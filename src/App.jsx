@@ -6,7 +6,6 @@ import Arduino from "./components/Arduino";
 import Code from "./components/Code";
 import Footer from "./components/Footer";
 import Contact from "./components/Contact";
-import Ai from "./components/Ai";
 
 function App() {
   return (
@@ -20,9 +19,6 @@ function App() {
 
       <section id="Hero" className="animate-fadeIn">
         <Hero />
-      </section>
-      <section id="AI" className="animate-fadeIn">
-        <Ai />
       </section>
       <section id="3D Print" className="animate-fadeIn">
         <Print />
