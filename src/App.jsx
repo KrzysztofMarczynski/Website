@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import Ai from "./components/Ai";
 import Print from "./components/Print";
 import Unity from "./components/Unity";
 import Arduino from "./components/Arduino";
@@ -19,6 +20,9 @@ function App() {
 
       <section id="Hero" className="animate-fadeIn">
         <Hero />
+      </section>
+      <section id="AI" className="animate-fadeIn">
+        <Ai />
       </section>
       <section id="3D Print" className="animate-fadeIn">
         <Print />
