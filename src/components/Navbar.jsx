@@ -148,7 +148,7 @@ export default function Navbar() {
             ${mobileMenuIsOpen ? "opacity-100 translate-y-0 duration-500 delay-300" : "opacity-0 translate-y-2 duration-100"}`}
           >
             <button
-              onClick={() => handleScroll(contact)}   // ← teraz używa handleScroll (zamyka menu!)
+              onClick={() => handleScroll(contact)}
               className="px-10 py-4 text-xl font-bold rounded-full
                          bg-red-600 hover:bg-red-500 text-white cursor-pointer
                          transition-all active:scale-95"

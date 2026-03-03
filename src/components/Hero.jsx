@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 
 export default function Hero() {
+  
   const scrollToContact = () => {
     const el = document.getElementById("contact");
     if (el) {
@@ -11,9 +12,9 @@ export default function Hero() {
     }
   };
 
-  return (
-    <section className="relative pt-20 md:pt-24 lg:pt-28 pb-10 px-5 md:px-10 lg:px-16 bg-gray-950 text-white">
-      <div className="relative z-10 max-w-7xl mx-auto">
+return (
+  <section className="relative pt-24 md:pt-28 lg:pt-32 pb-10 px-5 md:px-10 lg:px-16 bg-gray-950 text-white">
+    <div className="relative z-10 max-w-7xl mx-auto">
 
         {/* ===== MOBILE TITLE ===== */}
         <motion.h1
@@ -98,7 +99,7 @@ export default function Hero() {
               className="flex justify-center lg:justify-start"
             >
             <button
-              onClick={() => handleScroll(contact)}   // ← teraz używa handleScroll (zamyka menu!)
+              onClick={() => scrollToContact(contact)}
               className="px-10 py-4 text-xl font-bold rounded-full
                          bg-red-600 hover:bg-red-500 text-white cursor-pointer
                          transition-all active:scale-95"
