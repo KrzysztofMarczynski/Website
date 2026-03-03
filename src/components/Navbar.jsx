@@ -6,7 +6,7 @@ export default function Navbar() {
   const [buttonPos, setButtonPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef(null);
 
-  const links = ["Code", "3D Print", "Unity Games", "Arduino", "AI"];
+  const links = ["Code", "3D Print", "Unity Games"];
   const contact = "Contact";
 
   // Pobranie pozycji przycisku burgera

@@ -22,20 +22,12 @@ function App() {
           <Code />
         </section>
 
-        <section id="ai" className="animate-fadeIn">
-          <Ai />
-        </section>
-
         <section id="3d-print" className="animate-fadeIn">
           <Print />
         </section>
 
         <section id="unity-games" className="animate-fadeIn">
           <Unity />
-        </section>
-
-        <section id="arduino" className="animate-fadeIn">
-          <Arduino />
         </section>
 
         <section id="contact" className="animate-fadeIn">
