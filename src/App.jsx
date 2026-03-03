@@ -3,7 +3,6 @@ import Hero from "./components/Hero";
 import Ai from "./components/Ai";
 import Print from "./components/Print";
 import Unity from "./components/Unity";
-import Arduino from "./components/Arduino";
 import Code from "./components/Code";
 import Footer from "./components/Footer";
 import Contact from "./components/Contact";
@@ -34,8 +33,7 @@ function App() {
           <Contact />
         </section>
       </main>
-
-      <Footer />  {/* fixed – nie wpływa na layout */}
+      <Ai />
     </div>
   );
 }
