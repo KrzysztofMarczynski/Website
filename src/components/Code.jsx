@@ -332,7 +332,7 @@ public class RoomVariations
 
   return (
     <section
-      id="code"
+      id="Code"
       className="relative min-h-screen pt-12 sm:pt-14 md:pt-16 lg:pt-16 pb-20 px-5 md:px-10 lg:px-16 
                  bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 
                  text-white overflow-visible"

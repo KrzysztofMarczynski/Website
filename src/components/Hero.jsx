@@ -97,15 +97,14 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="flex justify-center lg:justify-start"
             >
-              <button
-                onClick={scrollToContact}
-                className="px-7 py-3 border border-gray-600 
-                           hover:border-gray-400 text-gray-300 
-                           hover:text-white rounded-xl 
-                           transition-all"
-              >
-                Contact me
-              </button>
+            <button
+              onClick={() => handleScroll(contact)}   // ← teraz używa handleScroll (zamyka menu!)
+              className="px-10 py-4 text-xl font-bold rounded-full
+                         bg-red-600 hover:bg-red-500 text-white cursor-pointer
+                         transition-all active:scale-95"
+            >
+              Contact Me
+            </button>
             </motion.div>
 
           </div>

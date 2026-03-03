@@ -37,7 +37,7 @@ export default function Navbar() {
       const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: "smooth" });
     }
-    setMobileMenuIsOpen(false);
+    setMobileMenuIsOpen(false); // ← ZAMYKANIE MENU PO KLIKNIĘCIU
   };
 
   return (
@@ -52,7 +52,6 @@ export default function Navbar() {
           style={{ background: "linear-gradient(90deg, #1E201E, #1E201E)" }}
         >
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
             <div
               className="flex items-center space-x-2 cursor-pointer hover:scale-105 transition"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -66,9 +65,7 @@ export default function Navbar() {
                 <button
                   key={item}
                   onClick={() => handleScroll(item)}
-                  className="font-bold text-xl text-white cursor-pointer
-                  transition-all duration-300
-                  hover:text-white hover:scale-105"
+                  className="font-bold text-xl text-white cursor-pointer transition-all duration-300 hover:text-white hover:scale-105"
                 >
                   {item}
                 </button>
@@ -80,8 +77,7 @@ export default function Navbar() {
               <button
                 ref={buttonRef}
                 onClick={() => setMobileMenuIsOpen(true)}
-                className={`absolute inset-0 flex items-center justify-center
-                  cursor-pointer transition-opacity duration-200
+                className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-opacity duration-200
                   ${mobileMenuIsOpen ? "opacity-0 pointer-events-none" : "opacity-100"}`}
               >
                 <Menu className="w-7 h-7 text-white transition-transform duration-200 active:scale-90" />
@@ -129,23 +125,15 @@ export default function Navbar() {
           <div
             className={`flex-1 flex flex-col items-center justify-center space-y-8
             transition-all
-            ${
-              mobileMenuIsOpen
-                ? "opacity-100 translate-y-0 duration-500 delay-200"
-                : "opacity-0 translate-y-4 duration-150"
-            }`}
+            ${mobileMenuIsOpen ? "opacity-100 translate-y-0 duration-500 delay-200" : "opacity-0 translate-y-4 duration-150"}`}
           >
             {links.map((item, i) => (
               <button
                 key={item}
                 onClick={() => handleScroll(item)}
-                style={{
-                  transitionDelay: mobileMenuIsOpen ? `${i * 70}ms` : "0ms",
-                }}
-                className={`relative text-3xl font-bold text-white cursor-pointer
-                transition-all duration-300 hover:scale-110
-                after:absolute after:left-0 after:-bottom-2
-                after:h-[2px] after:w-0 after:bg-white
+                style={{ transitionDelay: mobileMenuIsOpen ? `${i * 70}ms` : "0ms" }}
+                className={`relative text-3xl font-bold text-white cursor-pointer transition-all duration-300 hover:scale-110
+                after:absolute after:left-0 after:-bottom-2 after:h-[2px] after:w-0 after:bg-white
                 after:transition-all after:duration-300 hover:after:w-full
                 ${mobileMenuIsOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
               >
@@ -154,27 +142,18 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* CONTACT BUTTON */}
+          {/* CONTACT BUTTON – CZERWONY + ZAMYKANIE MENU */}
           <div
             className={`pb-16 flex justify-center transition-all
             ${mobileMenuIsOpen ? "opacity-100 translate-y-0 duration-500 delay-300" : "opacity-0 translate-y-2 duration-100"}`}
           >
             <button
-              onClick={() => {
-                const el = document.getElementById("Contact");
-                if (el) {
-                  const yOffset = -80; // dokładnie taki sam offset jak w navbarze
-                  const y =
-                    el.getBoundingClientRect().top +
-                    window.pageYOffset +
-                    yOffset;
-                  window.scrollTo({ top: y, behavior: "smooth" });
-                }
-              }}
-              className="px-7 py-3.5 border border-gray-600 hover:border-gray-400 
-             text-gray-300 hover:text-white rounded-xl transition-all"
+              onClick={() => handleScroll(contact)}   // ← teraz używa handleScroll (zamyka menu!)
+              className="px-10 py-4 text-xl font-bold rounded-full
+                         bg-red-600 hover:bg-red-500 text-white cursor-pointer
+                         transition-all active:scale-95"
             >
-              Contact me
+              Contact
             </button>
           </div>
         </div>
