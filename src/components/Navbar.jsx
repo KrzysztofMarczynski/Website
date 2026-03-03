@@ -6,8 +6,7 @@ export default function Navbar() {
   const [buttonPos, setButtonPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef(null);
 
-  // dodana zakładka AI jako pierwsza
-  const links = ["AI", "3D Print", "Unity Games", "Arduino", "Code"];
+  const links = ["Code", "3D Print", "Unity Games", "Arduino", "AI"];
   const contact = "Contact";
 
   // Pobranie pozycji przycisku burgera
@@ -161,12 +160,21 @@ export default function Navbar() {
             ${mobileMenuIsOpen ? "opacity-100 translate-y-0 duration-500 delay-300" : "opacity-0 translate-y-2 duration-100"}`}
           >
             <button
-              onClick={() => handleScroll(contact)}
-              className="px-10 py-4 text-xl font-bold rounded-full
-              bg-white text-[#403d39] cursor-pointer
-              hover:bg-[#eb5e28] hover:text-white transition-all active:scale-95"
+              onClick={() => {
+                const el = document.getElementById("Contact");
+                if (el) {
+                  const yOffset = -80; // dokładnie taki sam offset jak w navbarze
+                  const y =
+                    el.getBoundingClientRect().top +
+                    window.pageYOffset +
+                    yOffset;
+                  window.scrollTo({ top: y, behavior: "smooth" });
+                }
+              }}
+              className="px-7 py-3.5 border border-gray-600 hover:border-gray-400 
+             text-gray-300 hover:text-white rounded-xl transition-all"
             >
-              Contact
+              Contact me
             </button>
           </div>
         </div>

@@ -10,38 +10,40 @@ import Contact from "./components/Contact";
 
 function App() {
   return (
-    <div
-      className="min-h-screen text-white overflow-hidden scroll-smooth"
-      style={{ backgroundColor: "bg-gray-900" }}
-    >
-      {/* Navbar */}
+    <div className="bg-gray-900 text-white min-h-screen scroll-smooth">
       <Navbar />
-      {/* Sekcje z id i animacją fade-in */}
 
-      <section id="Hero" className="animate-fadeIn">
-        <Hero />
-      </section>
-      <section id="AI" className="animate-fadeIn">
-        <Ai />
-      </section>
-      <section id="3D Print" className="animate-fadeIn">
-        <Print />
-      </section>
-      <section id="Unity Games" className="animate-fadeIn">
-        <Unity />
-      </section>
-      <section id="Arduino" className="animate-fadeIn">
-        <Arduino />
-      </section>
-      <section id="Code" className="animate-fadeIn">
-        <Code />
-      </section>
-      <section id="Contact" className="animate-fadeIn">
-        <Contact />
-      </section>
-      {/* Footer */}
-      <Footer />
-      {/* Tailwind CSS animacja fade-in */}
+      <main className="pb-40 sm:pb-24 md:pb-28 lg:pb-10">
+        <section id="hero" className="animate-fadeIn">
+          <Hero />
+        </section>
+
+        <section id="code" className="animate-fadeIn">
+          <Code />
+        </section>
+
+        <section id="ai" className="animate-fadeIn">
+          <Ai />
+        </section>
+
+        <section id="3d-print" className="animate-fadeIn">
+          <Print />
+        </section>
+
+        <section id="unity-games" className="animate-fadeIn">
+          <Unity />
+        </section>
+
+        <section id="arduino" className="animate-fadeIn">
+          <Arduino />
+        </section>
+
+        <section id="contact" className="animate-fadeIn">
+          <Contact />
+        </section>
+      </main>
+
+      <Footer />  {/* fixed – nie wpływa na layout */}
     </div>
   );
 }

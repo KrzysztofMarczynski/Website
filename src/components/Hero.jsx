@@ -1,129 +1,116 @@
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export default function Hero() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e) =>
-      setMousePosition({ x: e.clientX, y: e.clientY });
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  const topImages = [1, 2, 3, 4, 5, 8, 9, 10, 11, 12];
-  const bottomImages = [1, 2, 3, 4, 5, 8, 9, 10, 11, 12];
+  const scrollToContact = () => {
+    const el = document.getElementById("contact");
+    if (el) {
+      const yOffset = -80;
+      const y =
+        el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  };
 
   return (
-    <section className="relative min-h-screen pt-24 px-4 overflow-hidden bg-gray-900">
-      {/* efekt myszki */}
-      <div
-        className="absolute inset-0 opacity-20 pointer-events-none"
-        style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(59,130,246,0.07), transparent 40%)`,
-        }}
-      />
+    <section className="relative pt-20 md:pt-24 lg:pt-28 pb-10 px-5 md:px-10 lg:px-16 bg-gray-950 text-white">
+      <div className="relative z-10 max-w-7xl mx-auto">
 
-      {/* tekst */}
-      <div className="relative z-10 text-center max-w-3xl mx-auto text-white">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6 drop-shadow-md">
-          Welcome to my website!
-        </h1>
-        <p className="text-lg md:text-xl mb-4">
-          My name is <b>Krzysztof</b> and I love to create and experience new things.
-        </p>
-        <p className="text-lg md:text-xl mb-4">
-          I design board games, create 3D prints and explore new ideas.
-        </p>
-        <p className="text-lg md:text-xl">
-          I enjoy collaborating with people and building cool stuff.
-        </p>
-      </div>
+        {/* ===== MOBILE TITLE ===== */}
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="lg:hidden text-center mb-10 text-4xl md:text-5xl font-bold leading-tight 
+                     bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
+                     bg-clip-text text-transparent"
+        >
+          Hi, my name is Krzysztof
+        </motion.h1>
 
-      {/* ===== PASEK GÓRNY ===== */}
-      <div className="mt-16 overflow-hidden">
-        <div className="scroll-left">
-          {[...topImages, ...topImages].map((i, idx) => (
-            <img
-              key={idx}
-              src={`${i}.png`}
-              className="scroll-img"
-              alt=""
-            />
-          ))}
+        {/* ===== MAIN FLEX CONTAINER ===== */}
+        <div className="flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-16">
+
+          {/* ===== LEFT SIDE – IMAGE ===== */}
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9 }}
+            className="w-full lg:w-1/2 flex justify-center lg:justify-start"
+          >
+            <div className="relative rounded-2xl overflow-hidden border border-gray-700/50">
+              <img
+                src="portrait.JPEG"
+                alt="Krzysztof"
+                className="w-full max-w-md lg:max-w-none object-cover 
+                           aspect-[4/5] lg:aspect-[3/4] 
+                           grayscale-[30%] hover:grayscale-0 
+                           transition-all duration-700"
+              />
+            </div>
+          </motion.div>
+
+          {/* ===== RIGHT SIDE – TEXT ===== */}
+          <div className="w-full lg:w-1/2 space-y-8 text-center lg:text-left">
+
+            {/* ===== DESKTOP TITLE ===== */}
+            <motion.h1
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="hidden lg:block text-5xl xl:text-6xl font-bold leading-tight 
+                         bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
+                         bg-clip-text text-transparent"
+            >
+              Hi, my name is Krzysztof
+            </motion.h1>
+
+            {/* ===== DESCRIPTION ===== */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="space-y-5 text-lg md:text-xl leading-relaxed text-gray-300"
+            >
+              <p>
+                I'm a very energetic and creative person who can tackle any
+                problem. I believe that every solution can be improved.
+              </p>
+              <p>
+                I often think outside the box, I'm not afraid to express my
+                opinion.
+              </p>
+              <p>
+                My greatest strengths are my soft skills. I learn new skills
+                very quickly. I feel great working with a group.
+              </p>
+            </motion.div>
+
+            {/* ===== BUTTON ===== */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="flex justify-center lg:justify-start"
+            >
+              <button
+                onClick={scrollToContact}
+                className="px-7 py-3 border border-gray-600 
+                           hover:border-gray-400 text-gray-300 
+                           hover:text-white rounded-xl 
+                           transition-all"
+              >
+                Contact me
+              </button>
+            </motion.div>
+
+          </div>
         </div>
       </div>
-
-      {/* ===== PASEK DOLNY ===== */}
-      <div className="mt-6 overflow-hidden">
-        <div className="scroll-right">
-          {[...bottomImages, ...bottomImages].map((i, idx) => (
-            <img
-              key={idx}
-              src={`${i}.png`}
-              className="scroll-img"
-              alt=""
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* ===== PASEK TRZECI (jak górny) ===== */}
-      <div className="mt-6 overflow-hidden mb-24">
-        <div className="scroll-left">
-          {[...topImages, ...topImages].map((i, idx) => (
-            <img
-              key={`third-${idx}`}
-              src={`${i}.png`}
-              className="scroll-img"
-              alt=""
-            />
-          ))}
-        </div>
-      </div>
-
-      <style jsx>{`
-        .scroll-left,
-        .scroll-right {
-          display: flex;
-          width: max-content;
-        }
-
-        .scroll-left {
-          animation: scrollLeft 65s linear infinite;
-        }
-
-        .scroll-right {
-          animation: scrollRight 65s linear infinite;
-        }
-
-        .scroll-img {
-          width: 260px;
-          height: 160px;
-          margin-right: 16px;
-          object-fit: cover;
-          border-radius: 16px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-        }
-
-        @keyframes scrollLeft {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
-        }
-
-        @keyframes scrollRight {
-          from {
-            transform: translateX(-50%);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-      `}</style>
     </section>
   );
 }
