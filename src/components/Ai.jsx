@@ -5,7 +5,7 @@ import { MessageCircle, X } from "lucide-react";
 export default function AI() {
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState([
-    { from: "ai", text: "Cześć! Jestem Twoim AI asystentem. W czym mogę pomóc?" },
+    { from: "ai", text: "Co tam byku, jak mogę Ci dzisiaj pomóc?" },
   ]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
@@ -43,7 +43,7 @@ export default function AI() {
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { from: "ai", text: "Przepraszam, coś poszło nie tak." },
+        { from: "ai", text: "Narazie to ja mam urlop, DO WIDZENIA PAŃSTWU!" },
       ]);
     }
   };
