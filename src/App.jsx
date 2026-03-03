@@ -10,7 +10,7 @@ import Contact from "./components/Contact";
 
 function App() {
   return (
-    <div className="bg-gray-900 text-white min-h-screen scroll-smooth">
+    <div className="bg-gray-950 text-white min-h-screen scroll-smooth">
       <Navbar />
 
       <main className="pb-40 sm:pb-24 md:pb-28 lg:pb-10">
