@@ -301,6 +301,8 @@ public class RoomVariations
   const languageDescriptions = {
     C: (
       <>
+        This is my implementation of the printf function in C.
+        <br></br>
         I started learning C when I got into 42Warsaw school. There, I was
         forced to write code in a very simple form, which taught me the basics
         of how C works.
@@ -316,7 +318,12 @@ public class RoomVariations
         pointerami, STL i wielowątkowością.
       </>
     ),
-    CSharp: <>I mainly use C# to create games in Unity.</>,
+    CSharp: (
+      <>
+        It's my own level generation system, just like in The Binding of isaac.
+        <br></br>I mainly use C# to create games in Unity.
+      </>
+    ),
     Python: (
       <>
         Python wybieram, gdy potrzebuję szybko prototypować, automatyzować
@@ -398,29 +405,29 @@ public class RoomVariations
                        border border-gray-700/50 rounded-2xl shadow-2xl shadow-black/40 
                        overflow-hidden"
           >
-<div className="max-h-[500px] overflow-y-auto">
-  <SyntaxHighlighter
-    language={
-      activeTab.toLowerCase() === "c++"
-        ? "cpp"
-        : activeTab.toLowerCase() === "csharp"
-        ? "csharp"
-        : activeTab.toLowerCase()
-    }
-    style={vscDarkPlus}
-    customStyle={{
-      margin: 0,
-      padding: "2rem",
-      background: "transparent",
-      fontSize: "1.05rem",
-      lineHeight: "1.6",
-    }}
-    showLineNumbers
-    wrapLongLines
-  >
-    {codeSamples[activeTab]}
-  </SyntaxHighlighter>
-</div>
+            <div className="max-h-[500px] overflow-y-auto">
+              <SyntaxHighlighter
+                language={
+                  activeTab.toLowerCase() === "c++"
+                    ? "cpp"
+                    : activeTab.toLowerCase() === "csharp"
+                      ? "csharp"
+                      : activeTab.toLowerCase()
+                }
+                style={vscDarkPlus}
+                customStyle={{
+                  margin: 0,
+                  padding: "2rem",
+                  background: "transparent",
+                  fontSize: "1.05rem",
+                  lineHeight: "1.6",
+                }}
+                showLineNumbers
+                wrapLongLines
+              >
+                {codeSamples[activeTab]}
+              </SyntaxHighlighter>
+            </div>
 
             <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-gray-950/40" />
           </motion.div>

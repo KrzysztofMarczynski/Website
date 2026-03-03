@@ -42,7 +42,7 @@ return (
           >
             <div className="relative rounded-2xl overflow-hidden border border-gray-700/50">
               <img
-                src="portrait.JPEG"
+                src="portrait.png"
                 alt="Krzysztof"
                 className="w-full max-w-md lg:max-w-none object-cover 
                            aspect-[4/5] lg:aspect-[3/4] 
