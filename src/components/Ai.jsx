@@ -11,7 +11,7 @@ export default function AI() {
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
 
-  const API_URL = "http://localhost:8000/chat";
+  const API_URL = "/api/chat";;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
