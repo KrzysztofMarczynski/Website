@@ -22,46 +22,38 @@ export default function AI() {
     }
   }, [messages, isOpen]);
 
-  const handleSend = async () => {
-    if (input.trim() === "") return;
+const handleSend = async () => {
+  if (input.trim() === "") return;
 
-    const userMessage = input;
+  const userMessage = input;
 
+  setMessages((prev) => [...prev, { from: "user", text: userMessage }]);
+  setInput("");
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userMessage })   // ← poprawione na "message"
+    });
+
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const data = await res.json();
+
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    setMessages((prev) => [...prev, { from: "ai", text: data.response }]);
+  } catch (err) {
+    console.error("Chat error:", err);
     setMessages((prev) => [
       ...prev,
-      { from: "user", text: userMessage }
+      { from: "ai", text: "Ups... coś poszło nie tak. Spróbuj ponownie." }
     ]);
-
-    setInput("");
-
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message: userMessage
-        })
-      });
-
-      const data = await res.json();
-
-      setMessages((prev) => [
-        ...prev,
-        { from: "ai", text: data.response }
-      ]);
-
-    } catch (err) {
-
-      console.error(err);
-
-      setMessages((prev) => [
-        ...prev,
-        { from: "ai", text: "Ups... try again" }
-      ]);
-    }
-  };
+  }
+};
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
