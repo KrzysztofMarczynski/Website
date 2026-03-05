@@ -33,13 +33,13 @@ export default function AI() {
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage })
+        body: JSON.stringify({ text: userMessage })
       });
 
       if (!res.ok) throw new Error("Something went wrong.");
 
       const data = await res.json();
-      setMessages((prev) => [...prev, { from: "ai", text: data.response }]);
+      setMessages((prev) => [...prev, { from: "ai", text: data.reply }]);
     } catch (err) {
       setMessages((prev) => [
         ...prev,
