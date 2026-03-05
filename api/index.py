@@ -5,9 +5,7 @@ from openai import OpenAI
 
 app = FastAPI()
 
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY")
-)
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 class ChatRequest(BaseModel):
     message: str
@@ -22,7 +20,7 @@ async def chat(req: ChatRequest):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "Jesteś pomocnym asystentem AI."},
+                {"role": "system", "content": "You are a helpful AI assistant on a portfolio website."},
                 {"role": "user", "content": req.message}
             ]
         )
