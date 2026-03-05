@@ -15,9 +15,9 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     input: str
 
-@app.get("/")
-async def root():
-    return {"message": "API działa"}
+@app.get("/api/test")
+async def test():
+    return {"status": "ok"}
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
