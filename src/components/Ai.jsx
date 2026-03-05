@@ -5,7 +5,7 @@ import { MessageCircle, X } from "lucide-react";
 export default function AI() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { from: "ai", text: "Cześć byku! Co słychać? W czym mogę pomóc? 😏" },
+    { from: "ai", text: "Hi, how can I help you?" },
   ]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
@@ -37,14 +37,14 @@ export default function AI() {
         body: JSON.stringify({ input: userMessage }),
       });
 
-      if (!res.ok) throw new Error("Błąd serwera");
+      if (!res.ok) throw new Error("Something went wrong.");
 
       const data = await res.json();
       setMessages((prev) => [...prev, { from: "ai", text: data.response }]);
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { from: "ai", text: "Ups... coś poszło nie tak. Spróbuj jeszcze raz! 😅" },
+        { from: "ai", text: "Ups... try again" },
       ]);
     }
   };
@@ -69,7 +69,7 @@ export default function AI() {
       >
         <MessageCircle className="w-8 h-8" />
         <span className="hidden sm:block font-medium pr-2 group-hover:pr-3 transition-all">
-          Zapytaj AI
+          Ask AI
         </span>
       </motion.button>
 
@@ -92,8 +92,8 @@ export default function AI() {
                     <MessageCircle className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="font-semibold text-white">AI Asystent</p>
-                    <p className="text-xs text-green-400">Online • Gotowy do akcji</p>
+                    <p className="font-semibold text-white">AI Assistant</p>
+                    <p className="text-xs text-green-400">Online • Ready</p>
                   </div>
                 </div>
                 <button 
@@ -131,7 +131,7 @@ export default function AI() {
               <div className="bg-gray-800 px-4 py-3 flex gap-2 border-t border-gray-700">
                 <input
                   type="text"
-                  placeholder="Napisz wiadomość..."
+                  placeholder="Write message..."
                   className="flex-1 bg-gray-700 text-white placeholder-gray-400 rounded-2xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
@@ -141,7 +141,7 @@ export default function AI() {
                   onClick={handleSend}
                   className="bg-blue-600 hover:bg-blue-500 px-6 rounded-2xl font-medium text-white transition-all active:scale-95"
                 >
-                  Wyślij
+                  Send
                 </button>
               </div>
             </motion.div>
