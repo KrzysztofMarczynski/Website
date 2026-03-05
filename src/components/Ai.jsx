@@ -79,7 +79,7 @@ export default function AI() {
             <motion.div
               initial={{ opacity: 0, scale: 0.85, y: 50 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.85, y: 50 }}
+              exit={{ opacity: 0, scale: 0.85, y: 0 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="w-full max-w-md sm:max-w-lg bg-[#1E201E] rounded-3xl shadow-2xl 
                          flex flex-col overflow-hidden border border-gray-700/50 h-[85vh] sm:h-[90vh]"
