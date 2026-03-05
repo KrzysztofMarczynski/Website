@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism"; // motyw VS Code
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export default function Code() {
   const [activeTab, setActiveTab] = useState("C");
@@ -56,13 +56,57 @@ int	ft_printf(const char *input, ...)
 	va_end(arguments);
 	return (res);
 }`,
-    "C++": `#include <iostream>
-using namespace std;
 
-int main() {
-    cout << "Hello, World!" << endl;
-    return 0;
-}`,
+    JavaScript: `import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === 'undefined') return 'dark';
+    return localStorage.getItem('theme') || 
+           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  });
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  return (
+    <motion.button
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={toggleTheme}
+      className="fixed top-6 right-6 z-50 p-3 rounded-full 
+                 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200
+                 shadow-lg hover:shadow-xl transition-shadow"
+      aria-label="Toggle dark mode"
+    >
+      {theme === 'dark' ? (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ) : (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      )}
+    </motion.button>
+  );
+}
+
+export default ThemeToggle;`,
+
     CSharp: `using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -295,6 +339,7 @@ public class RoomVariations
 		return null;
 	}
 }`,
+
     Python: `print("Hello, World!")`,
   };
 
@@ -309,13 +354,11 @@ public class RoomVariations
         <br />
       </>
     ),
-    "C++": (
+    JavaScript: (
       <>
-        C++ to mój główny język do tworzenia gier i aplikacji wymagających
-        wysokiej wydajności.
+        JavaScript + React to mój główny język do tworzenia nowoczesnych aplikacji webowych.
         <br />
-        Pracuję z nowoczesnym standardem (C++17/20/23), szablonami, RAII, smart
-        pointerami, STL i wielowątkowością.
+        Pracuję z hooks, context, Framer Motion, Tailwind CSS, TypeScript i Vite/Next.js.
       </>
     ),
     CSharp: (
@@ -388,12 +431,12 @@ public class RoomVariations
                 }
               `}
             >
-              {lang}
+              {lang === "JavaScript" ? "JS / React" : lang}
             </button>
           ))}
         </motion.div>
 
-        {/* Okno kodu – teraz z kolorowaniem składni jak w VS Code */}
+        {/* Okno kodu */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -408,8 +451,8 @@ public class RoomVariations
             <div className="max-h-[500px] overflow-y-auto">
               <SyntaxHighlighter
                 language={
-                  activeTab.toLowerCase() === "c++"
-                    ? "cpp"
+                  activeTab.toLowerCase() === "javascript"
+                    ? "jsx"
                     : activeTab.toLowerCase() === "csharp"
                       ? "csharp"
                       : activeTab.toLowerCase()
@@ -444,7 +487,7 @@ public class RoomVariations
             className="mt-10 md:mt-12 lg:mt-14 max-w-3xl mx-auto text-center space-y-8 pb-12 md:pb-16 lg:pb-20"
           >
             <h3 className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent leading-[1.25]">
-              {activeTab} – My Experience
+              {activeTab === "JavaScript" ? "JavaScript / React" : activeTab} – My Experience
             </h3>
 
             <p className="text-lg md:text-xl leading-[1.8] md:leading-[1.9] lg:leading-[2.0] text-gray-300">
@@ -460,7 +503,7 @@ public class RoomVariations
                          hover:from-blue-500 hover:to-indigo-500 
                          text-white font-medium rounded-xl transition-all shadow-lg shadow-blue-700/30"
             >
-              See my {activeTab} repo on GitHub →
+              See my {activeTab === "JavaScript" ? "JS/React" : activeTab} repo on GitHub →
             </a>
           </motion.div>
         </AnimatePresence>

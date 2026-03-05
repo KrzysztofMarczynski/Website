@@ -79,7 +79,7 @@ export default function Hero() {
                 greatest strengths are my soft skills. I learn new skills very
                 quickly. I feel great working with a group.
               </p>
-              <p>#skills</p>
+              <p>#skillset</p>
 <p>
   I have experience:
   <br />• Computer hardware
