@@ -17,8 +17,8 @@ class ChatRequest(BaseModel):
 
 @app.get("/api/test")
 async def test():
-    return {"status": "ok"}
+    return {"status": "API działa"}
 
-@app.post("/chat")
+@app.post("/api/chat")
 async def chat(request: ChatRequest):
     return {"response": f"Echo: {request.input}"}
