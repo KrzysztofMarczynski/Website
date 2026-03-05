@@ -7,18 +7,86 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependency directories
+node_modules/
+venv/
+.env/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Editor directories and files
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+coverage/
+.vite/
+
+# Local env and config files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env.*
+config.json
+credentials.json
+
+# Editor / IDE files
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/settings.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Vercel / deployment related (zwykle nie commitujemy)
+.vercel
+.output
+.vercel_build_output/
+
+# Python virtual environments & caches
+venv/
+.venv/
+env/
+ENV/
+pipenv/
+poetry.lock   # ← jeśli używasz poetry, to zazwyczaj commitujesz, jeśli nie – zostaw
+
+# Testing & coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+*.pytest_cache/
+.pytest_cache/
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+.AppleDouble
+.LSOverride
