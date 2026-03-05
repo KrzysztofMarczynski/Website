@@ -1,7 +1,7 @@
 [project]
-name = "website-backend"
+name = "webnr2"
 version = "0.1.0"
-description = "FastAPI backend for website"
+description = "FastAPI + OpenAI backend"
 requires-python = ">=3.12"
 
 dependencies = [
