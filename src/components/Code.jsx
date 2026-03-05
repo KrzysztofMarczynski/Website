@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-// ────────────────────────────────────────────────
-// Komponent do dynamicznego wczytywania kodu z GitHub
-// ────────────────────────────────────────────────
-function CodeFromFile({ filePath, language = "jsx", title }) {
+// Pomocniczy komponent do ładowania kodu z GitHub
+function CodeFromFile({
+  filePath = "src/components/Ai.jsx",
+  language = "jsx",
+  title = "Pływający czat AI",
+}) {
   const [code, setCode] = useState("// Ładowanie kodu z GitHub...");
   const [error, setError] = useState(null);
 
@@ -15,35 +17,38 @@ function CodeFromFile({ filePath, language = "jsx", title }) {
 
     fetch(rawUrl)
       .then((res) => {
-        if (!res.ok) throw new Error(`Błąd ${res.status} – plik nie znaleziony`);
+        if (!res.ok) {
+          throw new Error(`Nie udało się pobrać pliku (${res.status})`);
+        }
         return res.text();
       })
       .then((text) => setCode(text))
       .catch((err) => {
+        console.error(err);
         setError(err.message);
-        setCode("// Nie udało się wczytać kodu");
+        setCode("// Błąd podczas ładowania kodu");
       });
   }, [filePath]);
 
   return (
     <div className="space-y-4">
       {title && (
-        <h4 className="text-xl font-semibold text-blue-300">{title}</h4>
+        <h4 className="text-xl font-semibold text-blue-300 mb-3">{title}</h4>
       )}
 
-      <div className="flex justify-end">
+      <div className="flex justify-end mb-2">
         <a
           href={`https://github.com/KrzysztofMarczynski/Website/blob/main/${filePath}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-blue-400 hover:text-blue-300 underline flex items-center gap-1"
+          className="text-sm text-blue-400 hover:text-blue-300 underline flex items-center gap-1.5"
         >
-          Zobacz na GitHub →
+          Pełna wersja na GitHub →
         </a>
       </div>
 
       {error ? (
-        <div className="p-6 bg-red-950/40 rounded-xl text-red-300 border border-red-800/50">
+        <div className="p-6 bg-red-950/40 rounded-xl border border-red-800/50 text-red-300">
           {error}
         </div>
       ) : (
@@ -123,13 +128,17 @@ int	ft_printf(const char *input, ...)
 	return (res);
 }`,
 
-    // JavaScript → usuwamy statyczny kod – będzie ładowany dynamicznie
+    // Klucz musi istnieć, żeby zakładka była widoczna – kod będzie ładowany dynamicznie
+    JavaScript: "",
 
     CSharp: `using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-// ... (cały Twój kod C# bez zmian) ...`,
+public class LevelGenerator : MonoBehaviour
+{
+    // ... Twój oryginalny kod C# (wklej tutaj cały jeśli chcesz) ...
+}`,
 
     Python: `print("Hello, World!")`,
   };
@@ -138,33 +147,30 @@ using UnityEngine;
     C: (
       <>
         This is my implementation of the printf function in C.
-        <br></br>
+        <br />
         I started learning C when I got into 42Warsaw school. There, I was
         forced to write code in a very simple form, which taught me the basics
         of how C works.
-        <br />
       </>
     ),
     JavaScript: (
       <>
-        JavaScript + React to mój główny język do tworzenia nowoczesnych aplikacji webowych.
+        JavaScript + React to obecnie mój główny język do tworzenia interaktywnych aplikacji webowych.
         <br />
         Poniżej rzeczywisty kod komponentu pływającego czatu AI z mojej strony.
       </>
     ),
     CSharp: (
       <>
-        It's my own level generation system, just like in The Binding of isaac.
-        <br></br>I mainly use C# to create games in Unity.
+        It's my own level generation system, just like in The Binding of Isaac.
+        <br />
+        I mainly use C# to create games in Unity.
       </>
     ),
     Python: (
       <>
-        Python wybieram, gdy potrzebuję szybko prototypować, automatyzować
-        zadania, analizować dane lub eksperymentować z AI/ML.
-        <br />
-        Używam go do narzędzi CLI, web scrapingu, przetwarzania obrazów i
-        skryptów DevOps.
+        Python wybieram, gdy potrzebuję szybko prototypować, automatyzować zadania
+        lub eksperymentować z AI/ML.
       </>
     ),
   };
@@ -184,18 +190,7 @@ using UnityEngine;
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="
-            text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold 
-            mt-6 sm:mt-6 md:mt-6 lg:mt-6 xl:mt-6
-            mb-12 md:mb-14 lg:mb-16
-            pb-4 md:pb-6 lg:pb-8
-            text-center 
-            leading-[1.25] md:leading-[1.2] lg:leading-[1.15]
-            tracking-tight
-            bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
-            bg-clip-text text-transparent 
-            drop-shadow-md
-          "
+          className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold mt-6 mb-12 pb-4 text-center leading-tight tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent drop-shadow-md"
         >
           My Code & Experience
         </motion.h2>
@@ -215,11 +210,9 @@ using UnityEngine;
               className={`
                 px-6 py-2.5 rounded-full font-medium text-base md:text-lg
                 transition-all duration-300 border border-gray-700/60
-                ${
-                  activeTab === lang
-                    ? "bg-gradient-to-r from-blue-600/80 to-indigo-600/80 text-white shadow-lg shadow-blue-700/30 border-blue-500/50"
-                    : "bg-gray-800/40 text-gray-300 hover:bg-gray-700/60 hover:text-white hover:border-gray-500/60"
-                }
+                ${activeTab === lang
+                  ? "bg-gradient-to-r from-blue-600/80 to-indigo-600/80 text-white shadow-lg shadow-blue-700/30 border-blue-500/50"
+                  : "bg-gray-800/40 text-gray-300 hover:bg-gray-700/60 hover:text-white hover:border-gray-500/60"}
               `}
             >
               {lang === "JavaScript" ? "JS / React" : lang}
@@ -227,7 +220,7 @@ using UnityEngine;
           ))}
         </motion.div>
 
-        {/* Okno kodu */}
+        {/* Zawartość kodu */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -235,15 +228,13 @@ using UnityEngine;
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -30, scale: 0.97 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="relative w-full max-w-5xl mx-auto bg-gray-950/70 backdrop-blur-md 
-                       border border-gray-700/50 rounded-2xl shadow-2xl shadow-black/40 
-                       overflow-hidden"
+            className="relative w-full max-w-5xl mx-auto bg-gray-950/70 backdrop-blur-md border border-gray-700/50 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden"
           >
-            <div className="max-h-[500px] overflow-y-auto p-1">
+            <div className="max-h-[500px] overflow-y-auto">
               {activeTab === "JavaScript" ? (
                 <CodeFromFile
                   filePath="src/components/Ai.jsx"
-                  title="Komponent pływającego czatu AI"
+                  title="Floating AI Assistant Chat"
                 />
               ) : (
                 <SyntaxHighlighter
@@ -272,7 +263,7 @@ using UnityEngine;
           </motion.div>
         </AnimatePresence>
 
-        {/* Opis doświadczenia */}
+        {/* Opis */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -282,11 +273,11 @@ using UnityEngine;
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="mt-10 md:mt-12 lg:mt-14 max-w-3xl mx-auto text-center space-y-8 pb-12 md:pb-16 lg:pb-20"
           >
-            <h3 className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent leading-[1.25]">
+            <h3 className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent leading-tight">
               {activeTab === "JavaScript" ? "JavaScript / React" : activeTab} – My Experience
             </h3>
 
-            <p className="text-lg md:text-xl leading-[1.8] md:leading-[1.9] lg:leading-[2.0] text-gray-300">
+            <p className="text-lg md:text-xl leading-relaxed text-gray-300">
               {languageDescriptions[activeTab]}
             </p>
 
@@ -294,10 +285,7 @@ using UnityEngine;
               href={`https://github.com/KrzysztofMarczynski?tab=repositories&q=&type=&language=${activeTab.toLowerCase()}&sort=`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 mt-8 px-7 py-3.5 
-                         bg-gradient-to-r from-blue-600 to-indigo-600 
-                         hover:from-blue-500 hover:to-indigo-500 
-                         text-white font-medium rounded-xl transition-all shadow-lg shadow-blue-700/30"
+              className="inline-flex items-center gap-2 mt-8 px-7 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-blue-700/30"
             >
               See my {activeTab === "JavaScript" ? "JS/React" : activeTab} repo on GitHub →
             </a>
