@@ -13,6 +13,14 @@
   ],
   "routes": [
     {
+      "src": "/api/chat",
+      "dest": "api/index.py"
+    },
+    {
+      "src": "/api/test",
+      "dest": "api/index.py"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "api/index.py"
     },
