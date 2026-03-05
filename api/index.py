@@ -4,7 +4,11 @@ app = FastAPI()
 
 @app.get("/test")
 async def test():
-    return {"status": "SUKCES - endpoint /test działa", "czas": "2026-03-05", "klucz_length": len(os.environ.get("OPENAI_API_KEY", ""))}
+    return {
+        "status": "SUKCES - endpoint /test DZIAŁA",
+        "czas": "2026-03-05",
+        "klucz_length": len(os.environ.get("OPENAI_API_KEY", ""))
+    }
 
 @app.get("/")
 async def root():
