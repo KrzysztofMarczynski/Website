@@ -9,3 +9,7 @@ async def test():
 @app.get("/")
 async def root():
     return {"message": "API root OK"}
+
+@app.get("/api/index.py")
+async def root():
+    return {"message": "API root OK"}
