@@ -1,18 +1,35 @@
 import os
 from fastapi import FastAPI
+from pydantic import BaseModel
+from openai import OpenAI
 
 app = FastAPI()
 
-@app.get("/test")
-async def test():
-    return {
-        "status": "SUKCES - endpoint /test DZIAŁA",
-        "czas": "2026-03-05",
-        "klucz_length": len(os.environ.get("OPENAI_API_KEY", ""))
-    }
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY")
+)
+
+class ChatRequest(BaseModel):
+    message: str
 
 @app.get("/")
 async def root():
-    return {"message": "Python root OK – jeśli widzisz to, routing działa idealnie"}
+    return {"status": "AI backend działa"}
 
-print("[MIN TEST] Backend wystartował – jeśli widzisz to w logach, sukces")
+@app.post("/chat")
+async def chat(req: ChatRequest):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "Jesteś pomocnym asystentem AI."},
+                {"role": "user", "content": req.message}
+            ]
+        )
+
+        return {
+            "response": response.choices[0].message.content
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
