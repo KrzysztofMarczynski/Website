@@ -1,8 +1,8 @@
-import os
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
+from fastapi.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI()
 
@@ -23,16 +23,13 @@ class ChatRequest(BaseModel):
 
 @app.get("/test")
 async def test():
-    return {
-        "status": "backend działa",
-        "klucz_length": len(os.environ.get("OPENAI_API_KEY", ""))
-    }
+    return {"status": "test endpoint działa", "klucz_length": len(os.environ.get("OPENAI_API_KEY", ""))}
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key or len(api_key) < 40:
-        return {"error": "Brak poprawnego klucza OPENAI_API_KEY"}
+        return {"error": "Brak klucza OPENAI_API_KEY"}
 
     try:
         client = OpenAI(api_key=api_key)
@@ -41,10 +38,12 @@ async def chat(request: ChatRequest):
             messages=[
                 {"role": "system", "content": "Jesteś pomocnym AI asystentem."},
                 {"role": "user", "content": request.message}
-            ],
-            temperature=0.7,
-            max_tokens=500,
+            ]
         )
         return {"response": response.choices[0].message.content.strip()}
     except Exception as e:
         return {"error": str(e)}
+
+@app.get("/")
+async def root():
+    return {"status": "backend działa"}
