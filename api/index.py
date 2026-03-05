@@ -45,5 +45,3 @@ async def chat(request: ChatRequest):
         return {"response": resp.choices[0].message.content.strip()}
     except Exception as e:
         return {"error": str(e)}
-
-# NIE dodawaj handler = app – Vercel sam wykryje app jako ASGI
