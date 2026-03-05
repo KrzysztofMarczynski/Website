@@ -1,13 +1,13 @@
-# api/index.py
+# api/index.py – wersja minimalna + debug + OpenAI w funkcji
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 
-print("[DEBUG] api/index.py loaded")
-print("[DEBUG] OPENAI_API_KEY present?", "YES" if "OPENAI_API_KEY" in os.environ else "NO")
-print("[DEBUG] Key length:", len(os.environ.get("OPENAI_API_KEY", "")))
+print("[DEBUG] api/index.py załadowany pomyślnie")
+print("[DEBUG] OPENAI_API_KEY obecny?", "TAK" if "OPENAI_API_KEY" in os.environ else "NIE")
+print("[DEBUG] Długość klucza:", len(os.environ.get("OPENAI_API_KEY", "")))
 
 app = FastAPI()
 
@@ -25,23 +25,31 @@ class ChatRequest(BaseModel):
 @app.get("/test")
 async def test():
     return {
-        "status": "alive",
+        "status": "backend żyje",
         "key_present": "OPENAI_API_KEY" in os.environ,
-        "key_length": len(os.environ.get("OPENAI_API_KEY", ""))
+        "key_length": len(os.environ.get("OPENAI_API_KEY", "")),
+        "message": "Jeśli widzisz ten JSON → backend działa"
     }
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    key = os.environ.get("OPENAI_API_KEY")
-    if not key:
-        return {"error": "No OPENAI_API_KEY set"}
+    print(f"[DEBUG] Otrzymano wiadomość: {request.input[:100]}...")
+    
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key or len(api_key) < 40:
+        return {"error": "Brak poprawnego klucza OPENAI_API_KEY"}
 
-    client = OpenAI(api_key=key)
     try:
-        resp = client.chat.completions.create(
+        client = OpenAI(api_key=api_key)
+        response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": request.input}],
+            temperature=0.7,
+            max_tokens=600,
         )
-        return {"response": resp.choices[0].message.content.strip()}
+        content = response.choices[0].message.content.strip()
+        print("[DEBUG] Odpowiedź GPT:", content[:100] + "..." if len(content) > 100 else content)
+        return {"response": content}
     except Exception as e:
-        return {"error": str(e)}
+        print(f"[ERROR] Błąd w /chat: {str(e)}")
+        return {"error": f"Błąd OpenAI: {str(e)}"}
