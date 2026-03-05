@@ -8,23 +8,18 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Zmień na swoją domenę w produkcji
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Debug printy – pojawią się w Functions Logs
 print("[DEBUG] api/index.py załadowany")
 print("[DEBUG] OPENAI_API_KEY obecny?", "TAK" if "OPENAI_API_KEY" in os.environ else "NIE")
 print("[DEBUG] Długość klucza:", len(os.environ.get("OPENAI_API_KEY", "")))
 
 class ChatRequest(BaseModel):
     message: str
-
-@app.get("/")
-async def root():
-    return {"status": "backend działa"}
 
 @app.get("/test")
 async def test():
@@ -50,8 +45,6 @@ async def chat(request: ChatRequest):
             temperature=0.7,
             max_tokens=500,
         )
-        print("[DEBUG] Odpowiedź GPT:", response.choices[0].message.content[:100])
         return {"response": response.choices[0].message.content.strip()}
     except Exception as e:
-        print("[ERROR] Błąd w /chat:", str(e))
         return {"error": str(e)}
