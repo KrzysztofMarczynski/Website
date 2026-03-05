@@ -1,22 +1,28 @@
+# api/index.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+print("[DEBUG START] api/index.py loading...")
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # potem zmień na konkretną domenę
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/test")
-async def test():
-    return {"status": "Backend żyje bez OpenAI! 😎"}
+class ChatRequest(BaseModel):
+    input: str
 
 @app.post("/chat")
-async def chat():
-    return {"response": "Testowa odpowiedź – OpenAI wyłączone"}
+async def chat(request: ChatRequest):
+    print(f"[DEBUG] Otrzymano wiadomość: {request.input}")
+    return {"response": f"Echo twojej wiadomości: {request.input}. Backend działa bez OpenAI!"}
 
-handler = app
+handler = app  # zostaje!
+
+print("[DEBUG END] api/index.py loaded successfully")
