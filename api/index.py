@@ -45,12 +45,12 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     input: str
 
-@app.get("/test")
+@app.get("/api/test")
 async def test_endpoint():
     """Prosty endpoint do sprawdzenia, czy backend żyje"""
     return {"status": "ok", "message": "Backend działa poprawnie 🚀"}
 
-@app.post("/chat")
+@app.post("/api/chat")
 async def chat(request: ChatRequest):
     """Główny endpoint czatu – wysyła wiadomość do GPT-4o-mini"""
     if not client:
