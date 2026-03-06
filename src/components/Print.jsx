@@ -31,7 +31,7 @@ export default function Print() {
           className="max-w-3xl mx-auto text-center text-lg md:text-xl leading-relaxed text-gray-300 mb-20"
         >
           <p>
-            3D printing is my another hobbie, I am currently working on my own
+            3D printing is my another hobby, I am currently working on my own
             board game, I am also involved in other side projects, depends what
             i need.
           </p>
@@ -128,7 +128,7 @@ export default function Print() {
               </h3>
               <p className="text-gray-300 text-lg leading-relaxed">
                 I designed figurines, the design of which took me some of my
-                time
+                time.
               </p>
             </motion.div>
           </div>
@@ -146,8 +146,7 @@ export default function Print() {
               </h3>
               <p className="text-gray-300 text-lg leading-relaxed">
                 After printing the entire board, it turned out that it was not
-                practical to unfold, so I had to redesign the board a bit, which
-                wasted a lot of filament.
+                practical to unfold, so I had to redesign the board a bit.
               </p>
             </motion.div>
 
