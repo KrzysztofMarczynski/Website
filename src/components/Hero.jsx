@@ -73,21 +73,22 @@ export default function Hero() {
             >
               <p>#about me</p>
               <p>
-                I'm a very energetic and creative person who can tackle any
-                problem. I believe that every solution can be improved. I often
-                think outside the box, I'm not afraid to express my opinion. My
-                greatest strengths are my soft skills. I learn new skills very
-                quickly. I feel great working with a group.
+                I am an energetic and creative person who enjoys solving
+                problems and improving existing solutions. I think outside the
+                box and confidently share my ideas and opinions. My greatest
+                strengths are my soft skills and my ability to quickly learn new
+                things. I work very well in a team environment and enjoy
+                collaborating with others.
               </p>
               <p>#skillset</p>
-<p>
-  I have experience:
-  <br />• Computer hardware
-  <br />• 3D printing and 3D modeling
-  <br />• Pixel art creation
-  <br />• Game development in Unity
-  <br />• Programming in C, C#, Python, and JavaScript
-</p>
+              <p>
+                I have experience:
+                <br />• Computer hardware
+                <br />• 3D printing and 3D modeling
+                <br />• Pixel art creation
+                <br />• Game development in Unity
+                <br />• Programming in C, C#, Python, and JavaScript
+              </p>
             </motion.div>
 
             {/* ===== BUTTON ===== */}
