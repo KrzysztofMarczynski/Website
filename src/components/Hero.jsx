@@ -80,15 +80,15 @@ export default function Hero() {
                 things. I work very well in a team environment and enjoy
                 collaborating with others.
               </p>
-              <p>#skillset</p>
-              <p>
-                I have experience:
-                <br />• Computer hardware
-                <br />• 3D printing and 3D modeling
-                <br />• Pixel art creation
-                <br />• Game development in Unity
-                <br />• Programming in C, C#, Python, and JavaScript
-              </p>
+              <br />
+              #skillset
+              <br />
+              <br />• Computer hardware
+              <br />• 3D printing and 3D modeling
+              <br />• Pixel art creation
+              <br />• Game development in Unity
+              <br />• Programming in C, C#, Python, and JavaScript
+              <br />• English C1
             </motion.div>
 
             {/* ===== BUTTON ===== */}
