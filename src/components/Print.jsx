@@ -286,7 +286,7 @@ export default function Print() {
               </h3>
 
               <p className="text-lg md:text-xl leading-relaxed text-gray-300">
-                This is the coin holder I use in my car to keep my coins in place so they don't make any noise while driving.
+                This is the coin holder, I use in my car to keep coins in one place so they don't make any noise while driving.
               </p>
 
               {/* Przycisk */}
