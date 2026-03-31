@@ -219,7 +219,7 @@ export default function Print() {
               >
                 Other 3D Projects
               </h3>
-                            <h3
+              <h3
                 className="text-3xl md:text-4xl font-semibold mb-6 pb-4 
                              bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent
                              leading-[1.25]"
@@ -245,7 +245,7 @@ export default function Print() {
                            shadow-lg shadow-blue-700/40 hover:shadow-blue-600/60 
                            active:scale-95"
               >
-                Check out my model here  →
+                Check out my model here →
               </a>
             </div>
 
@@ -259,9 +259,64 @@ export default function Print() {
                 className="rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border border-gray-700/50 w-full max-w-md"
               >
                 <img
-                  src="/phone_holder.gif" // jeśli w public/ → /phone_holder.gif
-                  // lub jeśli w src/assets/: import phoneGif from '@/assets/phone_holder.gif'; i src={phoneGif}
+                  src="/phone_holder.gif"
                   alt="Phone holder 3D printing timelapse"
+                  className="w-full h-auto object-cover"
+                />
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mt-24 max-w-5xl mx-auto"
+        >
+          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Lewa strona – tekst + przycisk */}
+            <div className="space-y-8 text-center md:text-left">
+              <h3
+                className="text-3xl md:text-4xl font-semibold mb-6 pb-4 
+                             bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent
+                             leading-[1.25]"
+              >
+                Coin Holder
+              </h3>
+
+              <p className="text-lg md:text-xl leading-relaxed text-gray-300">
+                This is the coin holder I use in my car to keep my coins in place so they don't make any noise while driving.
+              </p>
+
+              {/* Przycisk */}
+              <a
+                href="https://www.printables.com/model/1658618-coin-holder-for-polish-zloty"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 mt-6 px-8 py-4 
+                           bg-gradient-to-r from-blue-600 to-indigo-600 
+                           hover:from-blue-500 hover:to-indigo-500 
+                           text-white font-medium text-lg rounded-xl transition-all 
+                           shadow-lg shadow-blue-700/40 hover:shadow-blue-600/60 
+                           active:scale-95"
+              >
+                Check out my model here →
+              </a>
+            </div>
+
+            {/* Prawa strona – gif */}
+            <div className="flex justify-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.9, delay: 0.2 }}
+                className="rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border border-gray-700/50 w-full max-w-md"
+              >
+                <img
+                  src="/coin_holder.gif"
+                  alt="Coin Holder 3D printing timelapse"
                   className="w-full h-auto object-cover"
                 />
               </motion.div>
