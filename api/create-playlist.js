@@ -1,36 +1,31 @@
-import SpotifyWebApi from "spotify-web-api-node";
+import axios from "axios";
 
 export default async function handler(req, res) {
-  const { mood, genre, token } = req.body;
+  const { code } = req.body;
 
-  if (!token) {
-    return res.status(401).json({ error: "No token" });
-  }
+  const clientId = process.env.Client_ID;
+  const clientSecret = process.env.Client_secret;
+
+  const redirectUri = process.env.REDIRECT_URI;
 
   try {
-    const spotify = new SpotifyWebApi({
-      clientId: process.env.Client_ID,
-      clientSecret: process.env.Client_secret,
-    });
+    const response = await axios.post(
+      "https://accounts.spotify.com/api/token",
+      new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: redirectUri,
+        client_id: clientId,
+        client_secret: clientSecret,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
 
-    spotify.setAccessToken(token);
-
-    const query = `${genre} ${mood}`;
-
-    const result = await spotify.searchTracks(query, { limit: 10 });
-
-    const tracks = result.body.tracks.items.map(t => t.uri);
-
-    const playlist = await spotify.createPlaylist("Photo Playlist 🎵", {
-      public: false,
-    });
-
-    await spotify.addTracksToPlaylist(playlist.body.id, tracks);
-
-    return res.json({
-      url: playlist.body.external_urls.spotify,
-    });
-
+    return res.json(response.data);
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
