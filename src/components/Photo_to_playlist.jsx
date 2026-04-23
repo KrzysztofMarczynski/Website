@@ -11,14 +11,14 @@ export default function Print() {
   const [genre, setGenre] = useState("");
   const [mood, setMood] = useState("");
   const [tracks, setTracks] = useState(20);
+  const [expanded, setExpanded] = useState(false);
 
   // 🔐 LOGIN SPOTIFY
   const loginSpotify = () => {
     const clientId = import.meta.env.VITE_Client_ID;
     const redirectUri = "https://www.krzysztof-marczynski.pl";
 
-    const scope =
-      "playlist-modify-private playlist-modify-public";
+    const scope = "playlist-modify-private playlist-modify-public";
 
     const authUrl =
       "https://accounts.spotify.com/authorize" +
@@ -57,6 +57,7 @@ export default function Print() {
     if (!savedToken) return alert("Zaloguj się do Spotify");
 
     setLoading(true);
+    setExpanded(true);
 
     try {
       const res = await fetch("/api/create-playlist", {
@@ -80,8 +81,10 @@ export default function Print() {
   };
 
   return (
-    <section id="Photo to playlist" className="min-h-screen bg-gray-950 text-white p-10">
-
+    <section
+      id="Photo to playlist"
+      className="min-h-screen bg-gray-950 text-white p-10"
+    >
       {/* TITLE */}
       <motion.h2
         initial={{ opacity: 0, y: 60 }}
@@ -129,7 +132,6 @@ export default function Print() {
       {/* UPLOAD + SETTINGS */}
       {!token && (
         <div className="flex flex-col items-center justify-center gap-8 mt-10">
-
           {/* UPLOAD */}
           <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-6 text-center">
             <h3 className="text-xl mb-4">Upload or take a photo</h3>
@@ -157,7 +159,6 @@ export default function Print() {
 
           {/* SETTINGS */}
           <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-6">
-
             {/* GENRE */}
             <div className="mb-4">
               <label className="block mb-2">Genre of music:</label>
@@ -178,37 +179,58 @@ export default function Print() {
               />
             </div>
 
-            {/* SLIDER */}
-            <div>
-              <label className="block mb-2">
-                Tracks: <span className="text-purple-400">{tracks}</span>
-              </label>
+   {/* SLIDER */}
+<div>
+  <label className="block mb-2">
+    Tracks: <span className="text-purple-400">{tracks}</span>
+  </label>
 
-              <input
-                type="range"
-                min="10"
-                max="50"
-                value={tracks}
-                onChange={(e) => setTracks(e.target.value)}
-                className="w-full accent-purple-500"
-              />
+  <input
+    type="range"
+    min="10"
+    max="50"
+    value={tracks}
+    onChange={(e) => setTracks(e.target.value)}
+    className="w-full accent-purple-500"
+  />
 
-              <div className="flex justify-between text-xs text-gray-400">
-                <span>10</span>
-                <span>50</span>
-              </div>
-            </div>
+  <div className="flex justify-between text-xs text-gray-400">
+    <span>10</span>
+    <span>50</span>
+  </div>
+</div>
 
+{/* 🎵 RESULT CARD (NOWE) */}
+{playlistUrl && expanded && (
+  <div className="mt-6 p-5 bg-gray-800 border border-gray-700 rounded-2xl text-center">
+    <h4 className="text-lg font-semibold mb-3 text-white">
+      Your playlist is ready 🎉
+    </h4>
+
+    <a
+      href={playlistUrl}
+      target="_blank"
+      className="text-green-400 underline text-lg"
+    >
+      Open Spotify Playlist
+    </a>
+  </div>
+)}
           </div>
 
           {/* BUTTON */}
-          <button
+          <a
             onClick={generatePlaylist}
-            className="bg-purple-600 hover:bg-purple-700 px-8 py-3 rounded-xl"
+            className="inline-flex items-center gap-3 mt-6 px-8 py-4 
+                       bg-purple-600 hover:bg-purple-700 
+                       text-white font-medium text-lg rounded-xl cursor-pointer"
+            font-medium
+            text-lg
+            rounded-xl
+            cursor-pointer
           >
             {loading ? "Generating..." : "Generate Playlist"}
-          </button>
-
+          </a>
         </div>
       )}
 
@@ -224,7 +246,6 @@ export default function Print() {
           </a>
         </div>
       )}
-
     </section>
   );
 }
