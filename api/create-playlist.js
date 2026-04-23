@@ -3,8 +3,8 @@ import axios from "axios";
 export default async function handler(req, res) {
   const { code } = req.body;
 
-  const clientId = process.env.Client_ID;
-  const clientSecret = process.env.Client_secret;
+  const clientId = process.env.VITE_Client_ID;
+  const clientSecret = process.env.VITE_Client_secret;
 
   const redirectUri = process.env.REDIRECT_URI;
 
