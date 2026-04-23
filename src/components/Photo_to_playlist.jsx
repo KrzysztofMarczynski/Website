@@ -7,18 +7,21 @@ export default function Print() {
   const [playlistUrl, setPlaylistUrl] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 🎧 NEW STATES
+  const [name, setName] = useState("");
   const [genre, setGenre] = useState("");
   const [mood, setMood] = useState("");
   const [tracks, setTracks] = useState(20);
-  const [expanded, setExpanded] = useState(false);
+
+  // ✅ NOWA LOGIKA FLOW
+  const [step, setStep] = useState(1);
 
   // 🔐 LOGIN SPOTIFY
   const loginSpotify = () => {
     const clientId = import.meta.env.VITE_Client_ID;
     const redirectUri = "https://www.krzysztof-marczynski.pl";
 
-    const scope = "playlist-modify-private playlist-modify-public";
+    const scope =
+      "playlist-modify-private playlist-modify-public";
 
     const authUrl =
       "https://accounts.spotify.com/authorize" +
@@ -45,6 +48,10 @@ export default function Print() {
         .then((data) => {
           setToken(data.access_token);
           localStorage.setItem("spotify_token", data.access_token);
+
+          // 👉 przejście do UI uploadu
+          setStep(2);
+
           window.history.replaceState({}, document.title, "/");
         });
     }
@@ -57,7 +64,6 @@ export default function Print() {
     if (!savedToken) return alert("Zaloguj się do Spotify");
 
     setLoading(true);
-    setExpanded(true);
 
     try {
       const res = await fetch("/api/create-playlist", {
@@ -67,12 +73,16 @@ export default function Print() {
           mood,
           genre,
           tracks,
+          name,
           token: savedToken,
         }),
       });
 
       const data = await res.json();
       setPlaylistUrl(data.url);
+
+      // 👉 przejście do wyniku
+      setStep(3);
     } catch (e) {
       console.error(e);
     }
@@ -108,15 +118,11 @@ export default function Print() {
       >
         <p>
           The program creates a Spotify playlist based on the photos you upload.
-          You can add up to three photos at a time, choose the genres you want
-          to include, your mood, and how many songs you want to include.
         </p>
-        <br />
-        <p>Just Log in to your Spotify account, upload your photo.</p>
       </motion.div>
 
-      {/* LOGIN */}
-      {!token && (
+      {/* ================= LOGIN ================= */}
+      {step === 1 && (
         <div className="text-center">
           <a
             onClick={loginSpotify}
@@ -129,9 +135,10 @@ export default function Print() {
         </div>
       )}
 
-      {/* UPLOAD + SETTINGS */}
-      {!token && (
+      {/* ================= UPLOAD + SETTINGS ================= */}
+      {step >= 2 && (
         <div className="flex flex-col items-center justify-center gap-8 mt-10">
+
           {/* UPLOAD */}
           <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-6 text-center">
             <h3 className="text-xl mb-4">Upload or take a photo</h3>
@@ -159,6 +166,17 @@ export default function Print() {
 
           {/* SETTINGS */}
           <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-6">
+
+            {/* NAME */}
+            <div className="mb-4">
+              <label className="block mb-2">Playlist name:</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-800 rounded"
+              />
+            </div>
+
             {/* GENRE */}
             <div className="mb-4">
               <label className="block mb-2">Genre of music:</label>
@@ -179,43 +197,26 @@ export default function Print() {
               />
             </div>
 
-   {/* SLIDER */}
-<div>
-  <label className="block mb-2">
-    Tracks: <span className="text-purple-400">{tracks}</span>
-  </label>
+            {/* TRACKS */}
+            <div>
+              <label className="block mb-2">
+                Tracks: <span className="text-purple-400">{tracks}</span>
+              </label>
 
-  <input
-    type="range"
-    min="10"
-    max="50"
-    value={tracks}
-    onChange={(e) => setTracks(e.target.value)}
-    className="w-full accent-purple-500"
-  />
+              <input
+                type="range"
+                min="10"
+                max="50"
+                value={tracks}
+                onChange={(e) => setTracks(Number(e.target.value))}
+                className="w-full accent-purple-500"
+              />
 
-  <div className="flex justify-between text-xs text-gray-400">
-    <span>10</span>
-    <span>50</span>
-  </div>
-</div>
-
-{/* 🎵 RESULT CARD (NOWE) */}
-{playlistUrl && expanded && (
-  <div className="mt-6 p-5 bg-gray-800 border border-gray-700 rounded-2xl text-center">
-    <h4 className="text-lg font-semibold mb-3 text-white">
-      Your playlist is ready 🎉
-    </h4>
-
-    <a
-      href={playlistUrl}
-      target="_blank"
-      className="text-green-400 underline text-lg"
-    >
-      Open Spotify Playlist
-    </a>
-  </div>
-)}
+              <div className="flex justify-between text-xs text-gray-400">
+                <span>10</span>
+                <span>50</span>
+              </div>
+            </div>
           </div>
 
           {/* BUTTON */}
@@ -224,26 +225,26 @@ export default function Print() {
             className="inline-flex items-center gap-3 mt-6 px-8 py-4 
                        bg-purple-600 hover:bg-purple-700 
                        text-white font-medium text-lg rounded-xl cursor-pointer"
-            font-medium
-            text-lg
-            rounded-xl
-            cursor-pointer
           >
             {loading ? "Generating..." : "Generate Playlist"}
           </a>
         </div>
       )}
 
-      {/* RESULT */}
-      {playlistUrl && (
-        <div className="text-center mt-10">
-          <a
-            href={playlistUrl}
-            target="_blank"
-            className="text-green-400 text-xl underline"
-          >
-            Open your Spotify playlist 🎵
-          </a>
+      {/* ================= RESULT ================= */}
+      {step === 3 && playlistUrl && (
+        <div className="text-center mt-12">
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 max-w-md mx-auto">
+            <h3 className="text-xl mb-4">Your playlist is ready 🎉</h3>
+
+            <a
+              href={playlistUrl}
+              target="_blank"
+              className="text-green-400 underline text-lg"
+            >
+              Open Spotify Playlist
+            </a>
+          </div>
         </div>
       )}
     </section>
