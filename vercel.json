@@ -7,34 +7,22 @@
       "config": { "distDir": "dist" }
     },
     {
-      "src": "api/index.py",
+      "src": "api/ai/**/*.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/api/chat",
-      "dest": "api/index.py"
+      "src": "/api/ai/(.*)",
+      "dest": "/api/ai/index.py"
     },
     {
-      "src": "/api/test",
-      "dest": "api/index.py"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "api/index.py"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "api/create-playlist.js"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "api/exchange-token.js"
+      "src": "/api/spotify/(.*)",
+      "dest": "/api/spotify/$1.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/index.html"
     }
   ]
 }
