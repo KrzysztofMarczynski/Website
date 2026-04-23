@@ -4,6 +4,7 @@ import Ai from "./components/Ai";
 import Print from "./components/Print";
 import Unity from "./components/Unity";
 import Code from "./components/Code";
+import Photo_to_playlist from "./components/Photo_to_playlist";
 import Footer from "./components/Footer";
 import Contact from "./components/Contact";
 
@@ -31,6 +32,10 @@ function App() {
 
         <section id="contact" className="animate-fadeIn">
           <Contact />
+        </section>
+
+        <section id="Photo_to_playlist" className="animate-fadeIn">
+          <Photo_to_playlist />
         </section>
       </main>
       <Ai />
