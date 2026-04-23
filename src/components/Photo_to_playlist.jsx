@@ -8,8 +8,8 @@ export default function Print() {
   const [loading, setLoading] = useState(false);
 
   // 🎧 NEW STATES
-  const [genre, setGenre] = useState("pop");
-  const [mood, setMood] = useState("happy");
+  const [genre, setGenre] = useState("");
+  const [mood, setMood] = useState("");
   const [tracks, setTracks] = useState(20);
 
   // 🔐 LOGIN SPOTIFY
@@ -80,7 +80,7 @@ export default function Print() {
   };
 
   return (
-    <section className="min-h-screen bg-gray-950 text-white p-10">
+    <section id="Photo to playlist" className="min-h-screen bg-gray-950 text-white p-10">
 
       {/* TITLE */}
       <motion.h2
