@@ -7,12 +7,18 @@ export default function Print() {
   const [playlistUrl, setPlaylistUrl] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 🔐 LOGIN SPOTIFY (POPRAWIONY FLOW)
+  // 🎧 NEW STATES
+  const [genre, setGenre] = useState("pop");
+  const [mood, setMood] = useState("happy");
+  const [tracks, setTracks] = useState(20);
+
+  // 🔐 LOGIN SPOTIFY
   const loginSpotify = () => {
     const clientId = import.meta.env.VITE_Client_ID;
     const redirectUri = "https://www.krzysztof-marczynski.pl";
 
-    const scope = "playlist-modify-private playlist-modify-public";
+    const scope =
+      "playlist-modify-private playlist-modify-public";
 
     const authUrl =
       "https://accounts.spotify.com/authorize" +
@@ -24,7 +30,7 @@ export default function Print() {
     window.location.href = authUrl;
   };
 
-  // 🔄 CALLBACK (CODE → TOKEN)
+  // 🔄 CALLBACK
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
@@ -39,14 +45,12 @@ export default function Print() {
         .then((data) => {
           setToken(data.access_token);
           localStorage.setItem("spotify_token", data.access_token);
-
-          // usuwa ?code= z URL
           window.history.replaceState({}, document.title, "/");
         });
     }
   }, []);
 
-  // 🎵 GENEROWANIE PLAYLISTY
+  // 🎵 GENERATE PLAYLIST
   const generatePlaylist = async () => {
     const savedToken = token || localStorage.getItem("spotify_token");
 
@@ -57,12 +61,11 @@ export default function Print() {
     try {
       const res = await fetch("/api/create-playlist", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          mood: "happy",
-          genre: "pop",
+          mood,
+          genre,
+          tracks,
           token: savedToken,
         }),
       });
@@ -77,25 +80,22 @@ export default function Print() {
   };
 
   return (
-    <section
-      id="Photo to playlist"
-      className="min-h-screen bg-gray-950 text-white p-10"
-    >
-      {/* TITLE — NIE ZMIENIONE */}
+    <section className="min-h-screen bg-gray-950 text-white p-10">
+
+      {/* TITLE */}
       <motion.h2
         initial={{ opacity: 0, y: 60 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
         className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16
-                     pb-6 md:pb-8 lg:pb-10 leading-[1.2] md:leading-[1.15] lg:leading-[1.1]
                      bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
-                     bg-clip-text text-transparent drop-shadow-md"
+                     bg-clip-text text-transparent"
       >
         Photo to Playlist
       </motion.h2>
 
-      {/* DESCRIPTION — NIE ZMIENIONE */}
+      {/* DESCRIPTION */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -112,45 +112,107 @@ export default function Print() {
         <p>Just Log in to your Spotify account, upload your photo.</p>
       </motion.div>
 
-      {/* LOGIN — TWÓJ ORYGINALNY DESIGN */}
+      {/* LOGIN */}
       {!token && (
         <div className="text-center">
-          <div className="max-w-6xl mx-auto flex flex-col cursor-pointer items-center justify-center text-center">
-            <a
-              onClick={loginSpotify}
-              className="inline-flex items-center gap-3 mt-6 px-8 py-4 
-                           bg-[#1DB954] 
-                           hover:bg-[#17a74a] 
-                           text-black font-medium text-lg rounded-xl transition-all 
-                           shadow-lg shadow-green-700/40 hover:shadow-green-600/60 
-                           active:scale-95 cursor-pointer"
-            >
-              Log in with Spotify
-            </a>
-          </div>
+          <a
+            onClick={loginSpotify}
+            className="inline-flex items-center gap-3 mt-6 px-8 py-4 
+                       bg-[#1DB954] hover:bg-[#17a74a] 
+                       text-black font-medium text-lg rounded-xl cursor-pointer"
+          >
+            Log in with Spotify
+          </a>
         </div>
       )}
 
-      {/* UPLOAD — BEZ ZMIAN */}
-      {token && (
-        <div className="text-center space-y-6">
-          <input
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={(e) => setImage(e.target.files[0])}
-          />
+      {/* UPLOAD + SETTINGS */}
+      {!token && (
+        <div className="flex flex-col items-center justify-center gap-8 mt-10">
 
+          {/* UPLOAD */}
+          <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-6 text-center">
+            <h3 className="text-xl mb-4">Upload or take a photo</h3>
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              className="block w-full text-sm text-gray-300
+                   file:mr-4 file:py-2 file:px-4
+                   file:rounded-full file:border-0
+                   file:text-sm file:font-semibold
+                   file:bg-purple-600 file:text-white
+                   hover:file:bg-purple-700"
+            />
+          </div>
+
+          {/* PREVIEW */}
+          {image && (
+            <img
+              src={URL.createObjectURL(image)}
+              className="w-full max-w-md rounded-2xl border border-gray-800"
+            />
+          )}
+
+          {/* SETTINGS */}
+          <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-6">
+
+            {/* GENRE */}
+            <div className="mb-4">
+              <label className="block mb-2">Genre of music:</label>
+              <input
+                value={genre}
+                onChange={(e) => setGenre(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-800 rounded"
+              />
+            </div>
+
+            {/* MOOD */}
+            <div className="mb-4">
+              <label className="block mb-2">Mood:</label>
+              <input
+                value={mood}
+                onChange={(e) => setMood(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-800 rounded"
+              />
+            </div>
+
+            {/* SLIDER */}
+            <div>
+              <label className="block mb-2">
+                Tracks: <span className="text-purple-400">{tracks}</span>
+              </label>
+
+              <input
+                type="range"
+                min="10"
+                max="50"
+                value={tracks}
+                onChange={(e) => setTracks(e.target.value)}
+                className="w-full accent-purple-500"
+              />
+
+              <div className="flex justify-between text-xs text-gray-400">
+                <span>10</span>
+                <span>50</span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* BUTTON */}
           <button
             onClick={generatePlaylist}
-            className="bg-purple-600 px-6 py-3 rounded-xl"
+            className="bg-purple-600 hover:bg-purple-700 px-8 py-3 rounded-xl"
           >
             {loading ? "Generating..." : "Generate Playlist"}
           </button>
+
         </div>
       )}
 
-      {/* RESULT — BEZ ZMIAN */}
+      {/* RESULT */}
       {playlistUrl && (
         <div className="text-center mt-10">
           <a
@@ -162,6 +224,7 @@ export default function Print() {
           </a>
         </div>
       )}
+
     </section>
   );
 }
