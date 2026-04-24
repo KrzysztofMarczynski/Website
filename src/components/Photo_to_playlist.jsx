@@ -103,7 +103,7 @@ export default function Print() {
         transition={{ duration: 0.8 }}
         className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16
                      bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
-                     bg-clip-text text-transparent"
+                     bg-clip-text text-blue-400"
       >
         Photo to Playlist
       </motion.h2>
@@ -114,10 +114,10 @@ export default function Print() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 0.1 }}
-        className="max-w-3xl mx-auto text-center text-lg md:text-xl leading-relaxed text-gray-300 mb-20"
+        className="max-w-3xl mx-auto text-center text-lg md:text-xl leading-relaxed text-gray-300 mb-10"
       >
         <p>
-          jjjjjjjjjThe program creates a Spotify playlist based on the photos you upload.
+          The program creates a Spotify playlist based on the photos you upload.
         </p>
       </motion.div>
 
