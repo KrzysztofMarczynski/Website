@@ -117,7 +117,7 @@ export default function Print() {
         className="max-w-3xl mx-auto text-center text-lg md:text-xl leading-relaxed text-gray-300 mb-20"
       >
         <p>
-          The program creates a Spotify playlist based on the photos you upload.
+          jjjjjjjjjThe program creates a Spotify playlist based on the photos you upload.
         </p>
       </motion.div>
 
