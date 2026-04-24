@@ -12,29 +12,9 @@
     }
   ],
   "routes": [
-    {
-      "src": "/api/chat",
-      "dest": "api/index.py"
-    },
-    {
-      "src": "/api/test",
-      "dest": "api/index.py"
-    },
-    {
-      "src": "/api/index.py",
-      "dest": "api/index.py"
-    },
-    {
-      "src": "/api/create-playlist.js",
-      "dest": "api/create-playlist.js"
-    },
-    {
-      "src": "/api/exchange-token.js",
-      "dest": "api/exchange-token.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
+    { "src": "/api/chat", "dest": "api/index.py" },
+    { "src": "/api/test", "dest": "api/index.py" },
+    { "src": "/api/create-playlist", "dest": "api/create-playlist.js" },
+    { "src": "/api/exchange-token", "dest": "api/exchange-token.js" }
   ]
 }
