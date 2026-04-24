@@ -21,15 +21,15 @@
       "dest": "api/index.py"
     },
     {
-      "src": "/api/(.*)",
+      "src": "/api/index.py",
       "dest": "api/index.py"
     },
     {
-      "src": "/api/(.*)",
+      "src": "/api/create-playlist.js",
       "dest": "api/create-playlist.js"
     },
     {
-      "src": "/api/(.*)",
+      "src": "/api/exchange-token.js",
       "dest": "api/exchange-token.js"
     },
     {
