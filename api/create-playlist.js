@@ -1,4 +1,5 @@
 import axios from "axios";
+import { URLSearchParams } from "url";
 
 export default async function handler(req, res) {
   const { mood, genre, tracks, name, token } = req.body;
@@ -41,12 +42,17 @@ export default async function handler(req, res) {
     // Validate and set limit
     let limit = Number(tracks) || 20;
     limit = Math.max(1, Math.min(50, limit));
-    console.log("[DEBUG] Limit:", limit);
+    console.log("[DEBUG] Limit:", limit, "type:", typeof limit);
 
-    // Search tracks
+    // Search tracks using URLSearchParams
     console.log("[DEBUG] Searching tracks...");
+    const searchParams = new URLSearchParams();
+    searchParams.append("q", searchQuery);
+    searchParams.append("type", "track");
+    searchParams.append("limit", String(limit));
+    
     console.log("[DEBUG] URL:", "https://api.spotify.com/v1/search");
-    console.log("[DEBUG] Params:", JSON.stringify({ q: searchQuery, type: "track", limit }));
+    console.log("[DEBUG] Params string:", searchParams.toString());
 
     try {
       const searchResponse = await axios.get("https://api.spotify.com/v1/search", {
@@ -54,7 +60,7 @@ export default async function handler(req, res) {
         params: {
           q: searchQuery,
           type: "track",
-          limit: limit
+          limit: String(limit)  // Ensure string
         }
       });
 
