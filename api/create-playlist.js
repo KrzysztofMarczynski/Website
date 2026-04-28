@@ -4,13 +4,15 @@ export default async function handler(req, res) {
   const { mood, genre, tracks, name, token } = req.body;
 
   console.log("[DEBUG] ===== CREATE PLAYLIST START =====");
-  console.log("[DEBUG] Otrzymano:", { mood, genre, tracks, name, token: token ? "✓" : "✗" });
+  console.log("[DEBUG] Otrzymano:", { mood, genre, tracks, name, token: token ? token.substring(0, 10) + "..." : "✗" });
 
   if (!token) {
+    console.error("[ERROR] No token provided");
     return res.status(401).json({ error: "No token" });
   }
 
   if (!mood && !genre) {
+    console.error("[ERROR] No mood or genre");
     return res.status(400).json({ error: "Mood or Genre required" });
   }
 
@@ -18,27 +20,42 @@ export default async function handler(req, res) {
     const spotify = new SpotifyWebApi();
     spotify.setAccessToken(token);
 
-    const searchQuery = `${genre || ""} ${mood || ""}`.trim();
+    // Buduj query - dodaj quotes dla lepszych rezultatów
+    let searchQuery = "";
+    if (genre && mood) {
+      searchQuery = `genre:${genre} ${mood}`;
+    } else if (genre) {
+      searchQuery = `genre:${genre}`;
+    } else {
+      searchQuery = mood;
+    }
     
     console.log("[DEBUG] Search query:", `"${searchQuery}"`);
-    console.log("[DEBUG] Query length:", searchQuery.length);
-    console.log("[DEBUG] Tracks limit:", Number(tracks) || 20);
 
-    console.log("[DEBUG] Wysyłam request do Spotify...");
+    const limit = Math.max(1, Math.min(50, Number(tracks) || 20));
+    console.log("[DEBUG] Limit:", limit);
+
+    console.log("[DEBUG] Wysyłam search do Spotify...");
     
-    const result = await spotify.searchTracks(
-      searchQuery,
-      { limit: Number(tracks) || 20 }
-    );
+    let result;
+    try {
+      result = await spotify.searchTracks(searchQuery, { limit });
+    } catch (searchError) {
+      console.error("[ERROR] Search failed:", searchError.message);
+      // Fallback: spróbuj proższego query
+      console.log("[DEBUG] Trying fallback search...");
+      result = await spotify.searchTracks(mood || genre, { limit });
+    }
 
-    console.log("[DEBUG] Spotify response OK:", result.body.tracks.items.length, "tracks");
+    console.log("[DEBUG] Search OK, found:", result.body.tracks.items.length, "tracks");
 
     if (!result.body.tracks.items.length) {
-      return res.status(400).json({ error: "No tracks found" });
+      console.error("[ERROR] No tracks found for query");
+      return res.status(404).json({ error: "No tracks found - try different mood/genre" });
     }
 
     const uris = result.body.tracks.items.map(t => t.uri);
-    console.log("[DEBUG] URIs:", uris.length);
+    console.log("[DEBUG] URIs count:", uris.length);
 
     const user = await spotify.getMe();
     console.log("[DEBUG] User ID:", user.body.id);
@@ -56,7 +73,7 @@ export default async function handler(req, res) {
 
     await spotify.addTracksToPlaylist(playlist.body.id, uris);
     
-    console.log("[DEBUG] Tracks added!");
+    console.log("[DEBUG] Tracks added, URL:", playlist.body.external_urls.spotify);
     console.log("[DEBUG] ===== CREATE PLAYLIST SUCCESS =====");
 
     return res.json({
@@ -67,13 +84,12 @@ export default async function handler(req, res) {
     console.error("[ERROR] ===== CREATE PLAYLIST FAILED =====");
     console.error("[ERROR] Message:", e.message);
     console.error("[ERROR] Status:", e.statusCode);
-    console.error("[ERROR] Body:", e.body);
-    console.error("[ERROR] Full:", JSON.stringify(e, null, 2));
+    if (e.body) {
+      console.error("[ERROR] Body:", JSON.stringify(e.body));
+    }
     
     return res.status(500).json({ 
-      error: e.message,
-      status: e.statusCode,
-      body: e.body
+      error: e.message || "Unknown error",
     });
   }
 }
