@@ -238,8 +238,8 @@ export default function Print() {
 
               <input
                 type="range"
-                min="10"
-                max="50"
+                min="1"
+                max="10"
                 value={tracks}
                 onChange={(e) => setTracks(Number(e.target.value))}
                 className="w-full accent-purple-500"
