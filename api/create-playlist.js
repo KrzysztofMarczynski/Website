@@ -1,6 +1,6 @@
-const SpotifyWebApi = require("spotify-web-api-node");
+import SpotifyWebApi from "spotify-web-api-node";
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   const { mood, genre, tracks, name, token } = req.body;
 
   if (!token) {
@@ -38,4 +38,4 @@ module.exports = async function handler(req, res) {
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
-};
+}

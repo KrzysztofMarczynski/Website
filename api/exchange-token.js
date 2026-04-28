@@ -1,7 +1,7 @@
-const axios = require("axios");
-const { URLSearchParams } = require("url");
+import axios from "axios";
+import { URLSearchParams } from "url";
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   const { code } = req.body;
 
   const clientId = process.env.CLIENT_ID;
@@ -35,4 +35,4 @@ module.exports = async function handler(req, res) {
     console.error("[ERROR] Spotify token exchange failed:", e.response?.data || e.message);
     return res.status(500).json({ error: e.response?.data?.error_description || e.message });
   }
-};
+}

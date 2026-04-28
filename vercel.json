@@ -8,11 +8,13 @@
     },
     {
       "src": "api/exchange-token.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": { "runtime": "nodejs20.x" }
     },
     {
       "src": "api/create-playlist.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": { "runtime": "nodejs20.x" }
     },
     {
       "src": "api/index.py",
