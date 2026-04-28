@@ -70,7 +70,7 @@ export default async function handler(req, res) {
       `https://api.spotify.com/v1/users/${userId}/playlists`,
       {
         name: name || "My Photo Playlist 🎵",
-        public: false,           // Możesz zmienić na true do testów
+        public: true,           // Możesz zmienić na true do testów
         collaborative: false,
         description: `Playlist created from mood: ${mood || genre}`
       },
