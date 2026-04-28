@@ -7,10 +7,10 @@ export default function Print() {
   const [playlistUrl, setPlaylistUrl] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const [name, setName] = useState("");
-  const [genre, setGenre] = useState("");
-  const [mood, setMood] = useState("");
-  const [tracks, setTracks] = useState(20);
+  const [name, setName] = useState("My Photo Playlist");
+  const [genre, setGenre] = useState("pop");
+  const [mood, setMood] = useState("happy");
+  const [tracks, setTracks] = useState(5);
 
   // ✅ NOWA LOGIKA FLOW
   const [step, setStep] = useState(1);
