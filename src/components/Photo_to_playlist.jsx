@@ -15,25 +15,23 @@ export default function Print() {
   const [step, setStep] = useState(1);
 
   // 🔐 LOGIN SPOTIFY - POPRAWIONA WERSJA
-  const loginSpotify = () => {
-    const clientId = import.meta.env.VITE_CLIENT_ID;
-    
-    // Używamy tej samej strony jako callback (najprostsze rozwiązanie)
-    const redirectUri = "https://www.krzysztof-marczynski.pl";
+const loginSpotify = () => {
+  const clientId = import.meta.env.VITE_CLIENT_ID;
+  const redirectUri = "https://www.krzysztof-marczynski.pl";
 
-    const scope = "user-read-private playlist-modify-private playlist-modify-public";
+  const scope = "user-read-private playlist-modify-private playlist-modify-public";
 
-    const authUrl = 
-      "https://accounts.spotify.com/authorize?" +
-      `client_id=${clientId}&` +
-      `response_type=code&` +
-      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-      `scope=${encodeURIComponent(scope)}&` +
-      `state=playlist-${Date.now()}`;
+  const authUrl = `https://accounts.spotify.com/authorize?` +
+    `client_id=${clientId}&` +
+    `response_type=code&` +
+    `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+    `scope=${encodeURIComponent(scope)}&` +
+    `show_dialog=true&` +                    // ← TO JEST NAJWAŻNIEJSZE
+    `state=playlist-${Date.now()}`;
 
-    console.log("[DEBUG] Spotify Login - redirectUri:", redirectUri);
-    window.location.href = authUrl;
-  };
+  console.log("[DEBUG] Login URL with show_dialog=true");
+  window.location.href = authUrl;
+};
 
   // 🔄 HANDLE SPOTIFY CALLBACK
   useEffect(() => {
