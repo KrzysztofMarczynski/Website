@@ -20,7 +20,7 @@ const loginSpotify = () => {
   const clientId = import.meta.env.VITE_CLIENT_ID;
   
   // ← ZMIEŃ NA SWÓJ RZECZYWISTY CALLBACK URL
-  const redirectUri = "http://localhost:5173/callback";   // podczas developmentu
+  const redirectUri = "https://www.krzysztof-marczynski.pl";   // podczas developmentu
   // const redirectUri = "https://www.krzysztof-marczynski.pl/callback"; // na produkcji
 
   const scope = 
