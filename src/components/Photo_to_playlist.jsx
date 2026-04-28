@@ -15,29 +15,26 @@ export default function Print() {
   // ✅ NOWA LOGIKA FLOW
   const [step, setStep] = useState(1);
 
-// 🔐 LOGIN SPOTIFY - POPRAWIONA WERSJA
+// 🔐 LOGIN SPOTIFY - POPRAWIONA
 const loginSpotify = () => {
   const clientId = import.meta.env.VITE_CLIENT_ID;
   
-  // ← ZMIEŃ NA SWÓJ RZECZYWISTY CALLBACK URL
-  const redirectUri = "https://www.krzysztof-marczynski.pl";   // podczas developmentu
-  // const redirectUri = "https://www.krzysztof-marczynski.pl/callback"; // na produkcji
+  // Zmień na swój aktualny adres callback (ważne!)
+  const redirectUri = "https://www.krzysztof-marczynski.pl";   // ← development
+  // const redirectUri = "https://www.krzysztof-marczynski.pl/callback"; // produkcja
 
-  const scope = 
-    "user-read-private " +
-    "playlist-modify-private " +
-    "playlist-modify-public";
+  const scope = "user-read-private playlist-modify-private playlist-modify-public";
 
-  const authUrl =
+  const authUrl = 
     "https://accounts.spotify.com/authorize?" +
     `client_id=${clientId}&` +
     `response_type=code&` +
     `redirect_uri=${encodeURIComponent(redirectUri)}&` +
     `scope=${encodeURIComponent(scope)}&` +
-    `state=${Math.random().toString(36).substring(7)}`;   // ochrona przed CSRF
+    `state=playlist-${Date.now()}`;
 
-  console.log("[DEBUG] Redirecting to Spotify login with scopes:", scope);
-  console.log("[DEBUG] Redirect URI:", redirectUri);
+  console.log("[DEBUG] Spotify Auth URL:", authUrl);
+  console.log("[DEBUG] Redirect URI used:", redirectUri);
 
   window.location.href = authUrl;
 };
