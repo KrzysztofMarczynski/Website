@@ -39,10 +39,10 @@ export default async function handler(req, res) {
     const searchQuery = [genreClean, moodClean].filter(x => x).join(" ");
     console.log("[DEBUG] Final search query:", JSON.stringify(searchQuery), "length:", searchQuery.length);
 
-    // Validate and set limit
-    let limit = Number(tracks) || 20;
-    limit = Math.max(1, Math.min(50, limit));
-    console.log("[DEBUG] Limit:", limit, "type:", typeof limit);
+    // Validate and set limit - IMPORTANT: Search endpoint max is 10!
+    let limit = Number(tracks) || 5;
+    limit = Math.max(1, Math.min(10, limit));  // SEARCH API: max 10, not 50!
+    console.log("[DEBUG] Limit (corrected for search):", limit);
 
     // Search tracks using URLSearchParams
     console.log("[DEBUG] Searching tracks...");
