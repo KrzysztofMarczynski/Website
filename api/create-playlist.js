@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   console.log("[DEBUG] Otrzymano:", JSON.stringify({ mood, genre, tracks, name }, null, 2));
 
   if (!token) {
-    console.error("[ERROR] No token");
+    console.error("[ERROR] No token provided");
     return res.status(401).json({ error: "No token" });
   }
 
@@ -22,11 +22,15 @@ export default async function handler(req, res) {
       "Content-Type": "application/json"
     };
 
-    // Test token and get user ID
+    // Test token + pobierz informacje o użytkowniku + scopes
     console.log("[DEBUG] Testing token...");
     const meResponse = await axios.get("https://api.spotify.com/v1/me", { headers });
+    
     const userId = meResponse.data.id;
-    console.log("[DEBUG] Token valid! User:", userId);
+    const scopes = meResponse.data.scope || "No scopes returned";
+
+    console.log("[DEBUG] Token valid! User ID:", userId);
+    console.log("[DEBUG] Token scopes:", scopes);   // ← To jest najważniejsze teraz
 
     // Build search query
     const moodClean = (mood || "").trim();
@@ -35,7 +39,7 @@ export default async function handler(req, res) {
 
     console.log("[DEBUG] Search query:", JSON.stringify(searchQuery));
 
-    // Limit for search (Spotify search max = 10)
+    // Limit (Spotify search max = 10)
     let limit = Math.max(1, Math.min(10, Number(tracks) || 5));
     console.log("[DEBUG] Limit:", limit);
 
@@ -61,27 +65,31 @@ export default async function handler(req, res) {
 
     // Create playlist
     console.log("[DEBUG] Creating playlist...");
+    console.log("[DEBUG] Playlist name:", name || "Photo Playlist 🎵");
+
     const createResponse = await axios.post(
       `https://api.spotify.com/v1/users/${userId}/playlists`,
       {
         name: name || "Photo Playlist 🎵",
-        public: false,
+        public: false,                    // spróbuj później zmienić na true jeśli nadal 403
+        collaborative: false,
         description: "Generated from your photo mood"
       },
       { headers }
     );
 
     const playlistId = createResponse.data.id;
-    console.log("[DEBUG] Playlist created:", playlistId);
+    console.log("[DEBUG] Playlist created successfully:", playlistId);
 
     // Add tracks to playlist
-    console.log("[DEBUG] Adding tracks...");
+    console.log("[DEBUG] Adding tracks to playlist...");
     await axios.post(
       `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-      { uris },
+      { uris: uris },
       { headers }
     );
 
+    console.log("[DEBUG] Tracks added successfully!");
     console.log("[DEBUG] ===== CREATE PLAYLIST SUCCESS =====");
 
     const playlistUrl = createResponse.data.external_urls.spotify;
