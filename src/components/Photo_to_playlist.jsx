@@ -19,9 +19,8 @@ export default function Print() {
 const loginSpotify = () => {
   const clientId = import.meta.env.VITE_CLIENT_ID;
   
-  // Zmień na swój aktualny adres callback (ważne!)
-  const redirectUri = "https://www.krzysztof-marczynski.pl";   // ← development
-  // const redirectUri = "https://www.krzysztof-marczynski.pl/callback"; // produkcja
+  // Użyj dokładnego callback URL (dodaj go też w Spotify Dashboard!)
+  const redirectUri = "https://www.krzysztof-marczynski.pl/callback";
 
   const scope = "user-read-private playlist-modify-private playlist-modify-public";
 
@@ -33,101 +32,102 @@ const loginSpotify = () => {
     `scope=${encodeURIComponent(scope)}&` +
     `state=playlist-${Date.now()}`;
 
-  console.log("[DEBUG] Spotify Auth URL:", authUrl);
-  console.log("[DEBUG] Redirect URI used:", redirectUri);
-
+  console.log("[DEBUG] Spotify Login URL:", authUrl);
   window.location.href = authUrl;
 };
 
-  // 🔄 CALLBACK
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
+// 🔄 CALLBACK
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  const error = params.get("error");
 
-    if (code) {
-      fetch("/api/exchange-token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
+  if (error) {
+    console.error("[ERROR] Spotify callback error:", error);
+    alert("Błąd logowania od Spotify: " + error);
+    return;
+  }
+
+  if (code) {
+    console.log("[DEBUG] Code received, exchanging for token...");
+
+    fetch("/api/exchange-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
       })
-        .then((res) => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.json();
-        })
-        .then((data) => {
-          if (data.error) throw new Error(data.error);
-          
-          setToken(data.access_token);
-          localStorage.setItem("spotify_token", data.access_token);
+      .then((data) => {
+        if (data.error) throw new Error(data.error);
 
-          // 👉 przejście do UI uploadu
-          setStep(2);
+        const accessToken = data.access_token;
+        console.log("[DEBUG] Token received successfully. Scopes:", data.scope);
 
-          window.history.replaceState({}, document.title, "/");
-        })
-        .catch((err) => {
-          console.error("[ERROR] Exchange token failed:", err);
-          alert("❌ Błąd logowania: " + err.message);
-        });
-    }
-  }, []);
+        setToken(accessToken);
+        localStorage.setItem("spotify_token", accessToken);
 
-  // 🎵 GENERATE PLAYLIST
-  const generatePlaylist = async () => {
-    const savedToken = token || localStorage.getItem("spotify_token");
+        setStep(2);
 
-    if (!savedToken) return alert("Zaloguj się do Spotify");
-    
-    if (!mood && !genre) {
-      return alert("⚠️ Podaj Mood lub Genre!");
-    }
-    
-    if (!name) {
-      return alert("⚠️ Podaj nazwę playlisty!");
-    }
-
-    setLoading(true);
-
-    try {
-      const payload = {
-        mood,
-        genre,
-        tracks,
-        name,
-        token: savedToken,
-      };
-      
-      console.log("[DEBUG] Wysyłam:", payload);
-
-      const res = await fetch("/api/create-playlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        // Wyczyść URL (usuń ?code=...)
+        window.history.replaceState({}, document.title, window.location.pathname);
+      })
+      .catch((err) => {
+        console.error("[ERROR] Exchange token failed:", err);
+        alert("❌ Błąd wymiany kodu na token: " + err.message);
       });
+  }
+}, []);
 
-      const data = await res.json();
-      
-      console.log("[DEBUG] Odpowiedź:", data);
+const generatePlaylist = async () => {
+  const savedToken = token || localStorage.getItem("spotify_token");
 
-      if (!res.ok) {
-        throw new Error(data.error || `HTTP ${res.status}`);
-      }
+  console.log("[DEBUG] Generate playlist - token length:", savedToken ? savedToken.length : 0);
 
-      if (!data.url) {
-        throw new Error("Brak URL playlisty w odpowiedzi");
-      }
+  if (!savedToken) {
+    alert("Zaloguj się do Spotify");
+    setStep(1);
+    return;
+  }
+  
+  if (!mood && !genre) return alert("Podaj Mood lub Genre!");
+  if (!name) return alert("Podaj nazwę playlisty!");
 
-      setPlaylistUrl(data.url);
+  setLoading(true);
 
-      // 👉 przejście do wyniku
-      setStep(3);
-    } catch (e) {
-      console.error("[ERROR] Generate playlist failed:", e);
-      alert("❌ Błąd: " + e.message);
+  try {
+    const payload = {
+      mood,
+      genre,
+      tracks,
+      name,
+      token: savedToken,
+    };
+    
+    const res = await fetch("/api/create-playlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    console.log("[DEBUG] Create playlist response:", data);
+
+    if (!res.ok) {
+      throw new Error(data.error || `HTTP ${res.status}`);
     }
 
-    setLoading(false);
-  };
+    setPlaylistUrl(data.url);
+    setStep(3);
+  } catch (e) {
+    console.error("[ERROR] Generate playlist failed:", e);
+    alert("❌ Błąd tworzenia playlisty: " + e.message);
+  }
+
+  setLoading(false);
+};
 
   return (
     <section
