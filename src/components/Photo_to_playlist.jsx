@@ -15,23 +15,32 @@ export default function Print() {
   // ✅ NOWA LOGIKA FLOW
   const [step, setStep] = useState(1);
 
-  // 🔐 LOGIN SPOTIFY
-  const loginSpotify = () => {
-    const clientId = import.meta.env.VITE_CLIENT_ID;
-    const redirectUri = "https://www.krzysztof-marczynski.pl";
+// 🔐 LOGIN SPOTIFY - POPRAWIONA WERSJA
+const loginSpotify = () => {
+  const clientId = import.meta.env.VITE_CLIENT_ID;
+  
+  // ← ZMIEŃ NA SWÓJ RZECZYWISTY CALLBACK URL
+  const redirectUri = "http://localhost:5173/callback";   // podczas developmentu
+  // const redirectUri = "https://www.krzysztof-marczynski.pl/callback"; // na produkcji
 
-    const scope =
-      "playlist-modify-private playlist-modify-public";
+  const scope = 
+    "user-read-private " +
+    "playlist-modify-private " +
+    "playlist-modify-public";
 
-    const authUrl =
-      "https://accounts.spotify.com/authorize" +
-      `?client_id=${clientId}` +
-      `&response_type=code` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&scope=${encodeURIComponent(scope)}`;
+  const authUrl =
+    "https://accounts.spotify.com/authorize?" +
+    `client_id=${clientId}&` +
+    `response_type=code&` +
+    `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+    `scope=${encodeURIComponent(scope)}&` +
+    `state=${Math.random().toString(36).substring(7)}`;   // ochrona przed CSRF
 
-    window.location.href = authUrl;
-  };
+  console.log("[DEBUG] Redirecting to Spotify login with scopes:", scope);
+  console.log("[DEBUG] Redirect URI:", redirectUri);
+
+  window.location.href = authUrl;
+};
 
   // 🔄 CALLBACK
   useEffect(() => {
