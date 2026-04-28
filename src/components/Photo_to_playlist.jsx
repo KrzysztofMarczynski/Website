@@ -20,7 +20,7 @@ const loginSpotify = () => {
   const clientId = import.meta.env.VITE_CLIENT_ID;
   
   // Użyj dokładnego callback URL (dodaj go też w Spotify Dashboard!)
-  const redirectUri = "https://www.krzysztof-marczynski.pl/callback";
+  const redirectUri = "https://www.krzysztof-marczynski.pl";
 
   const scope = "user-read-private playlist-modify-private playlist-modify-public";
 
