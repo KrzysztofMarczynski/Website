@@ -71,29 +71,53 @@ export default function Print() {
     const savedToken = token || localStorage.getItem("spotify_token");
 
     if (!savedToken) return alert("Zaloguj się do Spotify");
+    
+    if (!mood && !genre) {
+      return alert("⚠️ Podaj Mood lub Genre!");
+    }
+    
+    if (!name) {
+      return alert("⚠️ Podaj nazwę playlisty!");
+    }
 
     setLoading(true);
 
     try {
+      const payload = {
+        mood,
+        genre,
+        tracks,
+        name,
+        token: savedToken,
+      };
+      
+      console.log("[DEBUG] Wysyłam:", payload);
+
       const res = await fetch("/api/create-playlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mood,
-          genre,
-          tracks,
-          name,
-          token: savedToken,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
+      
+      console.log("[DEBUG] Odpowiedź:", data);
+
+      if (!res.ok) {
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+
+      if (!data.url) {
+        throw new Error("Brak URL playlisty w odpowiedzi");
+      }
+
       setPlaylistUrl(data.url);
 
       // 👉 przejście do wyniku
       setStep(3);
     } catch (e) {
-      console.error(e);
+      console.error("[ERROR] Generate playlist failed:", e);
+      alert("❌ Błąd: " + e.message);
     }
 
     setLoading(false);
