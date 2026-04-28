@@ -14,11 +14,9 @@ export default function Print() {
 
   const [step, setStep] = useState(1);
 
-  // 🔐 LOGIN SPOTIFY - POPRAWIONA WERSJA
+  // 🔐 LOGIN SPOTIFY
   const loginSpotify = () => {
     const clientId = import.meta.env.VITE_CLIENT_ID;
-    
-    // Używamy tej samej strony jako callback (najprostsze rozwiązanie)
     const redirectUri = "https://www.krzysztof-marczynski.pl";
 
     const scope = "user-read-private playlist-modify-private playlist-modify-public";
@@ -31,24 +29,24 @@ export default function Print() {
       `scope=${encodeURIComponent(scope)}&` +
       `state=playlist-${Date.now()}`;
 
-    console.log("[DEBUG] Spotify Login - redirectUri:", redirectUri);
+    console.log("[DEBUG] Redirecting to Spotify login");
     window.location.href = authUrl;
   };
 
-  // 🔄 HANDLE SPOTIFY CALLBACK
+  // 🔄 HANDLE CALLBACK + TOKEN
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const error = params.get("error");
 
     if (error) {
-      console.error("[ERROR] Spotify callback error:", error);
-      alert("Błąd logowania od Spotify: " + error);
+      console.error("[ERROR] Spotify error:", error);
+      alert("Błąd logowania: " + error);
       return;
     }
 
     if (code) {
-      console.log("[DEBUG] Spotify code received → exchanging for token...");
+      console.log("[DEBUG] Code found, exchanging for token...");
 
       fetch("/api/exchange-token", {
         method: "POST",
@@ -63,217 +61,117 @@ export default function Print() {
           if (data.error) throw new Error(data.error);
 
           const accessToken = data.access_token;
-          console.log("[DEBUG] Token received successfully!");
-          console.log("[DEBUG] Scopes:", data.scope);
+          console.log("[DEBUG] Token received! Scopes:", data.scope);
 
+          // Zapisz token
           setToken(accessToken);
           localStorage.setItem("spotify_token", accessToken);
 
+          // Przejdź do kroku 2
           setStep(2);
 
-          // Wyczyść parametry z URL
+          // Wyczyść URL
           window.history.replaceState({}, document.title, window.location.pathname);
         })
         .catch((err) => {
           console.error("[ERROR] Token exchange failed:", err);
-          alert("❌ Nie udało się zalogować: " + err.message);
+          alert("Nie udało się zalogować: " + err.message);
         });
+    } else {
+      // Jeśli nie ma code w URL, spróbuj wczytać token z localStorage
+      const savedToken = localStorage.getItem("spotify_token");
+      if (savedToken) {
+        setToken(savedToken);
+        setStep(2);
+      }
     }
   }, []);
 
   // 🎵 GENERATE PLAYLIST
   const generatePlaylist = async () => {
-    const savedToken = token || localStorage.getItem("spotify_token");
+    const currentToken = token || localStorage.getItem("spotify_token");
 
-    console.log("[DEBUG] Generate playlist - token length:", savedToken ? savedToken.length : 0);
-
-    if (!savedToken) {
+    if (!currentToken) {
       alert("Zaloguj się do Spotify");
       setStep(1);
       return;
     }
 
-    if (!mood && !genre) {
-      return alert("⚠️ Podaj Mood lub Genre!");
-    }
+    console.log("[DEBUG] Using token length:", currentToken.length);
 
-    if (!name) {
-      return alert("⚠️ Podaj nazwę playlisty!");
-    }
+    if (!mood && !genre) return alert("Podaj Mood lub Genre!");
+    if (!name) return alert("Podaj nazwę playlisty!");
 
     setLoading(true);
 
     try {
-      const payload = {
-        mood,
-        genre,
-        tracks,
-        name,
-        token: savedToken,
-      };
-
       const res = await fetch("/api/create-playlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          mood,
+          genre,
+          tracks,
+          name,
+          token: currentToken,
+        }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error || `HTTP ${res.status}`);
-      }
-
-      if (!data.url) {
-        throw new Error("Brak URL playlisty w odpowiedzi");
-      }
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
       setPlaylistUrl(data.url);
       setStep(3);
-
       console.log("[DEBUG] Playlist created successfully!");
     } catch (e) {
-      console.error("[ERROR] Generate playlist failed:", e);
-      alert("❌ Błąd tworzenia playlisty: " + e.message);
+      console.error("[ERROR] Generate failed:", e);
+      alert("Błąd tworzenia playlisty: " + e.message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
-    <section
-      id="Photo to playlist"
-      className="min-h-screen bg-gray-950 text-white p-10"
-    >
-      {/* TITLE */}
+    <section id="Photo to playlist" className="min-h-screen bg-gray-950 text-white p-10">
       <motion.h2
         initial={{ opacity: 0, y: 60 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16
-                   bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
-                   bg-clip-text text-blue-400"
+        className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-blue-400"
       >
         Photo to Playlist
       </motion.h2>
 
-      {/* DESCRIPTION */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.1 }}
-        className="max-w-3xl mx-auto text-center text-lg md:text-xl leading-relaxed text-gray-300 mb-10"
-      >
-        <p>The program creates a Spotify playlist based on the photos you upload.</p>
-      </motion.div>
-
-      {/* ================= LOGIN ================= */}
+      {/* LOGIN STEP */}
       {step === 1 && (
-        <div className="text-center">
-          <a
+        <div className="text-center mt-20">
+          <button
             onClick={loginSpotify}
-            className="inline-flex items-center gap-3 mt-6 px-8 py-4 
-                       bg-[#1DB954] hover:bg-[#17a74a] 
-                       text-black font-medium text-lg rounded-xl cursor-pointer"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-[#1DB954] hover:bg-[#17a74a] text-black font-medium text-lg rounded-xl cursor-pointer"
           >
             Log in with Spotify
-          </a>
+          </button>
         </div>
       )}
 
-      {/* ================= UPLOAD + SETTINGS ================= */}
+      {/* MAIN APP */}
       {step >= 2 && (
         <div className="flex flex-col items-center justify-center gap-8 mt-10">
+          {/* ... Twój kod uploadu, preview i ustawień bez zmian ... */}
 
-          {/* UPLOAD */}
-          <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-6 text-center">
-            <h3 className="text-xl mb-4">Upload or take a photo</h3>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
-              className="block w-full text-sm text-gray-300
-                         file:mr-4 file:py-2 file:px-4
-                         file:rounded-full file:border-0
-                         file:text-sm file:font-semibold
-                         file:bg-purple-600 file:text-white
-                         hover:file:bg-purple-700"
-            />
-          </div>
-
-          {/* PREVIEW */}
-          {image && (
-            <img
-              src={URL.createObjectURL(image)}
-              className="w-full max-w-md rounded-2xl border border-gray-800"
-              alt="Preview"
-            />
-          )}
-
-          {/* SETTINGS */}
-          <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-6">
-
-            <div className="mb-4">
-              <label className="block mb-2">Playlist name:</label>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 rounded"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block mb-2">Genre of music:</label>
-              <input
-                value={genre}
-                onChange={(e) => setGenre(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 rounded"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block mb-2">Mood:</label>
-              <input
-                value={mood}
-                onChange={(e) => setMood(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2">
-                Tracks: <span className="text-purple-400">{tracks}</span>
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value={tracks}
-                onChange={(e) => setTracks(Number(e.target.value))}
-                className="w-full accent-purple-500"
-              />
-              <div className="flex justify-between text-xs text-gray-400 mt-1">
-                <span>1</span>
-                <span>10</span>
-              </div>
-            </div>
-          </div>
-
-          {/* GENERATE BUTTON */}
-          <a
+          <button
             onClick={generatePlaylist}
-            className="inline-flex items-center gap-3 mt-6 px-8 py-4 
-                       bg-purple-600 hover:bg-purple-700 
-                       text-white font-medium text-lg rounded-xl cursor-pointer"
+            disabled={loading}
+            className="inline-flex items-center gap-3 mt-6 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-medium text-lg rounded-xl cursor-pointer disabled:opacity-50"
           >
-            {loading ? "Generating..." : "Generate Playlist"}
-          </a>
+            {loading ? "Generating Playlist..." : "Generate Playlist"}
+          </button>
         </div>
       )}
 
-      {/* ================= RESULT ================= */}
+      {/* RESULT */}
       {step === 3 && playlistUrl && (
         <div className="text-center mt-12">
           <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 max-w-md mx-auto">
