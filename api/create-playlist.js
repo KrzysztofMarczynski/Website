@@ -1,13 +1,13 @@
-import SpotifyWebApi from "spotify-web-api-node";
+import axios from "axios";
 
 export default async function handler(req, res) {
   const { mood, genre, tracks, name, token } = req.body;
 
   console.log("[DEBUG] ===== CREATE PLAYLIST START =====");
-  console.log("[DEBUG] Otrzymano:", { mood, genre, tracks, name, token: token ? token.substring(0, 15) + "..." : "✗" });
+  console.log("[DEBUG] Otrzymano:", { mood, genre, tracks, name });
 
   if (!token) {
-    console.error("[ERROR] No token provided");
+    console.error("[ERROR] No token");
     return res.status(401).json({ error: "No token" });
   }
 
@@ -17,89 +17,96 @@ export default async function handler(req, res) {
   }
 
   try {
-    const spotify = new SpotifyWebApi();
-    spotify.setAccessToken(token);
+    const headers = {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    };
 
-    // Test token - czy valid?
+    // Test token
     console.log("[DEBUG] Testing token...");
-    const me = await spotify.getMe();
-    console.log("[DEBUG] Token valid! User:", me.body.id);
+    const meResponse = await axios.get("https://api.spotify.com/v1/me", { headers });
+    const userId = meResponse.data.id;
+    console.log("[DEBUG] Token valid! User:", userId);
 
-    // Buduj query
+    // Build search query
     const queries = [];
     if (genre) queries.push(genre);
     if (mood) queries.push(mood);
     const searchQuery = queries.join(" ");
     
-    console.log("[DEBUG] Search query:", `"${searchQuery}"`);
+    console.log("[DEBUG] Search query:", searchQuery);
 
-    const limit = Math.max(1, Math.min(50, Number(tracks) || 20));
-    console.log("[DEBUG] Limit:", limit);
+    // Validate and set limit
+    let limit = Number(tracks) || 20;
+    limit = Math.max(1, Math.min(50, limit)); // Ensure 1-50
+    console.log("[DEBUG] Limit:", limit, "type:", typeof limit);
 
-    // Спотифай search - prosty format
-    console.log("[DEBUG] Wysyłam search do Spotify...");
-    const result = await spotify.searchTracks(searchQuery, { limit });
-    
-    console.log("[DEBUG] Search OK, found:", result.body.tracks.items.length, "tracks");
-
-    if (!result.body.tracks.items.length) {
-      console.error("[ERROR] No tracks found");
-      // Spróbuj jeszcze bardziej prosty query
-      console.log("[DEBUG] Trying simple search with:", mood || genre);
-      const simpleResult = await spotify.searchTracks(mood || genre, { limit });
-      if (!simpleResult.body.tracks.items.length) {
-        return res.status(404).json({ error: "No tracks found - try different mood/genre" });
+    // Search tracks
+    console.log("[DEBUG] Searching tracks...");
+    const searchResponse = await axios.get("https://api.spotify.com/v1/search", {
+      headers,
+      params: {
+        q: searchQuery,
+        type: "track",
+        limit: limit
       }
-      console.log("[DEBUG] Found with simple search:", simpleResult.body.tracks.items.length);
-      return handlePlaylistCreation(spotify, simpleResult, name, res);
+    });
+
+    const tracks_list = searchResponse.data.tracks.items;
+    console.log("[DEBUG] Found:", tracks_list.length, "tracks");
+
+    if (tracks_list.length === 0) {
+      console.error("[ERROR] No tracks found");
+      return res.status(404).json({ error: "No tracks found" });
     }
 
-    return handlePlaylistCreation(spotify, result, name, res);
+    const uris = tracks_list.map(t => t.uri);
+    console.log("[DEBUG] URIs count:", uris.length);
+
+    // Create playlist
+    console.log("[DEBUG] Creating playlist...");
+    const createResponse = await axios.post(
+      `https://api.spotify.com/v1/users/${userId}/playlists`,
+      {
+        name: name || "Photo Playlist 🎵",
+        public: false,
+        description: "Generated playlist"
+      },
+      { headers }
+    );
+
+    const playlistId = createResponse.data.id;
+    console.log("[DEBUG] Playlist created:", playlistId);
+
+    // Add tracks
+    console.log("[DEBUG] Adding tracks...");
+    await axios.post(
+      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+      {
+        uris: uris
+      },
+      { headers }
+    );
+
+    console.log("[DEBUG] Tracks added!");
+    const playlistUrl = createResponse.data.external_urls.spotify;
+    console.log("[DEBUG] URL:", playlistUrl);
+    console.log("[DEBUG] ===== CREATE PLAYLIST SUCCESS =====");
+
+    return res.json({
+      url: playlistUrl,
+    });
 
   } catch (e) {
     console.error("[ERROR] ===== CREATE PLAYLIST FAILED =====");
     console.error("[ERROR] Message:", e.message);
-    console.error("[ERROR] Status:", e.statusCode);
-    if (e.body) {
-      console.error("[ERROR] Body:", JSON.stringify(e.body, null, 2));
+    if (e.response) {
+      console.error("[ERROR] Status:", e.response.status);
+      console.error("[ERROR] Data:", JSON.stringify(e.response.data, null, 2));
     }
     
     return res.status(500).json({ 
       error: e.message || "Unknown error",
     });
-  }
-}
-
-async function handlePlaylistCreation(spotify, result, name, res) {
-  try {
-    const uris = result.body.tracks.items.map(t => t.uri);
-    console.log("[DEBUG] URIs count:", uris.length);
-
-    const user = await spotify.getMe();
-    console.log("[DEBUG] User ID:", user.body.id);
-
-    const playlist = await spotify.createPlaylist(
-      user.body.id,
-      name || "Photo Playlist 🎵",
-      {
-        public: false,
-        description: "Generated playlist",
-      }
-    );
-
-    console.log("[DEBUG] Playlist created:", playlist.body.id);
-
-    await spotify.addTracksToPlaylist(playlist.body.id, uris);
-    
-    console.log("[DEBUG] Tracks added!");
-    console.log("[DEBUG] URL:", playlist.body.external_urls.spotify);
-    console.log("[DEBUG] ===== CREATE PLAYLIST SUCCESS =====");
-
-    return res.json({
-      url: playlist.body.external_urls.spotify,
-    });
-  } catch (e) {
-    console.error("[ERROR] Playlist creation failed:", e.message);
-    throw e;
   }
 }
