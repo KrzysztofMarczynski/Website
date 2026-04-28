@@ -1,5 +1,4 @@
 import axios from "axios";
-import { URLSearchParams } from "url";
 
 export default async function handler(req, res) {
   const { mood, genre, tracks, name, token } = req.body;
@@ -23,114 +22,88 @@ export default async function handler(req, res) {
       "Content-Type": "application/json"
     };
 
-    // Test token
+    // Test token and get user ID
     console.log("[DEBUG] Testing token...");
     const meResponse = await axios.get("https://api.spotify.com/v1/me", { headers });
     const userId = meResponse.data.id;
     console.log("[DEBUG] Token valid! User:", userId);
 
-    // Build search query - sanitize
+    // Build search query
     const moodClean = (mood || "").trim();
     const genreClean = (genre || "").trim();
-    
-    console.log("[DEBUG] Mood clean:", JSON.stringify(moodClean), "length:", moodClean.length);
-    console.log("[DEBUG] Genre clean:", JSON.stringify(genreClean), "length:", genreClean.length);
+    const searchQuery = [genreClean, moodClean].filter(Boolean).join(" ");
 
-    const searchQuery = [genreClean, moodClean].filter(x => x).join(" ");
-    console.log("[DEBUG] Final search query:", JSON.stringify(searchQuery), "length:", searchQuery.length);
+    console.log("[DEBUG] Search query:", JSON.stringify(searchQuery));
 
-    // Validate and set limit - IMPORTANT: Search endpoint max is 10!
-    let limit = Number(tracks) || 5;
-    limit = Math.max(1, Math.min(10, limit));  // SEARCH API: max 10, not 50!
-    console.log("[DEBUG] Limit (corrected for search):", limit);
+    // Limit for search (Spotify search max = 10)
+    let limit = Math.max(1, Math.min(10, Number(tracks) || 5));
+    console.log("[DEBUG] Limit:", limit);
 
-    // Search tracks using URLSearchParams
+    // Search tracks
     console.log("[DEBUG] Searching tracks...");
-    const searchParams = new URLSearchParams();
-    searchParams.append("q", searchQuery);
-    searchParams.append("type", "track");
-    searchParams.append("limit", String(limit));
-    
-    console.log("[DEBUG] URL:", "https://api.spotify.com/v1/search");
-    console.log("[DEBUG] Params string:", searchParams.toString());
-
-    try {
-      const searchResponse = await axios.get("https://api.spotify.com/v1/search", {
-        headers,
-        params: {
-          q: searchQuery,
-          type: "track",
-          limit: String(limit)  // Ensure string
-        }
-      });
-
-      const tracks_list = searchResponse.data.tracks.items;
-      console.log("[DEBUG] Found:", tracks_list.length, "tracks");
-
-      if (tracks_list.length === 0) {
-        console.error("[ERROR] No tracks found");
-        return res.status(404).json({ error: "No tracks found" });
+    const searchResponse = await axios.get("https://api.spotify.com/v1/search", {
+      headers,
+      params: {
+        q: searchQuery,
+        type: "track",
+        limit: limit
       }
+    });
 
-      const uris = tracks_list.map(t => t.uri);
-      console.log("[DEBUG] URIs count:", uris.length);
+    const tracks_list = searchResponse.data.tracks?.items || [];
+    console.log("[DEBUG] Found tracks:", tracks_list.length);
 
-      // Create playlist
-      console.log("[DEBUG] Creating playlist...");
-      console.log("[DEBUG] User ID:", userId);
-      console.log("[DEBUG] Playlist name:", name || "Photo Playlist 🎵");
-      
-      try {
-        const createResponse = await axios.post(
-          `https://api.spotify.com/v1/users/${userId}/playlists`,
-          {
-            name: name || "Photo Playlist 🎵",
-            public: false,
-            description: "Generated playlist"
-          },
-          { headers }
-        );
-
-        const playlistId = createResponse.data.id;
-        console.log("[DEBUG] Playlist created:", playlistId);
-
-      // Add tracks
-      console.log("[DEBUG] Adding tracks...");
-      await axios.post(
-        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-        {
-          uris: uris
-        },
-        { headers }
-      );
-
-      console.log("[DEBUG] Tracks added!");
-      const playlistUrl = createResponse.data.external_urls.spotify;
-      console.log("[DEBUG] URL:", playlistUrl);
-      console.log("[DEBUG] ===== CREATE PLAYLIST SUCCESS =====");
-
-      return res.json({
-        url: playlistUrl,
-      });
-
-    } catch (searchError) {
-      console.error("[ERROR] Search failed!");
-      console.error("[ERROR] Status:", searchError.response?.status);
-      console.error("[ERROR] Message:", searchError.response?.data?.error?.message);
-      console.error("[ERROR] Full data:", JSON.stringify(searchError.response?.data, null, 2));
-      throw searchError;
+    if (tracks_list.length === 0) {
+      return res.status(404).json({ error: "No tracks found" });
     }
 
-  } catch (e) {
+    const uris = tracks_list.map(t => t.uri);
+
+    // Create playlist
+    console.log("[DEBUG] Creating playlist...");
+    const createResponse = await axios.post(
+      `https://api.spotify.com/v1/users/${userId}/playlists`,
+      {
+        name: name || "Photo Playlist 🎵",
+        public: false,
+        description: "Generated from your photo mood"
+      },
+      { headers }
+    );
+
+    const playlistId = createResponse.data.id;
+    console.log("[DEBUG] Playlist created:", playlistId);
+
+    // Add tracks to playlist
+    console.log("[DEBUG] Adding tracks...");
+    await axios.post(
+      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+      { uris },
+      { headers }
+    );
+
+    console.log("[DEBUG] ===== CREATE PLAYLIST SUCCESS =====");
+
+    const playlistUrl = createResponse.data.external_urls.spotify;
+
+    return res.json({
+      url: playlistUrl,
+      playlistId: playlistId
+    });
+
+  } catch (error) {
     console.error("[ERROR] ===== CREATE PLAYLIST FAILED =====");
-    console.error("[ERROR] Message:", e.message);
-    if (e.response) {
-      console.error("[ERROR] Status:", e.response.status);
-      console.error("[ERROR] Data:", JSON.stringify(e.response.data, null, 2));
+    console.error("[ERROR] Message:", error.message);
+
+    if (error.response) {
+      console.error("[ERROR] Status:", error.response.status);
+      console.error("[ERROR] Data:", JSON.stringify(error.response.data, null, 2));
+    } else {
+      console.error("[ERROR] Stack:", error.stack);
     }
-    
-    return res.status(500).json({ 
-      error: e.response?.data?.error?.message || e.message || "Unknown error",
+
+    return res.status(500).json({
+      error: error.response?.data?.error?.message || error.message || "Failed to create playlist"
     });
   }
 }
