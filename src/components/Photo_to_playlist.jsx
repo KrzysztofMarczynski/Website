@@ -246,8 +246,8 @@ export default function Print() {
               />
 
               <div className="flex justify-between text-xs text-gray-400">
+                <span>1</span>
                 <span>10</span>
-                <span>50</span>
               </div>
             </div>
           </div>

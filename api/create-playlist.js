@@ -77,18 +77,22 @@ export default async function handler(req, res) {
 
       // Create playlist
       console.log("[DEBUG] Creating playlist...");
-      const createResponse = await axios.post(
-        `https://api.spotify.com/v1/users/${userId}/playlists`,
-        {
-          name: name || "Photo Playlist 🎵",
-          public: false,
-          description: "Generated playlist"
-        },
-        { headers }
-      );
+      console.log("[DEBUG] User ID:", userId);
+      console.log("[DEBUG] Playlist name:", name || "Photo Playlist 🎵");
+      
+      try {
+        const createResponse = await axios.post(
+          `https://api.spotify.com/v1/users/${userId}/playlists`,
+          {
+            name: name || "Photo Playlist 🎵",
+            public: false,
+            description: "Generated playlist"
+          },
+          { headers }
+        );
 
-      const playlistId = createResponse.data.id;
-      console.log("[DEBUG] Playlist created:", playlistId);
+        const playlistId = createResponse.data.id;
+        console.log("[DEBUG] Playlist created:", playlistId);
 
       // Add tracks
       console.log("[DEBUG] Adding tracks...");
