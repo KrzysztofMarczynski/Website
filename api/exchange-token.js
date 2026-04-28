@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { URLSearchParams } = require("url");
 
 module.exports = async function handler(req, res) {
   const { code } = req.body;
@@ -6,6 +7,11 @@ module.exports = async function handler(req, res) {
   const clientId = process.env.CLIENT_ID;
   const clientSecret = process.env.CLIENT_SECRET;
   const redirectUri = process.env.REDIRECT_URI;
+
+  if (!clientId || !clientSecret || !redirectUri) {
+    console.error("[ERROR] Brakujące zmienne env:", { clientId: !!clientId, clientSecret: !!clientSecret, redirectUri: !!redirectUri });
+    return res.status(500).json({ error: "Brakujące zmienne środowiskowe" });
+  }
 
   try {
     const response = await axios.post(
@@ -26,6 +32,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json(response.data);
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    console.error("[ERROR] Spotify token exchange failed:", e.response?.data || e.message);
+    return res.status(500).json({ error: e.response?.data?.error_description || e.message });
   }
 };

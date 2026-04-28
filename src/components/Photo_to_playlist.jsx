@@ -17,7 +17,7 @@ export default function Print() {
 
   // 🔐 LOGIN SPOTIFY
   const loginSpotify = () => {
-    const clientId = import.meta.env.VITE_Client_ID;
+    const clientId = import.meta.env.VITE_CLIENT_ID;
     const redirectUri = "https://www.krzysztof-marczynski.pl";
 
     const scope =
@@ -44,8 +44,13 @@ export default function Print() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
         .then((data) => {
+          if (data.error) throw new Error(data.error);
+          
           setToken(data.access_token);
           localStorage.setItem("spotify_token", data.access_token);
 
@@ -53,6 +58,10 @@ export default function Print() {
           setStep(2);
 
           window.history.replaceState({}, document.title, "/");
+        })
+        .catch((err) => {
+          console.error("[ERROR] Exchange token failed:", err);
+          alert("❌ Błąd logowania: " + err.message);
         });
     }
   }, []);
