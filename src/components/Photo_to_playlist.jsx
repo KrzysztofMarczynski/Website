@@ -14,7 +14,7 @@ export default function Print() {
 
   const [step, setStep] = useState(1);
 
-  // 🔐 LOGIN SPOTIFY
+  // LOGIN SPOTIFY
   const loginSpotify = () => {
     const clientId = import.meta.env.VITE_CLIENT_ID;
     const redirectUri = "https://www.krzysztof-marczynski.pl";
@@ -29,56 +29,48 @@ export default function Print() {
       `scope=${encodeURIComponent(scope)}&` +
       `state=playlist-${Date.now()}`;
 
-    console.log("[DEBUG] Redirecting to Spotify login");
+    console.log("[DEBUG] Redirecting to Spotify...");
     window.location.href = authUrl;
   };
 
-  // 🔄 HANDLE CALLBACK + TOKEN
+  // HANDLE CALLBACK
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const error = params.get("error");
 
     if (error) {
-      console.error("[ERROR] Spotify error:", error);
       alert("Błąd logowania: " + error);
       return;
     }
 
     if (code) {
-      console.log("[DEBUG] Code found, exchanging for token...");
+      console.log("[DEBUG] Code received, exchanging token...");
 
       fetch("/api/exchange-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
       })
-        .then((res) => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.json();
-        })
-        .then((data) => {
+        .then(res => res.json())
+        .then(data => {
           if (data.error) throw new Error(data.error);
 
           const accessToken = data.access_token;
           console.log("[DEBUG] Token received! Scopes:", data.scope);
 
-          // Zapisz token
           setToken(accessToken);
           localStorage.setItem("spotify_token", accessToken);
-
-          // Przejdź do kroku 2
           setStep(2);
 
-          // Wyczyść URL
           window.history.replaceState({}, document.title, window.location.pathname);
         })
-        .catch((err) => {
-          console.error("[ERROR] Token exchange failed:", err);
-          alert("Nie udało się zalogować: " + err.message);
+        .catch(err => {
+          console.error(err);
+          alert("Błąd logowania: " + err.message);
         });
     } else {
-      // Jeśli nie ma code w URL, spróbuj wczytać token z localStorage
+      // Load token from localStorage if already logged in
       const savedToken = localStorage.getItem("spotify_token");
       if (savedToken) {
         setToken(savedToken);
@@ -87,7 +79,6 @@ export default function Print() {
     }
   }, []);
 
-  // 🎵 GENERATE PLAYLIST
   const generatePlaylist = async () => {
     const currentToken = token || localStorage.getItem("spotify_token");
 
@@ -96,11 +87,6 @@ export default function Print() {
       setStep(1);
       return;
     }
-
-    console.log("[DEBUG] Using token length:", currentToken.length);
-
-    if (!mood && !genre) return alert("Podaj Mood lub Genre!");
-    if (!name) return alert("Podaj nazwę playlisty!");
 
     setLoading(true);
 
@@ -113,19 +99,18 @@ export default function Print() {
           genre,
           tracks,
           name,
-          token: currentToken,
+          token: currentToken
         }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(data.error || "Błąd serwera");
 
       setPlaylistUrl(data.url);
       setStep(3);
-      console.log("[DEBUG] Playlist created successfully!");
     } catch (e) {
-      console.error("[ERROR] Generate failed:", e);
+      console.error(e);
       alert("Błąd tworzenia playlisty: " + e.message);
     } finally {
       setLoading(false);
@@ -144,47 +129,87 @@ export default function Print() {
         Photo to Playlist
       </motion.h2>
 
-      {/* LOGIN STEP */}
+      {/* LOGIN */}
       {step === 1 && (
         <div className="text-center mt-20">
           <button
             onClick={loginSpotify}
-            className="inline-flex items-center gap-3 px-8 py-4 bg-[#1DB954] hover:bg-[#17a74a] text-black font-medium text-lg rounded-xl cursor-pointer"
+            className="px-8 py-4 bg-[#1DB954] hover:bg-[#17a74a] text-black font-medium text-lg rounded-xl"
           >
             Log in with Spotify
           </button>
         </div>
       )}
 
-      {/* MAIN APP */}
-      {step >= 2 && (
-        <div className="flex flex-col items-center justify-center gap-8 mt-10">
-          {/* ... Twój kod uploadu, preview i ustawień bez zmian ... */}
+      {/* MAIN FORM */}
+      {step === 2 && (
+        <div className="flex flex-col items-center gap-8 mt-10 max-w-md mx-auto">
+          {/* Upload */}
+          <div className="w-full bg-gray-900 border border-gray-800 rounded-2xl p-6">
+            <h3 className="text-xl mb-4 text-center">Upload or take a photo</h3>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700"
+            />
+          </div>
+
+          {image && (
+            <img src={URL.createObjectURL(image)} className="max-w-md rounded-2xl" alt="preview" />
+          )}
+
+          {/* Settings */}
+          <div className="w-full bg-gray-900 border border-gray-800 rounded-2xl p-6 space-y-4">
+            <div>
+              <label className="block mb-1">Playlist name</label>
+              <input value={name} onChange={(e) => setName(e.target.value)} className="w-full px-3 py-2 bg-gray-800 rounded" />
+            </div>
+
+            <div>
+              <label className="block mb-1">Genre</label>
+              <input value={genre} onChange={(e) => setGenre(e.target.value)} className="w-full px-3 py-2 bg-gray-800 rounded" />
+            </div>
+
+            <div>
+              <label className="block mb-1">Mood</label>
+              <input value={mood} onChange={(e) => setMood(e.target.value)} className="w-full px-3 py-2 bg-gray-800 rounded" />
+            </div>
+
+            <div>
+              <label className="block mb-1">Number of tracks: {tracks}</label>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={tracks}
+                onChange={(e) => setTracks(Number(e.target.value))}
+                className="w-full accent-purple-500"
+              />
+            </div>
+          </div>
 
           <button
             onClick={generatePlaylist}
             disabled={loading}
-            className="inline-flex items-center gap-3 mt-6 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-medium text-lg rounded-xl cursor-pointer disabled:opacity-50"
+            className="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-medium text-lg rounded-xl disabled:opacity-50"
           >
-            {loading ? "Generating Playlist..." : "Generate Playlist"}
+            {loading ? "Creating Playlist..." : "Generate Playlist"}
           </button>
         </div>
       )}
 
-      {/* RESULT */}
+      {/* SUCCESS */}
       {step === 3 && playlistUrl && (
-        <div className="text-center mt-12">
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 max-w-md mx-auto">
-            <h3 className="text-xl mb-4">Your playlist is ready 🎉</h3>
-            <a
-              href={playlistUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-green-400 underline text-lg"
-            >
-              Open Spotify Playlist →
-            </a>
-          </div>
+        <div className="text-center mt-16">
+          <h3 className="text-2xl mb-4">Playlist created successfully! 🎉</h3>
+          <a
+            href={playlistUrl}
+            target="_blank"
+            className="text-green-400 text-xl underline"
+          >
+            Open in Spotify →
+          </a>
         </div>
       )}
     </section>
