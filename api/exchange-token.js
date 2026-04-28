@@ -1,6 +1,6 @@
-import axios from "axios";
+const axios = require("axios");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const { code } = req.body;
 
   const clientId = process.env.CLIENT_ID;
@@ -28,4 +28,4 @@ export default async function handler(req, res) {
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
-}
+};
