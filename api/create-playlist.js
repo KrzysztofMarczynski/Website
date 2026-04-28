@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   const { mood, genre, tracks, name, token } = req.body;
 
   console.log("[DEBUG] ===== CREATE PLAYLIST START =====");
-  console.log("[DEBUG] Otrzymano:", { mood, genre, tracks, name, token: token ? token.substring(0, 10) + "..." : "✗" });
+  console.log("[DEBUG] Otrzymano:", { mood, genre, tracks, name, token: token ? token.substring(0, 15) + "..." : "✗" });
 
   if (!token) {
     console.error("[ERROR] No token provided");
@@ -20,40 +20,58 @@ export default async function handler(req, res) {
     const spotify = new SpotifyWebApi();
     spotify.setAccessToken(token);
 
-    // Buduj query - dodaj quotes dla lepszych rezultatów
-    let searchQuery = "";
-    if (genre && mood) {
-      searchQuery = `genre:${genre} ${mood}`;
-    } else if (genre) {
-      searchQuery = `genre:${genre}`;
-    } else {
-      searchQuery = mood;
-    }
+    // Test token - czy valid?
+    console.log("[DEBUG] Testing token...");
+    const me = await spotify.getMe();
+    console.log("[DEBUG] Token valid! User:", me.body.id);
+
+    // Buduj query
+    const queries = [];
+    if (genre) queries.push(genre);
+    if (mood) queries.push(mood);
+    const searchQuery = queries.join(" ");
     
     console.log("[DEBUG] Search query:", `"${searchQuery}"`);
 
     const limit = Math.max(1, Math.min(50, Number(tracks) || 20));
     console.log("[DEBUG] Limit:", limit);
 
+    // Спотифай search - prosty format
     console.log("[DEBUG] Wysyłam search do Spotify...");
+    const result = await spotify.searchTracks(searchQuery, { limit });
     
-    let result;
-    try {
-      result = await spotify.searchTracks(searchQuery, { limit });
-    } catch (searchError) {
-      console.error("[ERROR] Search failed:", searchError.message);
-      // Fallback: spróbuj proższego query
-      console.log("[DEBUG] Trying fallback search...");
-      result = await spotify.searchTracks(mood || genre, { limit });
-    }
-
     console.log("[DEBUG] Search OK, found:", result.body.tracks.items.length, "tracks");
 
     if (!result.body.tracks.items.length) {
-      console.error("[ERROR] No tracks found for query");
-      return res.status(404).json({ error: "No tracks found - try different mood/genre" });
+      console.error("[ERROR] No tracks found");
+      // Spróbuj jeszcze bardziej prosty query
+      console.log("[DEBUG] Trying simple search with:", mood || genre);
+      const simpleResult = await spotify.searchTracks(mood || genre, { limit });
+      if (!simpleResult.body.tracks.items.length) {
+        return res.status(404).json({ error: "No tracks found - try different mood/genre" });
+      }
+      console.log("[DEBUG] Found with simple search:", simpleResult.body.tracks.items.length);
+      return handlePlaylistCreation(spotify, simpleResult, name, res);
     }
 
+    return handlePlaylistCreation(spotify, result, name, res);
+
+  } catch (e) {
+    console.error("[ERROR] ===== CREATE PLAYLIST FAILED =====");
+    console.error("[ERROR] Message:", e.message);
+    console.error("[ERROR] Status:", e.statusCode);
+    if (e.body) {
+      console.error("[ERROR] Body:", JSON.stringify(e.body, null, 2));
+    }
+    
+    return res.status(500).json({ 
+      error: e.message || "Unknown error",
+    });
+  }
+}
+
+async function handlePlaylistCreation(spotify, result, name, res) {
+  try {
     const uris = result.body.tracks.items.map(t => t.uri);
     console.log("[DEBUG] URIs count:", uris.length);
 
@@ -73,23 +91,15 @@ export default async function handler(req, res) {
 
     await spotify.addTracksToPlaylist(playlist.body.id, uris);
     
-    console.log("[DEBUG] Tracks added, URL:", playlist.body.external_urls.spotify);
+    console.log("[DEBUG] Tracks added!");
+    console.log("[DEBUG] URL:", playlist.body.external_urls.spotify);
     console.log("[DEBUG] ===== CREATE PLAYLIST SUCCESS =====");
 
     return res.json({
       url: playlist.body.external_urls.spotify,
     });
-
   } catch (e) {
-    console.error("[ERROR] ===== CREATE PLAYLIST FAILED =====");
-    console.error("[ERROR] Message:", e.message);
-    console.error("[ERROR] Status:", e.statusCode);
-    if (e.body) {
-      console.error("[ERROR] Body:", JSON.stringify(e.body));
-    }
-    
-    return res.status(500).json({ 
-      error: e.message || "Unknown error",
-    });
+    console.error("[ERROR] Playlist creation failed:", e.message);
+    throw e;
   }
 }
