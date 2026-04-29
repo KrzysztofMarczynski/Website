@@ -275,14 +275,14 @@ const loginSpotify = () => {
       {step === 3 && playlistUrl && (
         <div className="text-center mt-12">
           <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 max-w-md mx-auto">
-            <h3 className="text-xl mb-4">Your playlist is ready 🎉</h3>
+            <h3 className="text-xl mb-4">Your playlist is ready!</h3>
             <a
               href={playlistUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-green-400 underline text-lg"
             >
-              Open Spotify Playlist →
+              Open Spotify Playlist
             </a>
           </div>
         </div>
