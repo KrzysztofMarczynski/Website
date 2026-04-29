@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       `https://api.spotify.com/v1/users/${userId}/playlists`,
       {
         name: name || "My Photo Playlist 🎵",
-        public: true,
+        public: false,
         collaborative: false,
         description: "Generated from photo",
       },
