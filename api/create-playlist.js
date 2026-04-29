@@ -75,76 +75,43 @@ export default async function handler(req, res) {
     console.log("[DEBUG] Playlist ID:", playlistId);
     console.log("[DEBUG] Number of tracks to add:", uris.length);
     
-    // Spotify API accepts both JSON and form-urlencoded for adding tracks
-    // Try sending with proper formatting
+    // Spotify API: Use /items endpoint (not deprecated /tracks)
+    // Documentation: https://developer.spotify.com/documentation/web-api/reference/add-items-to-playlist
     try {
-      // 🔍 Log the exact payload being sent
-      console.log("[DEBUG] Payload - URIs count:", uris.length);
-      console.log("[DEBUG] Token preview for add:", token.substring(0, 50) + "...");
-      
-      // Try form-encoded format first (Spotify might prefer this)
-      const params = new URLSearchParams();
-      uris.forEach((uri, index) => {
-        params.append("uris", uri);
-      });
-      
-      console.log("[DEBUG] Trying form-encoded format...");
+      console.log("[DEBUG] Adding tracks using NEW /items endpoint...");
+      console.log("[DEBUG] URIs count:", uris.length);
       
       const addTracksResponse = await axios.post(
-        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-        params,
+        `https://api.spotify.com/v1/playlists/${playlistId}/items`,
+        { uris },
         { 
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
           }
         }
       );
       
-      console.log("[DEBUG] Tracks added successfully!");
+      console.log("[DEBUG] ✅ Tracks added successfully!");
       console.log("[DEBUG] Snapshot ID:", addTracksResponse.data.snapshot_id);
 
       return res.json({
         url: createResponse.data.external_urls.spotify,
         playlistId,
-        message: "Playlist created and tracks added!"
+        message: "✅ Playlist created and tracks added!"
       });
     } catch (addError) {
-      console.error("[ERROR] Form-encoded failed, trying JSON...");
+      console.error("[ERROR] ❌ Failed to add tracks via /items endpoint");
       console.error("[ERROR] Status:", addError.response?.status);
+      console.error("[ERROR] Message:", addError.response?.data?.error?.message);
       
-      // Fallback to JSON
-      try {
-        const addTracksResponse = await axios.post(
-          `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-          { uris },
-          { 
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        
-        console.log("[DEBUG] Tracks added with JSON format!");
-        return res.json({
-          url: createResponse.data.external_urls.spotify,
-          playlistId,
-          message: "Playlist created and tracks added!"
-        });
-      } catch (jsonError) {
-        console.error("[ERROR] Both methods failed!");
-        console.error("[ERROR] JSON attempt status:", jsonError.response?.status);
-        console.error("[ERROR] Error message:", jsonError.response?.data?.error?.message);
-        
-        // Return partial success - playlist WAS created even if tracks failed
-        return res.json({
-          url: createResponse.data.external_urls.spotify,
-          playlistId,
-          warning: "Playlist created but tracks could not be added",
-          error: jsonError.response?.data?.error?.message
-        });
-      }
+      // Return partial success - playlist WAS created even if tracks failed
+      return res.json({
+        url: createResponse.data.external_urls.spotify,
+        playlistId,
+        warning: "Playlist created but tracks could not be added",
+        error: addError.response?.data?.error?.message
+      });
     }
 
   } catch (error) {
