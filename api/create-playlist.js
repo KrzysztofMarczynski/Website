@@ -73,26 +73,20 @@ console.log("[DEBUG] Adding tracks to playlist...");
     console.log("[DEBUG] Playlist ID:", playlistId);
     console.log("[DEBUG] Number of tracks to add:", uris.length);
     
-    try {
-      const addTracksResponse = await axios.post(
-        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-        { uris },
-        { headers }
-      );
-      
-      console.log("[DEBUG] Tracks added successfully!");
-      console.log("[DEBUG] Add tracks response snapshot_id:", addTracksResponse.data.snapshot_id);
-    } catch (addError) {
-      console.error("[ERROR] Failed to add tracks!");
-      console.error("[ERROR] Status:", addError.response?.status);
-      console.error("[ERROR] Data:", JSON.stringify(addError.response?.data, null, 2));
-      console.error("[ERROR] URIs sent:", JSON.stringify(uris));
-      throw addError;
-    }
-
-    console.log("[DEBUG] Tracks added to playlist");
-
-    return res.json({
+    // Try with direct JSON POST - Spotify might reject if Content-Type is wrong
+    const addTracksResponse = await axios.post(
+      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+      JSON.stringify({ uris }),
+      { 
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      }
+    );
+    
+    console.log("[DEBUG] Tracks added successfully!");
+    console.log("[DEBUG] Add tracks response snapshot_id:", addTracksResponse.data.snapshot_id);
       url: createResponse.data.external_urls.spotify,
       playlistId,
     });
