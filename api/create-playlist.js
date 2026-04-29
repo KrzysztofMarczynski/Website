@@ -50,12 +50,11 @@ export default async function handler(req, res) {
 
     console.log("[DEBUG] Tracks found:", uris.length);
 
-    // 🎵 Tworzenie playlisty
-    console.log("[DEBUG] Creating playlist for user:", userId);
-    console.log("[DEBUG] Playlist URL:", `https://api.spotify.com/v1/users/${userId}/playlists`);
+    // 🎵 Tworzenie playlisty - UŻYJ /me/playlists zamiast /users/{id}/playlists
+    console.log("[DEBUG] Creating playlist using /me/playlists endpoint");
 
     const createResponse = await axios.post(
-      `https://api.spotify.com/v1/users/${userId}/playlists`,
+      "https://api.spotify.com/v1/me/playlists",
       {
         name: name || "My Photo Playlist 🎵",
         public: false,
