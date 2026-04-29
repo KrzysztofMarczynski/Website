@@ -11,6 +11,8 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: "No token provided" });
   }
 
+  let userId = null;
+
   try {
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -21,12 +23,10 @@ export default async function handler(req, res) {
     console.log("[DEBUG] Calling /me endpoint...");
     const meResponse = await axios.get("https://api.spotify.com/v1/me", { headers });
 
-    const userId = meResponse.data.id;
+    userId = meResponse.data.id;
 
     console.log("[DEBUG] User ID:", userId);
     console.log("[DEBUG] Full /me response keys:", Object.keys(meResponse.data));
-
-    // 🚫 USUNIĘTY BŁĘDNY CHECK SCOPES
 
     // 🔍 Szukanie utworów
     const searchQuery = [genre, mood].filter(Boolean).join(" ").trim();
@@ -51,6 +51,9 @@ export default async function handler(req, res) {
     console.log("[DEBUG] Tracks found:", uris.length);
 
     // 🎵 Tworzenie playlisty
+    console.log("[DEBUG] Creating playlist for user:", userId);
+    console.log("[DEBUG] Playlist URL:", `https://api.spotify.com/v1/users/${userId}/playlists`);
+
     const createResponse = await axios.post(
       `https://api.spotify.com/v1/users/${userId}/playlists`,
       {
@@ -79,6 +82,7 @@ export default async function handler(req, res) {
       url: createResponse.data.external_urls.spotify,
       playlistId,
     });
+
   } catch (error) {
     console.error("[ERROR] ===== CREATE PLAYLIST FAILED =====");
     console.error("[ERROR] Message:", error.message);
@@ -86,6 +90,11 @@ export default async function handler(req, res) {
     if (error.response) {
       console.error("[ERROR] Status:", error.response.status);
       console.error("[ERROR] Data:", JSON.stringify(error.response.data, null, 2));
+      // NEW: extra debug info
+      console.error("[ERROR] Token used:", token ? token.substring(0, 40) + "..." : "NONE");
+      console.error("[ERROR] User ID at failure:", userId || "NOT FETCHED YET");
+      console.error("[ERROR] Failed URL:", error.config?.url);
+      console.error("[ERROR] Request headers sent:", JSON.stringify(error.config?.headers, null, 2));
     }
 
     return res.status(500).json({
