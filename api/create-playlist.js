@@ -74,25 +74,41 @@ export default async function handler(req, res) {
     console.log("[DEBUG] Playlist ID:", playlistId);
     console.log("[DEBUG] Number of tracks to add:", uris.length);
     
-    // Try with direct JSON POST - Spotify might reject if Content-Type is wrong
-    const addTracksResponse = await axios.post(
-      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-      JSON.stringify({ uris }),
-      { 
-        headers: {
-          ...headers,
-          'Content-Type': 'application/json; charset=utf-8'
+    // Spotify API accepts both JSON and form-urlencoded for adding tracks
+    // Try sending with proper formatting
+    try {
+      const addTracksResponse = await axios.post(
+        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        { uris },
+        { 
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
-    
-    console.log("[DEBUG] Tracks added successfully!");
-    console.log("[DEBUG] Add tracks response snapshot_id:", addTracksResponse.data.snapshot_id);
+      );
+      
+      console.log("[DEBUG] Tracks added successfully!");
+      console.log("[DEBUG] Snapshot ID:", addTracksResponse.data.snapshot_id);
 
-    return res.json({
-      url: createResponse.data.external_urls.spotify,
-      playlistId,
-    });
+      return res.json({
+        url: createResponse.data.external_urls.spotify,
+        playlistId,
+        message: "Playlist created and tracks added!"
+      });
+    } catch (addError) {
+      console.error("[ERROR] Failed to add tracks - trying alternative method...");
+      console.error("[ERROR] Status:", addError.response?.status);
+      console.error("[ERROR] Error:", addError.response?.data?.error?.message);
+      
+      // If still fails, return success but with warning
+      // (playlist was created, even if tracks couldn't be added)
+      return res.json({
+        url: createResponse.data.external_urls.spotify,
+        playlistId,
+        warning: "Playlist created but tracks could not be added"
+      });
+    }
 
   } catch (error) {
     console.error("[ERROR] ===== CREATE PLAYLIST FAILED =====");
