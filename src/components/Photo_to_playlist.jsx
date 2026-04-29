@@ -19,14 +19,15 @@ const loginSpotify = () => {
   const clientId = import.meta.env.VITE_CLIENT_ID;
   const redirectUri = "https://www.krzysztof-marczynski.pl";
 
-  const scope = "user-read-private playlist-modify-private playlist-modify-public";
+  const scope = "playlist-modify-public playlist-modify-private user-read-private";
 
-  const authUrl = `https://accounts.spotify.com/authorize?` +
+  const authUrl =
+    "https://accounts.spotify.com/authorize?" +
     `client_id=${clientId}&` +
     `response_type=code&` +
     `redirect_uri=${encodeURIComponent(redirectUri)}&` +
     `scope=${encodeURIComponent(scope)}&` +
-    `prompt=consent&` + 
+    `state=123&` +
     `show_dialog=true`;
 
   window.location.href = authUrl;

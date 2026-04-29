@@ -21,7 +21,6 @@ export default async function handler(req, res) {
     const meResponse = await axios.get("https://api.spotify.com/v1/me", { headers });
 
     const userId = meResponse.data.id;
-    const scopes = meResponse.data.scope || "NO SCOPES RETURNED";
 
     console.log("[DEBUG] User ID:", userId);
     console.log("[DEBUG] Scopes from /me:", scopes);
