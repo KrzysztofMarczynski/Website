@@ -69,7 +69,8 @@ export default async function handler(req, res) {
     const playlistId = createResponse.data.id;
 
     console.log("[DEBUG] Playlist created:", playlistId);
-console.log("[DEBUG] Adding tracks to playlist...");
+
+    console.log("[DEBUG] Adding tracks to playlist...");
     console.log("[DEBUG] Playlist ID:", playlistId);
     console.log("[DEBUG] Number of tracks to add:", uris.length);
     
@@ -87,6 +88,8 @@ console.log("[DEBUG] Adding tracks to playlist...");
     
     console.log("[DEBUG] Tracks added successfully!");
     console.log("[DEBUG] Add tracks response snapshot_id:", addTracksResponse.data.snapshot_id);
+
+    return res.json({
       url: createResponse.data.external_urls.spotify,
       playlistId,
     });
