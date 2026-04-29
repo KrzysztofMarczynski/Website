@@ -19,7 +19,7 @@ const loginSpotify = () => {
   const clientId = import.meta.env.VITE_CLIENT_ID;
   const redirectUri = "https://www.krzysztof-marczynski.pl";
 
-  const scope = "playlist-modify-public playlist-modify-private user-read-private";
+  const scope = "playlist-modify-private user-read-private";
 
   const authUrl =
     "https://accounts.spotify.com/authorize?" +
