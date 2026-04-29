@@ -26,10 +26,9 @@ const loginSpotify = () => {
     `response_type=code&` +
     `redirect_uri=${encodeURIComponent(redirectUri)}&` +
     `scope=${encodeURIComponent(scope)}&` +
-    `show_dialog=true&` +                    // ← TO JEST NAJWAŻNIEJSZE
-    `state=playlist-${Date.now()}`;
+    `prompt=consent&` + 
+    `show_dialog=true`;
 
-  console.log("[DEBUG] Login URL with show_dialog=true");
   window.location.href = authUrl;
 };
 
