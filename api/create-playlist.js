@@ -13,76 +13,83 @@ export default async function handler(req, res) {
 
   try {
     const headers = {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json"
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     };
 
+    // ✅ Pobranie user ID
     console.log("[DEBUG] Calling /me endpoint...");
     const meResponse = await axios.get("https://api.spotify.com/v1/me", { headers });
 
     const userId = meResponse.data.id;
 
     console.log("[DEBUG] User ID:", userId);
-    console.log("[DEBUG] Scopes from /me:", scopes);
     console.log("[DEBUG] Full /me response keys:", Object.keys(meResponse.data));
 
-    if (!scopes || !scopes.includes("playlist-modify")) {
-      console.error("[ERROR] Brak wymaganych scopes!");
-      return res.status(403).json({
-        error: "Token missing playlist scopes",
-        received_scopes: scopes,
-        message: "Spróbuj wylogować się całkowicie i zalogować ponownie"
-      });
-    }
+    // 🚫 USUNIĘTY BŁĘDNY CHECK SCOPES
 
-    // Reszta kodu bez zmian (search + create playlist)
+    // 🔍 Szukanie utworów
     const searchQuery = [genre, mood].filter(Boolean).join(" ").trim();
     const limit = Math.max(1, Math.min(10, Number(tracks) || 5));
 
+    console.log("[DEBUG] Search query:", searchQuery);
+
     const searchResponse = await axios.get("https://api.spotify.com/v1/search", {
       headers,
-      params: { q: searchQuery, type: "track", limit }
+      params: { q: searchQuery, type: "track", limit },
     });
 
     const tracks_list = searchResponse.data.tracks?.items || [];
 
     if (tracks_list.length === 0) {
+      console.error("[ERROR] No tracks found");
       return res.status(404).json({ error: "No tracks found" });
     }
 
-    const uris = tracks_list.map(t => t.uri);
+    const uris = tracks_list.map((t) => t.uri);
 
+    console.log("[DEBUG] Tracks found:", uris.length);
+
+    // 🎵 Tworzenie playlisty
     const createResponse = await axios.post(
       `https://api.spotify.com/v1/users/${userId}/playlists`,
       {
         name: name || "My Photo Playlist 🎵",
-        public: true,        // zmienione na true na czas testów
+        public: true,
         collaborative: false,
-        description: "Generated from photo"
+        description: "Generated from photo",
       },
       { headers }
     );
 
     const playlistId = createResponse.data.id;
 
+    console.log("[DEBUG] Playlist created:", playlistId);
+
+    // ➕ Dodawanie utworów
     await axios.post(
       `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
       { uris },
       { headers }
     );
 
+    console.log("[DEBUG] Tracks added to playlist");
+
     return res.json({
       url: createResponse.data.external_urls.spotify,
-      playlistId
+      playlistId,
     });
-
   } catch (error) {
     console.error("[ERROR] ===== CREATE PLAYLIST FAILED =====");
     console.error("[ERROR] Message:", error.message);
+
     if (error.response) {
       console.error("[ERROR] Status:", error.response.status);
       console.error("[ERROR] Data:", JSON.stringify(error.response.data, null, 2));
     }
-    return res.status(500).json({ error: error.message });
+
+    return res.status(500).json({
+      error: error.response?.data?.error?.message || error.message,
+    });
   }
 }
