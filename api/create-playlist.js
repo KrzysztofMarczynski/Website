@@ -49,6 +49,8 @@ export default async function handler(req, res) {
     const uris = tracks_list.map((t) => t.uri);
 
     console.log("[DEBUG] Tracks found:", uris.length);
+    console.log("[DEBUG] Sample URI:", uris[0]);
+    console.log("[DEBUG] All URIs:", JSON.stringify(uris));
 
     // 🎵 Tworzenie playlisty - UŻYJ /me/playlists zamiast /users/{id}/playlists
     console.log("[DEBUG] Creating playlist using /me/playlists endpoint");
@@ -67,13 +69,26 @@ export default async function handler(req, res) {
     const playlistId = createResponse.data.id;
 
     console.log("[DEBUG] Playlist created:", playlistId);
-
-    // ➕ Dodawanie utworów
-    await axios.post(
-      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-      { uris },
-      { headers }
-    );
+console.log("[DEBUG] Adding tracks to playlist...");
+    console.log("[DEBUG] Playlist ID:", playlistId);
+    console.log("[DEBUG] Number of tracks to add:", uris.length);
+    
+    try {
+      const addTracksResponse = await axios.post(
+        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        { uris },
+        { headers }
+      );
+      
+      console.log("[DEBUG] Tracks added successfully!");
+      console.log("[DEBUG] Add tracks response snapshot_id:", addTracksResponse.data.snapshot_id);
+    } catch (addError) {
+      console.error("[ERROR] Failed to add tracks!");
+      console.error("[ERROR] Status:", addError.response?.status);
+      console.error("[ERROR] Data:", JSON.stringify(addError.response?.data, null, 2));
+      console.error("[ERROR] URIs sent:", JSON.stringify(uris));
+      throw addError;
+    }
 
     console.log("[DEBUG] Tracks added to playlist");
 
