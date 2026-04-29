@@ -17,7 +17,7 @@ export default function Print() {
   // 🔐 LOGIN SPOTIFY - POPRAWIONA WERSJA
 const loginSpotify = () => {
   const clientId = import.meta.env.VITE_CLIENT_ID;
-  const redirectUri = "https://www.krzysztof-marczynski.pl";
+  const redirectUri = "https://www.krzysztof-marczynski.pl/";
 
   const scope = "playlist-modify-public playlist-modify-private user-read-private";
 
