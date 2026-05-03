@@ -11,7 +11,7 @@ export default function PhotoToPlaylist() {
   const [loading, setLoading] = useState(false);
 
   const [name, setName] = useState("My Photo Playlist");
-  const [mood, setMood] = useState("");
+  const [genre, setGenre] = useState("");
   const [tracks, setTracks] = useState(5);
 
   const [step, setStep] = useState(1);
@@ -237,7 +237,7 @@ const loginSpotify = () => {
 
     try {
       const payload = {
-        mood,
+        genre,
         photoMood: analysisHint,
         tracks,
         name,
@@ -365,12 +365,12 @@ const loginSpotify = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block mb-2">Mood (opcjonalnie):</label>
+              <label className="block mb-2">Genre (opcjonalnie):</label>
               <input
-                value={mood}
-                onChange={(e) => setMood(e.target.value)}
+                value={genre}
+                onChange={(e) => setGenre(e.target.value)}
                 className="w-full px-3 py-2 bg-gray-800 rounded"
-                placeholder="happy, energetic, calm..."
+                placeholder="rock metal, indie pop, chillwave..."
               />
             </div>
 

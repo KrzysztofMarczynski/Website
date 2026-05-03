@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default async function handler(req, res) {
-  const { mood, photoMood, imageBase64, tracks, name, token } = req.body;
+  const { genre, photoMood, imageBase64, tracks, name, token } = req.body;
 
   console.log("[DEBUG] ===== CREATE PLAYLIST START =====");
   console.log("[DEBUG] Token received - length:", token ? token.length : 0);
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
         {
           imageBase64,
           playlistName: name,
-          userMood: mood,
+          preferredGenres: genre,
           tracksCount: tracksLimit
         },
         {
@@ -50,7 +50,13 @@ export default async function handler(req, res) {
         }
       );
 
-      searchQuery = analysisResponse.data?.searchQuery || "indie pop acoustic";
+      const analysisData = analysisResponse.data || {};
+      searchQuery = analysisData.searchQuery || "indie pop acoustic";
+      const genrePreference = analysisData.preferredGenres || genre || "";
+      console.log("[DEBUG] Search query from GPT:", searchQuery);
+      if (genrePreference && !searchQuery.toLowerCase().includes(genrePreference.toLowerCase())) {
+        searchQuery = `${genrePreference} ${searchQuery}`.trim();
+      }
       console.log("[DEBUG] Search query from GPT:", searchQuery);
     } catch (analysisError) {
       console.warn("[WARN] GPT analysis failed, using fallback query");

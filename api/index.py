@@ -28,11 +28,11 @@ class Message(BaseModel):
 class PhotoAnalysisRequest(BaseModel):
     imageBase64: str
     playlistName: str
-    userMood: str = None
+    preferredGenres: str = None
     tracksCount: int = 5
 
 
-def analyze_photo_for_spotify(image_base64: str, playlist_name: str, user_mood: str = None, tracks_count: int = 5) -> dict:
+def analyze_photo_for_spotify(image_base64: str, playlist_name: str, preferred_genres: str = None, tracks_count: int = 5) -> dict:
     """
     Analizuje obraz za pomocą GPT Vision i generuje optimalne zapytanie Spotify.
     """
@@ -84,8 +84,8 @@ OUTPUT (STRICT JSON ONLY):
 Playlist name: {playlist_name}
 Number of tracks: {tracks_count}
 """
-        if user_mood:
-            user_prompt += f"Optional user preference: {user_mood}\n"
+        if preferred_genres:
+            user_prompt += f"Preferred genres: {preferred_genres}\n"
 
         user_prompt += """
 RETURN ONLY VALID JSON. NO TEXT OUTSIDE JSON."""
@@ -170,7 +170,7 @@ async def analyze_photo(request: PhotoAnalysisRequest):
     result = analyze_photo_for_spotify(
         image_base64=request.imageBase64,
         playlist_name=request.playlistName,
-        user_mood=request.userMood,
+        preferred_genres=request.preferredGenres,
         tracks_count=request.tracksCount
     )
 
