@@ -226,6 +226,7 @@ const loginSpotify = () => {
         imageBase64,
       };
 
+      console.log("[DEBUG] Sending playlist generation request with image");
       const res = await fetch("/api/create-playlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -246,6 +247,7 @@ const loginSpotify = () => {
       setStep(3);
 
       console.log("[DEBUG] Playlist created successfully!");
+      console.log("[DEBUG] Search query used:", data.searchQuery);
     } catch (e) {
       console.error("[ERROR] Generate playlist failed:", e);
       alert("❌ Błąd tworzenia playlisty: " + e.message);
