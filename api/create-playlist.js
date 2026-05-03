@@ -92,7 +92,11 @@ export default async function handler(req, res) {
 
     // 🎨 ANALIZA ZDJĘCIA za pomocą GPT Vision
     console.log("[DEBUG] Analyzing photo with GPT Vision...");
-    const tracksLimit = Math.max(1, Math.min(50, Number(tracks) || 5));
+    
+    // Ensure tracksLimit is always a valid number between 1-50
+    const rawTracks = Number(tracks);
+    const tracksLimit = Number.isFinite(rawTracks) && rawTracks > 0 ? Math.min(50, rawTracks) : 5;
+    console.log("[DEBUG] Tracks limit:", tracksLimit);
     
     try {
       const analysisResponse = await axios.post(
@@ -121,7 +125,8 @@ export default async function handler(req, res) {
         searchQuery = analysisData.searchQuery || "indie pop acoustic";
       }
 
-      if (!searchQuery) {
+      // Ensure searchQuery is always a non-empty string
+      if (!searchQuery || typeof searchQuery !== "string") {
         searchQuery = "indie pop acoustic";
       }
 
@@ -137,7 +142,8 @@ export default async function handler(req, res) {
     console.log("[DEBUG] Searching Spotify for:", searchQuery);
     console.log("[DEBUG] Limit:", tracksLimit);
 
-    const searchLimit = Math.min(50, Math.max(tracksLimit * 3, tracksLimit));
+    // Calculate searchLimit: fetch 2-3x more results for better genre filtering
+    const searchLimit = Math.max(1, Math.min(50, tracksLimit * 2));
     const searchResponse = await axios.get("https://api.spotify.com/v1/search", {
       headers,
       params: {
