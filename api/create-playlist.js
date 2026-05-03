@@ -105,7 +105,10 @@ export default async function handler(req, res) {
     if (imageBase64) {
       try {
         const imageBuffer = Buffer.from(imageBase64, "base64");
-        console.log("[DEBUG] Uploading playlist cover image...");
+        console.log("[DEBUG] Uploading playlist cover image... size bytes:", imageBuffer.length);
+        if (imageBuffer.length > 256 * 1024) {
+          console.warn("[WARN] Playlist image may be too large for Spotify:", imageBuffer.length);
+        }
         await axios.put(
           `https://api.spotify.com/v1/playlists/${playlistId}/images`,
           imageBuffer,
@@ -128,14 +131,14 @@ export default async function handler(req, res) {
     console.log("[DEBUG] Number of tracks to add:", uris.length);
 
     try {
-      console.log("[DEBUG] Adding tracks using /tracks endpoint...");
+      console.log("[DEBUG] Adding tracks using /items endpoint...");
       const addTracksResponse = await axios.post(
-        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        `https://api.spotify.com/v1/playlists/${playlistId}/items`,
         { uris },
         { headers }
       );
 
-      console.log("[DEBUG] ✅ Tracks added successfully!");
+      console.log("[DEBUG] ✅ Tracks added successfully via /items!");
       console.log("[DEBUG] Snapshot ID:", addTracksResponse.data.snapshot_id);
 
       return res.json({
@@ -146,17 +149,38 @@ export default async function handler(req, res) {
         message: "✅ Playlist created and tracks added!"
       });
     } catch (addError) {
-      console.error("[ERROR] ❌ Failed to add tracks to playlist");
+      console.error("[ERROR] ❌ Failed to add tracks via /items endpoint");
       console.error("[ERROR] Status:", addError.response?.status);
       console.error("[ERROR] Message:", addError.response?.data?.error?.message);
 
-      return res.json({
-        url: createResponse.data.external_urls.spotify,
-        playlistId,
-        searchQuery,
-        warning: "Playlist created but tracks could not be added",
-        error: addError.response?.data?.error?.message
-      });
+      try {
+        console.log("[DEBUG] Retrying track add via /tracks endpoint...");
+        const retryResponse = await axios.post(
+          `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+          { uris },
+          { headers }
+        );
+        console.log("[DEBUG] ✅ Tracks added successfully via /tracks!");
+        console.log("[DEBUG] Snapshot ID:", retryResponse.data.snapshot_id);
+
+        return res.json({
+          url: createResponse.data.external_urls.spotify,
+          playlistId,
+          searchQuery,
+          tracksAdded: uris.length,
+          message: "✅ Playlist created and tracks added on retry!"
+        });
+      } catch (retryError) {
+        console.error("[ERROR] Retry add tracks failed:", retryError.response?.data || retryError.message);
+
+        return res.json({
+          url: createResponse.data.external_urls.spotify,
+          playlistId,
+          searchQuery,
+          warning: "Playlist created but tracks could not be added",
+          error: retryError.response?.data?.error?.message || retryError.message
+        });
+      }
     }
 
   } catch (error) {

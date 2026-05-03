@@ -73,12 +73,30 @@ export default function PhotoToPlaylist() {
 
   const convertImageToJpeg = async (file) => {
     const img = await loadImageFile(file);
+    const maxDimension = 640;
+    let width = img.width;
+    let height = img.height;
+
+    if (width > maxDimension || height > maxDimension) {
+      const ratio = Math.min(maxDimension / width, maxDimension / height);
+      width = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+    }
+
     const canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    return canvas.toDataURL("image/jpeg", 0.92);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    let quality = 0.85;
+    let jpegData = canvas.toDataURL("image/jpeg", quality);
+    while (jpegData.length > 350 * 1024 && quality > 0.55) {
+      quality -= 0.1;
+      jpegData = canvas.toDataURL("image/jpeg", quality);
+    }
+
+    return jpegData;
   };
 
   const handleImageChange = async (e) => {
@@ -96,7 +114,8 @@ export default function PhotoToPlaylist() {
     }
 
     setImage(file);
-    setImagePreview(URL.createObjectURL(file));
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
 
     try {
       const jpegData = await convertImageToJpeg(file);
