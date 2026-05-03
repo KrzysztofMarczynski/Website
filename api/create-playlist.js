@@ -1,8 +1,7 @@
 import axios from "axios";
-import { URLSearchParams } from "url";
 
 export default async function handler(req, res) {
-  const { mood, genre, tracks, name, token } = req.body;
+  const { mood, photoMood, imageBase64, tracks, name, token } = req.body;
 
   console.log("[DEBUG] ===== CREATE PLAYLIST START =====");
   console.log("[DEBUG] Token received - length:", token ? token.length : 0);
@@ -30,8 +29,8 @@ export default async function handler(req, res) {
     console.log("[DEBUG] Full /me response keys:", Object.keys(meResponse.data));
 
     // 🔍 Szukanie utworów
-    const searchQuery = [genre, mood].filter(Boolean).join(" ").trim();
-    const limit = Math.max(1, Math.min(10, Number(tracks) || 5));
+    const searchQuery = [mood, photoMood].filter(Boolean).join(" ").trim() || "photo-inspired playlist";
+    const limit = Math.max(1, Math.min(20, Number(tracks) || 5));
 
     console.log("[DEBUG] Search query:", searchQuery);
 
@@ -47,7 +46,7 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "No tracks found" });
     }
 
-    const uris = tracks_list.map((t) => t.uri);
+    const uris = Array.from(new Set(tracks_list.map((t) => t.uri)));
 
     console.log("[DEBUG] Tracks found:", uris.length);
     console.log("[DEBUG] Sample URI:", uris[0]);
@@ -62,7 +61,7 @@ export default async function handler(req, res) {
         name: name || "My Photo Playlist 🎵",
         public: false,
         collaborative: false,
-        description: "Generated from photo",
+        description: `Generated from photo ${photoMood ? `- ${photoMood}` : ""}`,
       },
       { headers }
     );
@@ -71,27 +70,38 @@ export default async function handler(req, res) {
 
     console.log("[DEBUG] Playlist created:", playlistId);
 
+    if (imageBase64) {
+      try {
+        const imageBuffer = Buffer.from(imageBase64, "base64");
+        console.log("[DEBUG] Uploading playlist cover image...");
+        await axios.put(
+          `https://api.spotify.com/v1/playlists/${playlistId}/images`,
+          imageBuffer,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "image/jpeg",
+            },
+          }
+        );
+        console.log("[DEBUG] Playlist cover uploaded successfully");
+      } catch (coverError) {
+        console.error("[ERROR] Playlist cover upload failed:", coverError.response?.data || coverError.message);
+      }
+    }
+
     console.log("[DEBUG] Adding tracks to playlist...");
     console.log("[DEBUG] Playlist ID:", playlistId);
     console.log("[DEBUG] Number of tracks to add:", uris.length);
-    
-    // Spotify API: Use /items endpoint (not deprecated /tracks)
-    // Documentation: https://developer.spotify.com/documentation/web-api/reference/add-items-to-playlist
+
     try {
-      console.log("[DEBUG] Adding tracks using NEW /items endpoint...");
-      console.log("[DEBUG] URIs count:", uris.length);
-      
+      console.log("[DEBUG] Adding tracks using /tracks endpoint...");
       const addTracksResponse = await axios.post(
-        `https://api.spotify.com/v1/playlists/${playlistId}/items`,
+        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
         { uris },
-        { 
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
+        { headers }
       );
-      
+
       console.log("[DEBUG] ✅ Tracks added successfully!");
       console.log("[DEBUG] Snapshot ID:", addTracksResponse.data.snapshot_id);
 
@@ -101,11 +111,10 @@ export default async function handler(req, res) {
         message: "✅ Playlist created and tracks added!"
       });
     } catch (addError) {
-      console.error("[ERROR] ❌ Failed to add tracks via /items endpoint");
+      console.error("[ERROR] ❌ Failed to add tracks to playlist");
       console.error("[ERROR] Status:", addError.response?.status);
       console.error("[ERROR] Message:", addError.response?.data?.error?.message);
-      
-      // Return partial success - playlist WAS created even if tracks failed
+
       return res.json({
         url: createResponse.data.external_urls.spotify,
         playlistId,

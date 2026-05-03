@@ -1,23 +1,134 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-export default function Print() {
+export default function PhotoToPlaylist() {
   const [token, setToken] = useState(null);
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageBase64, setImageBase64] = useState(null);
+  const [analysisHint, setAnalysisHint] = useState("");
   const [playlistUrl, setPlaylistUrl] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [name, setName] = useState("My Photo Playlist");
-  const [genre, setGenre] = useState("pop");
-  const [mood, setMood] = useState("happy");
+  const [mood, setMood] = useState("");
   const [tracks, setTracks] = useState(5);
 
   const [step, setStep] = useState(1);
 
+  const parseBase64 = (dataUrl) => {
+    if (!dataUrl) return null;
+    return dataUrl.split(",")[1] || null;
+  };
+
+  const loadImageFile = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = (error) => reject(error);
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const analyzeImageMood = async (file) => {
+    try {
+      const img = await loadImageFile(file);
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const width = Math.min(80, img.width);
+      const height = Math.min(80, img.height);
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      const imageData = ctx.getImageData(0, 0, width, height).data;
+      let r = 0,
+        g = 0,
+        b = 0,
+        count = 0;
+      for (let i = 0; i < imageData.length; i += 4) {
+        r += imageData[i];
+        g += imageData[i + 1];
+        b += imageData[i + 2];
+        count += 1;
+      }
+      r = Math.round(r / count);
+      g = Math.round(g / count);
+      b = Math.round(b / count);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      if (brightness > 210) return "bright uplifting photo";
+      if (brightness < 80) return "moody atmospheric photo";
+      if (g > r && g > b) return "calm natural photo";
+      if (r > g && r > b) return "warm energetic photo";
+      if (b > r && b > g) return "dreamy chill photo";
+      return "photo-inspired playlist";
+    } catch (error) {
+      console.error("[ERROR] Image analysis failed:", error);
+      return "photo-inspired playlist";
+    }
+  };
+
+  const convertImageToJpeg = async (file) => {
+    const img = await loadImageFile(file);
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    return canvas.toDataURL("image/jpeg", 0.92);
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Wybierz plik obrazu (jpg, png itp.)");
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      alert("Maksymalny rozmiar pliku to 8 MB");
+      return;
+    }
+
+    setImage(file);
+    setImagePreview(URL.createObjectURL(file));
+
+    try {
+      const jpegData = await convertImageToJpeg(file);
+      setImageBase64(parseBase64(jpegData));
+      const hint = await analyzeImageMood(file);
+      setAnalysisHint(hint);
+    } catch (error) {
+      console.error("[ERROR] Image processing failed:", error);
+      alert("Nie udało się przetworzyć obrazka. Spróbuj innego pliku.");
+    }
+  };
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem("spotify_token");
+    if (savedToken) {
+      setToken(savedToken);
+      setStep(2);
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
   // 🔐 LOGIN SPOTIFY - POPRAWIONA WERSJA
 const loginSpotify = () => {
   const clientId = import.meta.env.VITE_CLIENT_ID;
-  const redirectUri = "https://www.krzysztof-marczynski.pl";
+  const redirectUri = import.meta.env.VITE_REDIRECT_URI || window.location.origin;
 
   const scope = "playlist-modify-public playlist-modify-private user-read-private";
 
@@ -91,12 +202,16 @@ const loginSpotify = () => {
       return;
     }
 
-    if (!mood && !genre) {
-      return alert("⚠️ Podaj Mood lub Genre!");
+    if (!image || !imageBase64) {
+      return alert("⚠️ Wybierz zdjęcie, aby utworzyć playlistę.");
     }
 
     if (!name) {
       return alert("⚠️ Podaj nazwę playlisty!");
+    }
+
+    if (!tracks || tracks < 1) {
+      return alert("⚠️ Wybierz liczbę utworów!");
     }
 
     setLoading(true);
@@ -104,10 +219,11 @@ const loginSpotify = () => {
     try {
       const payload = {
         mood,
-        genre,
+        photoMood: analysisHint,
         tracks,
         name,
         token: savedToken,
+        imageBase64,
       };
 
       const res = await fetch("/api/create-playlist", {
@@ -191,7 +307,7 @@ const loginSpotify = () => {
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
+              onChange={handleImageChange}
               className="block w-full text-sm text-gray-300
                          file:mr-4 file:py-2 file:px-4
                          file:rounded-full file:border-0
@@ -199,12 +315,17 @@ const loginSpotify = () => {
                          file:bg-purple-600 file:text-white
                          hover:file:bg-purple-700"
             />
+            {analysisHint && (
+              <p className="mt-3 text-sm text-gray-400">
+                Analiza obrazka: <span className="text-white">{analysisHint}</span>
+              </p>
+            )}
           </div>
 
           {/* PREVIEW */}
-          {image && (
+          {imagePreview && (
             <img
-              src={URL.createObjectURL(image)}
+              src={imagePreview}
               className="w-full max-w-md rounded-2xl border border-gray-800"
               alt="Preview"
             />
@@ -223,20 +344,12 @@ const loginSpotify = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block mb-2">Genre of music:</label>
-              <input
-                value={genre}
-                onChange={(e) => setGenre(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 rounded"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block mb-2">Mood:</label>
+              <label className="block mb-2">Mood (opcjonalnie):</label>
               <input
                 value={mood}
                 onChange={(e) => setMood(e.target.value)}
                 className="w-full px-3 py-2 bg-gray-800 rounded"
+                placeholder="happy, energetic, calm..."
               />
             </div>
 

@@ -1,0 +1,16 @@
+1 logowanie
+2 wrzucenie obrazka
+3 dodanie parametrów
+    Parametry:
+    zdjęcie MUST
+    nazwa playlisty MUST
+    gatunki muzyczne DONT
+    ilość utworów MUST
+
+    Działanie kodu:
+    1 szczegółowa analiza obrazka aby jak najlepiej dobrać utwory pasujące do niego
+    2 po przeanalizowaniu obrazka dobieranie utworów pasujących również zwracając uwagę na parametry podane przez użytkownika jeśli je dodał, utwory nie mogą się powtarzać
+    4 tworzenie playlisty z dobranych utworów, dodanie nazwy playlisty oraz zdjęcia na okładkę playlisty
+4 udostępnienie gotowej playlisty użytkownikowi poprzez link do niej
+
+napraw moją aplikację do tworzenia playlist na podstawie obrazków. Oto szczegółowy plan działania
