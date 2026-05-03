@@ -34,6 +34,8 @@ export default async function handler(req, res) {
 
     // 🎨 ANALIZA ZDJĘCIA za pomocą GPT Vision
     console.log("[DEBUG] Analyzing photo with GPT Vision...");
+    const tracksLimit = Math.max(1, Math.min(50, Number(tracks) || 5));
+    
     try {
       const analysisResponse = await axios.post(
         process.env.VERCEL_ENV ? "https://www.krzysztof-marczynski.pl/api/analyze-photo" : "http://localhost:8000/api/analyze-photo",
@@ -41,7 +43,7 @@ export default async function handler(req, res) {
           imageBase64,
           playlistName: name,
           userMood: mood,
-          tracksCount: Math.max(1, Math.min(20, Number(tracks) || 5))
+          tracksCount: tracksLimit
         },
         {
           timeout: 30000
@@ -53,17 +55,20 @@ export default async function handler(req, res) {
     } catch (analysisError) {
       console.warn("[WARN] GPT analysis failed, using fallback query");
       console.error("[WARN] Analysis error:", analysisError.message);
-      searchQuery = [mood, photoMood].filter(Boolean).join(" ").trim() || "photo-inspired music";
+      searchQuery = "indie pop acoustic";
     }
 
     // 🔍 Szukanie utworów na Spotify
-    const limit = Math.max(1, Math.min(20, Number(tracks) || 5));
-
     console.log("[DEBUG] Searching Spotify for:", searchQuery);
+    console.log("[DEBUG] Limit:", tracksLimit);
 
     const searchResponse = await axios.get("https://api.spotify.com/v1/search", {
       headers,
-      params: { q: searchQuery, type: "track", limit: limit * 2 }
+      params: { 
+        q: searchQuery, 
+        type: "track", 
+        limit: tracksLimit
+      }
     });
 
     const tracks_list = searchResponse.data.tracks?.items || [];
@@ -73,7 +78,7 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "No tracks found for the selected image" });
     }
 
-    const uris = Array.from(new Set(tracks_list.map((t) => t.uri))).slice(0, limit);
+    const uris = Array.from(new Set(tracks_list.map((t) => t.uri))).slice(0, tracksLimit);
 
     console.log("[DEBUG] Tracks found:", uris.length);
     console.log("[DEBUG] Sample URI:", uris[0]);

@@ -41,70 +41,57 @@ def analyze_photo_for_spotify(image_base64: str, playlist_name: str, user_mood: 
         raise HTTPException(status_code=500, detail="Brak poprawnego klucza OPENAI_API_KEY")
 
     try:
-        system_prompt = """You are an advanced AI system that analyzes images and generates Spotify-ready playlist data.
+        system_prompt = """You are an expert music curator AI. Analyze images and generate Spotify playlist data.
 
-Your goal is to analyze the uploaded image and generate a PERFECT Spotify search query and track list.
+CRITICAL RULES:
+1. SEARCHQUERY MUST BE A REAL MUSIC GENRE/STYLE - NO MOODS
+2. Use only searchable Spotify terms
+3. Combine: genre + vibe (style descriptor)
+4. Output ONLY valid JSON, no explanations
 
-ANALYSIS REQUIREMENTS:
-1. Analyze visual style: cinematic, dark, bright, vintage, modern, etc.
-2. Analyze environment: city, nature, night, indoors, party, etc.
-3. Analyze colors and lighting
-4. Analyze emotions and atmosphere
-5. Determine context: travel, love, loneliness, energy, chaos, calm, etc.
-
-SPOTIFY SEARCH QUERY RULES:
-- Use 2–5 strong keywords only
-- Combine genre + vibe + context
-- Use real, searchable terms (CRITICAL - must return results)
-- Avoid abstract words: "feeling", "vibes", "aesthetic"
-
-EXAMPLES OF GOOD QUERIES:
+GENRE EXAMPLES (GOOD):
 - "lofi chill beats"
-- "dark ambient electronic"
+- "dark ambient electronic"  
 - "indie pop summer"
 - "sad acoustic piano"
 - "night drive synthwave"
 - "upbeat dance electronic"
 - "indie folk acoustic"
+- "deep house electronic"
+- "ambient sleep music"
+- "lo-fi hip hop"
 
-TRACK GENERATION:
-- Generate tracks that match the image
-- Include REALISTIC artist + title combinations
-- Ensure tracks are likely to exist on Spotify
-- Avoid duplicates
-- Mix popular and less obvious tracks
+FORBIDDEN (BAD) QUERIES:
+- "happy mood"
+- "sad feeling"
+- "energetic vibes"
+- "calm aesthetic"
+- "peaceful atmosphere"
 
-OUTPUT FORMAT (STRICT JSON ONLY):
+TRACKS MUST:
+- Be realistic artist/title pairs
+- Likely exist on Spotify
+- Match search query
+
+OUTPUT (STRICT JSON ONLY):
 {
-  "searchQuery": "string optimized for Spotify API",
-  "tracks": [
-    {
-      "title": "Track name",
-      "artist": "Artist name"
-    }
-  ]
-}
+  "searchQuery": "MUST BE REAL GENRE + STYLE, 2-5 words",
+  "tracks": [{"title": "...", "artist": "..."}]
+}"""
 
-RULES:
-- DO NOT include "mood" field
-- DO NOT include explanations
-- DO NOT include any text outside JSON
-- Ensure searchQuery is usable directly in Spotify API
-- Return EXACT number of tracks requested"""
-
-        user_prompt = f"""Analyze this image and generate a Spotify playlist.
+        user_prompt = f"""Analyze this image and generate Spotify playlist data.
 
 Playlist name: {playlist_name}
-Number of tracks needed: {tracks_count}
+Number of tracks: {tracks_count}
 """
         if user_mood:
-            user_prompt += f"User mood/preference: {user_mood}\n"
+            user_prompt += f"Optional user preference: {user_mood}\n"
 
         user_prompt += """
-Return ONLY valid JSON with no additional text."""
+RETURN ONLY VALID JSON. NO TEXT OUTSIDE JSON."""
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=[
                 {
                     "role": "user",
@@ -122,7 +109,7 @@ Return ONLY valid JSON with no additional text."""
                     ]
                 }
             ],
-            max_tokens=1000
+            max_tokens=500
         )
 
         result_text = response.choices[0].message.content.strip()
@@ -135,14 +122,19 @@ Return ONLY valid JSON with no additional text."""
                 json_end = result_text.rfind('}') + 1
                 result = json.loads(result_text[json_match:json_end])
             else:
+                print("[ERROR] Could not parse JSON from:", result_text[:200])
                 raise ValueError("Nie udało się sparsować JSON z odpowiedzi GPT")
 
-        if "searchQuery" not in result:
-            result["searchQuery"] = "indie pop acoustic"
-        if "tracks" not in result:
-            result["tracks"] = []
-        if len(result["tracks"]) < tracks_count:
-            result["tracks"] = result["tracks"][:tracks_count] if result["tracks"] else []
+        search_query = result.get("searchQuery", "indie pop").strip()
+        
+        if not search_query or search_query.lower() in ["mood", "feeling", "vibes", "aesthetic"]:
+            search_query = "indie pop acoustic"
+        
+        if "mood" in search_query.lower() or "feeling" in search_query.lower():
+            search_query = "indie pop"
+
+        result["searchQuery"] = search_query
+        result["tracks"] = result.get("tracks", [])[:tracks_count]
 
         print("[DEBUG] Photo analysis completed")
         print("[DEBUG] Search query:", result["searchQuery"])
@@ -153,6 +145,7 @@ Return ONLY valid JSON with no additional text."""
     except Exception as e:
         print("[ERROR] Błąd w analyze_photo_for_spotify:", str(e))
         raise HTTPException(status_code=500, detail=f"Błąd analizy zdjęcia: {str(e)}")
+
 
 
 @app.get("/api/test")
