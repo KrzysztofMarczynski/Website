@@ -397,7 +397,7 @@ const loginSpotify = () => {
                 value={genre}
                 onChange={(e) => setGenre(e.target.value)}
                 className="w-full px-3 py-2 bg-gray-800 rounded"
-                placeholder="rock metal, indie pop, chillwave..."
+                placeholder="rock, metal, indie pop, chillwave..."
               />
             </div>
 

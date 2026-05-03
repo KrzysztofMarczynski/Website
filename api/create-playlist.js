@@ -95,7 +95,7 @@ export default async function handler(req, res) {
     
     // Ensure tracksLimit is always a valid number between 1-50
     const rawTracks = Number(tracks);
-    const tracksLimit = Number.isFinite(rawTracks) && rawTracks > 0 ? Math.min(50, rawTracks) : 5;
+    const tracksLimit = Number.isFinite(rawTracks) && rawTracks > 0 ? Math.min(10, rawTracks) : 5;
     console.log("[DEBUG] Tracks limit:", tracksLimit);
     
     try {
@@ -143,7 +143,7 @@ export default async function handler(req, res) {
     console.log("[DEBUG] Limit:", tracksLimit);
 
     // Calculate searchLimit: fetch 2-3x more results for better genre filtering
-    const searchLimit = Math.max(1, Math.min(50, tracksLimit * 2));
+    const searchLimit = Math.max(1, Math.min(10, tracksLimit));
     const searchResponse = await axios.get("https://api.spotify.com/v1/search", {
       headers,
       params: {
