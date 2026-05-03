@@ -73,7 +73,10 @@ export default function PhotoToPlaylist() {
 
   const convertImageToJpeg = async (file) => {
     const img = await loadImageFile(file);
+    const targetBytes = 230 * 1024;
+    const minDimension = 320;
     const maxDimension = 640;
+
     let width = img.width;
     let height = img.height;
 
@@ -84,16 +87,40 @@ export default function PhotoToPlaylist() {
     }
 
     const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, width, height);
+
+    const calculateBytes = (dataUrl) => {
+      const base64 = dataUrl.split(",")[1] || "";
+      return Math.round((base64.length * 3) / 4);
+    };
 
     let quality = 0.85;
-    let jpegData = canvas.toDataURL("image/jpeg", quality);
-    while (jpegData.length > 350 * 1024 && quality > 0.55) {
-      quality -= 0.1;
+    let jpegData = "";
+
+    while (true) {
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
       jpegData = canvas.toDataURL("image/jpeg", quality);
+      const bytes = calculateBytes(jpegData);
+
+      if (bytes <= targetBytes || (quality <= 0.45 && width <= minDimension && height <= minDimension)) {
+        break;
+      }
+
+      if (quality > 0.45) {
+        quality -= 0.1;
+        continue;
+      }
+
+      if (width > minDimension && height > minDimension) {
+        width = Math.max(minDimension, Math.round(width * 0.9));
+        height = Math.max(minDimension, Math.round(height * 0.9));
+        quality = 0.85;
+        continue;
+      }
+
+      break;
     }
 
     return jpegData;

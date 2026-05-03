@@ -45,9 +45,11 @@ def analyze_photo_for_spotify(image_base64: str, playlist_name: str, preferred_g
 
 CRITICAL RULES:
 1. SEARCHQUERY MUST BE A REAL MUSIC GENRE/STYLE - NO MOODS
-2. Use only searchable Spotify terms
-3. Combine: genre + vibe (style descriptor)
-4. Output ONLY valid JSON, no explanations
+2. If preferred genres are provided, use ONLY those genres and style descriptors.
+3. Do not invent or add unrelated genres outside the preferred genres list.
+4. Use only searchable Spotify terms
+5. Combine: genre + vibe (style descriptor)
+6. Output ONLY valid JSON, no explanations
 
 GENRE EXAMPLES (GOOD):
 - "lofi chill beats"

@@ -1,5 +1,62 @@
 import axios from "axios";
 
+const normalizeGenres = (text = "") => {
+  return String(text)
+    .split(/[,;&\/]+|\band\b|\s+/)
+    .map((part) => part.trim().toLowerCase())
+    .filter(Boolean);
+};
+
+const sanitizeHint = (hint = "") => {
+  return String(hint)
+    .replace(/\b(photo|image|picture|pic|mood|moody|feelings?|vibes?|aesthetic|atmosphere|atmospheric)\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+const buildSearchQuery = (genreTokens, hint) => {
+  if (!genreTokens.length) return null;
+  const cleanHint = sanitizeHint(hint);
+  return `${genreTokens.join(" ")}${cleanHint ? ` ${cleanHint}` : ""}`.trim();
+};
+
+const fetchArtistGenres = async (headers, artistIds) => {
+  if (!artistIds.length) return {};
+  const ids = artistIds.slice(0, 50).join(",");
+  const response = await axios.get("https://api.spotify.com/v1/artists", {
+    headers,
+    params: { ids },
+  });
+  return (response.data.artists || []).reduce((map, artist) => {
+    map[artist.id] = artist.genres || [];
+    return map;
+  }, {});
+};
+
+const filterTracksByPreferredGenres = async (tracks, genreTokens, headers) => {
+  if (!genreTokens.length) return tracks;
+  const artistIds = Array.from(
+    new Set(
+      tracks
+        .flatMap((track) => track.artists?.map((artist) => artist.id).filter(Boolean) || [])
+        .filter(Boolean)
+    )
+  );
+
+  if (!artistIds.length) return tracks;
+
+  const artistGenres = await fetchArtistGenres(headers, artistIds);
+  const filtered = tracks.filter((track) => {
+    return track.artists.some((artist) => {
+      const genres = artistGenres[artist.id] || [];
+      const lowerGenres = genres.map((g) => g.toLowerCase());
+      return genreTokens.some((token) => lowerGenres.some((genre) => genre.includes(token)));
+    });
+  });
+
+  return filtered.length ? filtered : tracks;
+};
+
 export default async function handler(req, res) {
   const { genre, photoMood, imageBase64, tracks, name, token } = req.body;
 
@@ -17,6 +74,7 @@ export default async function handler(req, res) {
 
   let userId = null;
   let searchQuery = null;
+  let preferredGenres = [];
 
   try {
     const headers = {
@@ -51,13 +109,24 @@ export default async function handler(req, res) {
       );
 
       const analysisData = analysisResponse.data || {};
-      searchQuery = analysisData.searchQuery || "indie pop acoustic";
       const genrePreference = analysisData.preferredGenres || genre || "";
-      console.log("[DEBUG] Search query from GPT:", searchQuery);
-      if (genrePreference && !searchQuery.toLowerCase().includes(genrePreference.toLowerCase())) {
-        searchQuery = `${genrePreference} ${searchQuery}`.trim();
+      preferredGenres = normalizeGenres(genrePreference);
+      const strictGenreQuery = buildSearchQuery(preferredGenres, photoMood || "");
+
+      if (preferredGenres.length > 0) {
+        const lowerGptQuery = (analysisData.searchQuery || "").toLowerCase();
+        const hasAllPreferredGenres = preferredGenres.every((token) => lowerGptQuery.includes(token));
+        searchQuery = hasAllPreferredGenres ? analysisData.searchQuery : strictGenreQuery;
+      } else {
+        searchQuery = analysisData.searchQuery || "indie pop acoustic";
       }
-      console.log("[DEBUG] Search query from GPT:", searchQuery);
+
+      if (!searchQuery) {
+        searchQuery = "indie pop acoustic";
+      }
+
+      console.log("[DEBUG] Search query from GPT or strict genre logic:", searchQuery);
+      console.log("[DEBUG] Preferred genres:", preferredGenres);
     } catch (analysisError) {
       console.warn("[WARN] GPT analysis failed, using fallback query");
       console.error("[WARN] Analysis error:", analysisError.message);
@@ -68,16 +137,26 @@ export default async function handler(req, res) {
     console.log("[DEBUG] Searching Spotify for:", searchQuery);
     console.log("[DEBUG] Limit:", tracksLimit);
 
+    const searchLimit = Math.min(50, Math.max(tracksLimit * 3, tracksLimit));
     const searchResponse = await axios.get("https://api.spotify.com/v1/search", {
       headers,
-      params: { 
-        q: searchQuery, 
-        type: "track", 
-        limit: tracksLimit
-      }
+      params: {
+        q: searchQuery,
+        type: "track",
+        limit: searchLimit,
+      },
     });
 
-    const tracks_list = searchResponse.data.tracks?.items || [];
+    let tracks_list = searchResponse.data.tracks?.items || [];
+    if (preferredGenres.length > 0) {
+      const filteredTracks = await filterTracksByPreferredGenres(tracks_list, preferredGenres, headers);
+      if (filteredTracks.length) {
+        tracks_list = filteredTracks;
+        console.log("[DEBUG] Filtered tracks by preferred genre metadata:", filteredTracks.length);
+      } else {
+        console.warn("[WARN] No tracks matched preferred genres via artist metadata; keeping original search results.");
+      }
+    }
 
     if (tracks_list.length === 0) {
       console.error("[ERROR] No tracks found for query:", searchQuery);
