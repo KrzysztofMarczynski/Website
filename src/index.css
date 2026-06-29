@@ -1,27 +1,18 @@
 @import "tailwindcss";
 
+
 @layer base {
-  html,
-  body {
+  html, body {
     margin: 0;
     padding: 0;
-    min-height: 100%;
-    background-color: #ffffff;
-    color: #111827;
-    color-scheme: light;
-  }
-
-  body {
-    min-width: 320px;
+    height: 100%;
+    background-color: #111827;      /* gray-900 – taki sam kolor jak bg-gray-900 w Hero */
+    color: white;
   }
 
   #root {
     min-height: 100vh;
-    background-color: #ffffff;
-  }
-
-  * {
-    box-sizing: border-box;
+    background-color: #111827;      /* to samo tło co body */
   }
 }
 
@@ -43,12 +34,12 @@
   }
 }
 
+/* index.css – dodaj na końcu */
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
