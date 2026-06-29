@@ -4,7 +4,7 @@ export default function Print() {
   return (
     <section
       id="3D Print"
-      className="relative min-h-screen overflow-hidden bg-white px-5 pb-20 pt-20 text-zinc-950 md:px-10 md:pt-24 lg:px-16 lg:pt-28"
+      className="relative min-h-screen overflow-hidden bg-white px-4 pb-16 pt-12 text-zinc-950 sm:px-5 sm:pb-20 sm:pt-16 md:px-10 md:pt-24 lg:px-16 lg:pt-28"
     >
       <div className="relative z-10 mx-auto max-w-6xl">
         <motion.h2
@@ -12,7 +12,7 @@ export default function Print() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="mb-16 pb-6 text-center text-4xl font-bold leading-[1.2] text-zinc-950 md:pb-8 md:text-5xl md:leading-[1.15] lg:pb-10 lg:text-6xl lg:leading-[1.1]"
+          className="mb-8 pb-4 text-center text-2xl font-bold leading-[1.2] text-zinc-950 sm:mb-12 sm:pb-6 md:pb-8 md:text-5xl md:leading-[1.15] lg:pb-10 lg:text-6xl lg:leading-[1.1]"
         >
           3D Printing
         </motion.h2>
@@ -35,7 +35,7 @@ export default function Print() {
           </p>
         </motion.div>
 
-        <h1 className="mb-6 pb-4 text-center text-4xl font-semibold leading-[1.25] text-zinc-950 md:text-5xl">
+        <h1 className="mb-4 pb-2 text-center text-xl font-semibold leading-[1.25] text-zinc-950 sm:mb-6 sm:pb-4 sm:text-2xl md:text-3xl lg:text-5xl">
           Pirate Stories
         </h1>
 
@@ -44,7 +44,7 @@ export default function Print() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="mx-auto mb-20 max-w-3xl text-center text-lg leading-relaxed text-zinc-700 md:text-xl"
+          className="mx-auto mb-12 max-w-3xl text-center text-sm leading-relaxed text-zinc-700 sm:mb-16 sm:text-base md:mb-20 md:text-lg lg:text-xl"
         >
           <p>
             Pirate Stories is a board game. The goal is to capture three pirate
@@ -54,22 +54,22 @@ export default function Print() {
           </p>
         </motion.div>
 
-        <div className="space-y-16">
-          <div className="grid items-center gap-10 md:grid-cols-2 lg:gap-12">
+        <div className="space-y-10 sm:space-y-16">
+          <div className="grid items-center gap-6 sm:gap-8 md:gap-10 md:grid-cols-2 lg:gap-12">
             <motion.div
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="order-1 space-y-6 md:order-1"
             >
-              <h3 className="text-3xl font-semibold text-zinc-950">Concept</h3>
-              <p className="text-lg leading-relaxed text-zinc-700">
+              <h3 className="text-lg font-semibold text-zinc-950 sm:text-xl lg:text-2xl xl:text-3xl">Concept</h3>
+              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base lg:text-lg">
                 At the beginning I focused on creating and designing a modular
                 board so that each game feels different from the previous one.
               </p>
             </motion.div>
 
-            <div className="order-2 grid grid-cols-3 gap-4 md:order-2">
+            <div className="order-2 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 md:order-2">
               {[1, 2, 3].map((i) => (
                 <motion.div
                   key={i}
@@ -107,35 +107,35 @@ export default function Print() {
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="order-1 space-y-6 md:order-2"
+              className="order-1 space-y-4 sm:space-y-6 md:order-2"
             >
-              <h3 className="text-3xl font-semibold text-zinc-950">
+              <h3 className="text-lg font-semibold text-zinc-950 sm:text-xl lg:text-2xl xl:text-3xl">
                 Figurines
               </h3>
-              <p className="text-lg leading-relaxed text-zinc-700">
+              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base lg:text-lg">
                 I designed figurines for the game, and the design process took a
                 lot of careful iteration.
               </p>
             </motion.div>
           </div>
 
-          <div className="grid items-center gap-10 md:grid-cols-2 lg:gap-12">
+          <div className="grid items-center gap-6 sm:gap-8 md:gap-10 md:grid-cols-2 lg:gap-12">
             <motion.div
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="order-1 space-y-6 md:order-1"
+              className="order-1 space-y-4 sm:space-y-6 md:order-1"
             >
-              <h3 className="text-3xl font-semibold text-zinc-950">
+              <h3 className="text-lg font-semibold text-zinc-950 sm:text-xl lg:text-2xl xl:text-3xl">
                 Whole Game
               </h3>
-              <p className="text-lg leading-relaxed text-zinc-700">
+              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base lg:text-lg">
                 After printing the entire board, I realized that it was not
                 practical to unfold, so I redesigned part of the board.
               </p>
             </motion.div>
 
-            <div className="order-2 grid grid-cols-2 gap-4 md:order-2">
+            <div className="order-2 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 md:order-2">
               {[7, 8].map((i) => (
                 <motion.div
                   key={i}
@@ -152,8 +152,8 @@ export default function Print() {
             </div>
           </div>
 
-          <div className="grid items-center gap-10 md:grid-cols-2 lg:gap-12">
-            <div className="order-2 grid grid-cols-2 gap-4 md:order-1">
+          <div className="grid items-center gap-6 sm:gap-8 md:gap-10 md:grid-cols-2 lg:gap-12">
+            <div className="order-2 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 md:order-1">
               {[9, 11].map((i) => (
                 <motion.div
                   key={i}
@@ -173,12 +173,12 @@ export default function Print() {
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="order-1 space-y-6 md:order-2"
+              className="order-1 space-y-4 sm:space-y-6 md:order-2"
             >
-              <h3 className="text-3xl font-semibold text-zinc-950">
+              <h3 className="text-lg font-semibold text-zinc-950 sm:text-xl lg:text-2xl xl:text-3xl">
                 Redesign
               </h3>
-              <p className="text-lg leading-relaxed text-zinc-700">
+              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base lg:text-lg\">
                 I printed a new board and designed a new type of element to
                 place on it, making the whole setup much more convenient.
               </p>
@@ -193,16 +193,16 @@ export default function Print() {
           transition={{ duration: 0.8 }}
           className="mx-auto mt-24 max-w-5xl"
         >
-          <div className="grid items-center gap-12 md:grid-cols-2 lg:gap-16">
-            <div className="space-y-8 text-center md:text-left">
-              <h3 className="mb-6 pb-4 text-4xl font-semibold leading-[1.25] text-zinc-950 md:text-5xl">
+          <div className="grid items-center gap-8 sm:gap-10 md:gap-12 md:grid-cols-2 lg:gap-16">
+            <div className="space-y-6 sm:space-y-8 text-center md:text-left">
+              <h3 className="mb-3 pb-2 text-xl font-semibold leading-[1.25] text-zinc-950 sm:mb-6 sm:pb-4 sm:text-2xl md:text-3xl lg:text-5xl">
                 Other 3D Projects
               </h3>
-              <h3 className="mb-6 pb-4 text-3xl font-semibold leading-[1.25] text-zinc-950 md:text-4xl">
+              <h3 className="mb-3 pb-2 text-lg font-semibold leading-[1.25] text-zinc-950 sm:mb-6 sm:pb-4 sm:text-xl md:text-2xl lg:text-4xl">
                 Phone Holder
               </h3>
 
-              <p className="text-lg leading-relaxed text-zinc-700 md:text-xl">
+              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base md:text-lg lg:text-xl">
                 Just a basic magnetic phone holder that I use every day. It has
                 a printed screw inside so you can attach a rubber mount to it.
                 The charger is press-fitted. It works surprisingly well.
@@ -243,13 +243,13 @@ export default function Print() {
           transition={{ duration: 0.8 }}
           className="mx-auto mt-24 max-w-5xl"
         >
-          <div className="grid items-center gap-12 md:grid-cols-2 lg:gap-16">
-            <div className="space-y-8 text-center md:text-left">
-              <h3 className="mb-6 pb-4 text-3xl font-semibold leading-[1.25] text-zinc-950 md:text-4xl">
+          <div className="grid items-center gap-8 sm:gap-10 md:gap-12 md:grid-cols-2 lg:gap-16">
+            <div className="space-y-6 sm:space-y-8 text-center md:text-left">
+              <h3 className="mb-3 pb-2 text-lg font-semibold leading-[1.25] text-zinc-950 sm:mb-6 sm:pb-4 sm:text-xl md:text-2xl lg:text-4xl">
                 Coin Holder
               </h3>
 
-              <p className="text-lg leading-relaxed text-zinc-700 md:text-xl">
+              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base md:text-lg lg:text-xl">
                 This is the coin holder I use in my car to keep coins in one
                 place so they do not make noise while driving.
               </p>
@@ -258,7 +258,7 @@ export default function Print() {
                 href="https://www.printables.com/model/1658618-coin-holder-for-polish-zloty"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center gap-3 rounded-xl bg-zinc-950 px-8 py-4 text-lg font-medium text-white shadow-lg shadow-zinc-950/15 transition-all duration-300 hover:bg-zinc-800 active:scale-95"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-zinc-950 px-4 py-2 text-xs font-medium text-white shadow-lg shadow-zinc-950/15 transition-all duration-300 hover:bg-zinc-800 active:scale-95 sm:mt-6 sm:gap-3 sm:rounded-xl sm:px-8 sm:py-4 sm:text-base\"
               >
                 Check out my model here -&gt;
               </a>

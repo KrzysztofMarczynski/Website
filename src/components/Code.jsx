@@ -1,7 +1,63 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpRight, Braces, Code2, Terminal } from "lucide-react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/hljs";
+
+const codeProjects = [
+  {
+    id: "C",
+    label: "C",
+    name: "ft_printf",
+    eyebrow: "Low-level programming",
+    repo: "ft_printf",
+    filePath: "ft_printf.c",
+    language: "c",
+    title: "Printf implementation in C",
+    description:
+      "My own printf implementation. It helped me understand variadic arguments, data formatting, parsing, and precise text output at a lower level.",
+    details: ["Variadic arguments", "Format parsing", "Manual control"],
+  },
+  {
+    id: "JavaScript",
+    label: "JS",
+    name: "Portfolio UI",
+    eyebrow: "Frontend engineering",
+    repo: "Website",
+    filePath: "src/components/Ai.jsx",
+    language: "jsx",
+    title: "React component architecture",
+    description:
+      "JavaScript and React helped me build a clear portfolio experience, connect UI with APIs, and present my projects in an interactive way.",
+    details: ["React", "UI state", "API requests"],
+  },
+  {
+    id: "CSharp",
+    label: "C#",
+    name: "Level generator",
+    eyebrow: "Game systems",
+    repo: "RogueLike-Level-Generation-System",
+    filePath: "LevelGenerator.cs",
+    language: "csharp",
+    title: "Roguelike room generation",
+    description:
+      "A Binding of Isaac style level generation system for my game. It focuses on modular rooms, rules, and flexible generation parameters.",
+    details: ["Unity", "Procedural logic", "Game design"],
+  },
+  {
+    id: "Python",
+    label: "PY",
+    name: "AI assistant API",
+    eyebrow: "Backend learning",
+    repo: "Website",
+    filePath: "api/index.py",
+    language: "python",
+    title: "AI assistant backend",
+    description:
+      "This backend file supports the AI assistant on the site and connects the interface with server-side logic.",
+    details: ["API route", "PY", "AI support"],
+  },
+];
 
 function CodeFromFile({ filePath, repo, language = "python" }) {
   const [code, setCode] = useState("// Loading from GitHub");
@@ -9,6 +65,9 @@ function CodeFromFile({ filePath, repo, language = "python" }) {
 
   useEffect(() => {
     const rawUrl = `https://raw.githubusercontent.com/KrzysztofMarczynski/${repo}/main/${filePath}`;
+
+    setCode("// Loading from GitHub");
+    setError(null);
 
     fetch(rawUrl)
       .then((res) => {
@@ -28,23 +87,26 @@ function CodeFromFile({ filePath, repo, language = "python" }) {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center text-red-600">
-        {error}
+      <div className="flex min-h-[24rem] items-center justify-center rounded-b-[1.75rem] bg-red-50 p-8 text-center">
+        <p className="max-w-md text-base font-medium text-red-600">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-zinc-800 shadow-2xl shadow-zinc-950/20">
+    <div className="max-h-[18rem] overflow-x-auto overflow-y-auto rounded-b-[1.75rem] bg-zinc-950 sm:max-h-[24rem] md:max-h-[28rem] lg:max-h-[34rem]">
       <SyntaxHighlighter
         language={language}
         style={dracula}
         customStyle={{
           margin: 0,
-          padding: "1.75rem 2.25rem",
+          padding: "0.75rem",
+          paddingTop: "1rem",
+          paddingBottom: "1rem",
           background: "transparent",
-          fontSize: "0.97rem",
-          lineHeight: "1.58",
+          fontSize: "0.7rem",
+          lineHeight: "1.4",
+          minHeight: "16rem",
         }}
         showLineNumbers
         wrapLongLines
@@ -58,175 +120,202 @@ function CodeFromFile({ filePath, repo, language = "python" }) {
 export default function Code() {
   const [activeTab, setActiveTab] = useState("C");
 
-  const repoMap = {
-    C: "ft_printf",
-    JavaScript: "Website",
-    CSharp: "RogueLike-Level-Generation-System",
-    Python: "Website",
-  };
+  const activeProject = useMemo(
+    () =>
+      codeProjects.find((project) => project.id === activeTab) ||
+      codeProjects[0],
+    [activeTab],
+  );
 
-  const filePathMap = {
-    C: "ft_printf.c",
-    JavaScript: "src/components/Ai.jsx",
-    CSharp: "LevelGenerator.cs",
-    Python: "api/index.py",
-  };
-
-  const languageDescriptions = {
-    C: (
-      <>
-        This is my <code>printf</code> implementation.
-        <br />I learned how to work with variadic arguments, data formatting,
-        and low-level text printing in C.
-      </>
-    ),
-    JavaScript: (
-      <>
-        JavaScript and React helped me build a clean portfolio where I can show
-        my projects and experiments.
-      </>
-    ),
-    CSharp: (
-      <>
-        This is my Binding of Isaac style level generation system that I use in
-        the game I am creating.
-      </>
-    ),
-    Python: (
-      <>
-        Python is the language I am currently learning. This example supports
-        the AI assistant on this website.
-      </>
-    ),
-  };
-
-  const tabs = Object.keys(repoMap);
-  const currentRepo = repoMap[activeTab] || "Website";
-  const currentFilePath = filePathMap[activeTab] || "README.md";
-  const githubFileLink = `https://github.com/KrzysztofMarczynski/${currentRepo}/blob/main/${currentFilePath}`;
+  const githubFileLink = `https://github.com/KrzysztofMarczynski/${activeProject.repo}/blob/main/${activeProject.filePath}`;
 
   return (
     <section
       id="Code"
-      className="relative min-h-screen overflow-visible bg-white px-5 pb-20 pt-12 text-zinc-950 sm:pt-14 md:px-10 md:pt-16 lg:px-16 lg:pt-16"
+      className="relative bg-white px-4 py-16 text-zinc-950 sm:px-5 md:px-10 md:py-24 lg:px-16"
     >
-      <div className="relative z-10 mx-auto max-w-6xl">
-        <motion.h2
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mb-12 mt-6 pb-4 text-center text-4xl font-bold leading-tight tracking-tight text-zinc-950 sm:text-5xl md:text-5xl lg:text-6xl"
-        >
-          My Code & Experience
-        </motion.h2>
-
+      <div className="mx-auto max-w-7xl">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 34 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="mb-10 flex flex-wrap justify-center gap-3 md:gap-4"
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-10 border-t border-zinc-200 pt-8 md:mb-14"
         >
-          {tabs.map((lang) => (
-            <button
-              key={lang}
-              type="button"
-              onClick={() => setActiveTab(lang)}
-              className={`rounded-full border px-6 py-2.5 text-base font-medium transition-all duration-300 md:text-lg ${
-                activeTab === lang
-                  ? "border-zinc-950 bg-zinc-950 text-white shadow-lg shadow-zinc-950/15"
-                  : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400 hover:text-zinc-950"
-              }`}
-            >
-              {lang === "JavaScript"
-                ? "JS / React"
-                : lang === "CSharp"
-                  ? "C#"
-                  : lang}
-            </button>
-          ))}
-        </motion.div>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 30, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -30, scale: 0.97 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-950 shadow-[0_24px_90px_rgba(15,23,42,0.18)]"
-          >
-            <div className="max-h-[500px] overflow-y-auto">
-              {activeTab === "C" ? (
-                <CodeFromFile
-                  filePath="ft_printf.c"
-                  repo="ft_printf"
-                  language="c"
-                />
-              ) : activeTab === "JavaScript" ? (
-                <CodeFromFile
-                  filePath="src/components/Ai.jsx"
-                  repo="Website"
-                  language="jsx"
-                />
-              ) : activeTab === "CSharp" ? (
-                <CodeFromFile
-                  filePath="LevelGenerator.cs"
-                  repo="RogueLike-Level-Generation-System"
-                  language="csharp"
-                />
-              ) : activeTab === "Python" ? (
-                <CodeFromFile
-                  filePath="api/index.py"
-                  repo="Website"
-                  language="python"
-                />
-              ) : null}
+          <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+            <div>
+              <p className="mb-4 text-sm font-bold uppercase text-zinc-400">
+                Code archive
+              </p>
+              <p className="mb-6 max-w-2xl text-base leading-relaxed text-zinc-600 md:text-lg lg:hidden">
+                A compact look at the languages and systems I use: from
+                low-level C exercises, through React UI work, to Unity game
+                logic and PY API experiments.
+              </p>
+              <h2 className="text-2xl font-black uppercase leading-[0.98] tracking-normal text-zinc-950 sm:text-3xl md:text-5xl lg:text-7xl xl:text-8xl">
+                Code & experience
+              </h2>
             </div>
 
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-zinc-950/30" />
-          </motion.div>
-        </AnimatePresence>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -40 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="mx-auto mt-10 max-w-3xl space-y-8 pb-12 text-center md:mt-12 md:pb-16 lg:mt-14 lg:pb-20"
-          >
-            <h3 className="text-3xl font-semibold leading-tight text-zinc-950 md:text-4xl">
-              {activeTab === "JavaScript"
-                ? "JavaScript / React"
-                : activeTab === "CSharp"
-                  ? "C#"
-                  : activeTab}{" "}
-              Experience
-            </h3>
-
-            <p className="text-lg leading-relaxed text-zinc-700 md:text-xl">
-              {languageDescriptions[activeTab]}
+            <p className="hidden max-w-2xl text-base leading-relaxed text-zinc-600 md:text-lg lg:block lg:pt-2 xl:text-xl">
+              A compact look at the languages and systems I use: from low-level
+              C exercises, through React UI work, to Unity game logic and PY API
+              experiments.
             </p>
+          </div>
+        </motion.div>
 
-            <a
-              href={githubFileLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-zinc-950 px-7 py-3.5 font-medium text-white shadow-lg shadow-zinc-950/15 transition-all duration-300 hover:bg-zinc-800"
+        <div className="flex flex-col gap-6 sm:gap-8 lg:grid lg:grid-cols-[20rem_1fr] xl:grid-cols-[22rem_1fr]">
+          <motion.aside
+            initial={{ opacity: 0, y: 34 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.7, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col gap-2 sm:gap-3 lg:block lg:space-y-3"
+          >
+            {codeProjects.map((project) => {
+              const isActive = activeProject.id === project.id;
+
+              return (
+                <button
+                  key={project.id}
+                  type="button"
+                  onClick={() => setActiveTab(project.id)}
+                  className={`group flex h-14 w-full items-center gap-3 rounded-[1rem] border px-3 text-left transition-colors duration-300 sm:h-16 sm:px-4 sm:rounded-[1.25rem] lg:block lg:h-auto lg:min-h-0 lg:w-full lg:rounded-[1.35rem] lg:p-5 lg:transition-all ${
+                    isActive
+                      ? "border-zinc-950 bg-zinc-950 text-white shadow-[0_18px_60px_rgba(15,23,42,0.16)]"
+                      : "border-zinc-200 bg-white text-zinc-950 lg:hover:-translate-y-0.5 lg:hover:border-zinc-400"
+                  }`}
+                >
+                  <div className="flex shrink-0 items-center justify-between gap-2 sm:gap-4 lg:mb-5">
+                    <span
+                      className={`inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-black sm:h-9 sm:w-9 sm:text-sm lg:h-10 lg:w-10 ${
+                        isActive
+                          ? "border-white/20 bg-white text-zinc-950"
+                          : "border-zinc-200 bg-zinc-50 text-zinc-950"
+                      }`}
+                    >
+                      {project.label}
+                    </span>
+                    <ArrowUpRight
+                      className={`hidden h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:h-5 sm:w-5 lg:block ${
+                        isActive ? "text-white" : "text-zinc-400"
+                      }`}
+                    />
+                  </div>
+
+                  <p
+                    className={`mb-2 hidden text-xs font-bold uppercase sm:text-xs lg:block ${
+                      isActive ? "text-white/50" : "text-zinc-400"
+                    }`}
+                  >
+                    {project.eyebrow}
+                  </p>
+<h3 className="min-w-0 truncate text-xs font-bold leading-tight sm:text-sm lg:text-lg">
+  {project.name}
+</h3>
+                </button>
+              );
+            })}
+          </motion.aside>
+
+          <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${activeProject.id}-description`}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -18 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="grid gap-2 rounded-[1.75rem] border border-zinc-200 bg-white p-2.5 shadow-[0_18px_70px_rgba(15,23,42,0.07)] sm:gap-3 sm:p-3 md:gap-5 md:grid-cols-[1fr_auto] md:items-center md:p-6 md:min-h-[160px]"
+              >
+                <div>
+                  <p className="mb-2 text-xs font-bold uppercase text-zinc-400 sm:text-sm">
+                    {activeProject.eyebrow}
+                  </p>
+                  <h3 className="text-base font-bold leading-tight text-zinc-950 sm:text-xl md:text-2xl lg:text-4xl">
+                    {activeProject.title}
+                  </h3>
+                  <p className="mt-2 max-w-3xl text-xs leading-relaxed text-zinc-600 sm:mt-3 sm:text-sm md:text-base lg:text-lg">
+                    {activeProject.description}
+                  </p>
+                </div>
+
+                <a
+                  href={githubFileLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-1.5 rounded-full bg-zinc-950 px-3 py-2 text-xs font-bold uppercase text-white transition-all duration-300 sm:gap-2 sm:px-4 sm:py-2.5 md:px-6 md:py-3 md:text-sm md:inline-flex md:w-auto hover:-translate-y-0.5 hover:bg-zinc-800 active:scale-95"
+                >
+                  GitHub
+                  <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                </a>
+              </motion.div>
+            </AnimatePresence>
+
+            <motion.div
+              initial={{ opacity: 0, y: 34 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.75, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden rounded-[1.75rem] border border-zinc-800 bg-zinc-950 shadow-[0_28px_100px_rgba(15,23,42,0.18)]"
             >
-              See my{" "}
-              {activeTab === "JavaScript"
-                ? "JS/React"
-                : activeTab === "CSharp"
-                  ? "C#"
-                  : activeTab}{" "}
-              code on GitHub -&gt;
-            </a>
-          </motion.div>
-        </AnimatePresence>
+              <div className="flex flex-col gap-2 border-b border-white/10 bg-zinc-900 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span className="h-2.5 w-2.5 rounded-full bg-red-400 sm:h-3 sm:w-3" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-yellow-300 sm:h-3 sm:w-3" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-green-400 sm:h-3 sm:w-3" />
+                </div>
+
+                <div className="flex min-w-0 items-center gap-2 text-xs font-medium text-zinc-400 sm:text-sm">
+                  <Terminal className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+                  <span className="truncate">{activeProject.filePath}</span>
+                </div>
+              </div>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`${activeProject.id}-code`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <CodeFromFile
+                    filePath={activeProject.filePath}
+                    repo={activeProject.repo}
+                    language={activeProject.language}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${activeProject.id}-details`}
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="grid gap-1.5 gap-y-2 grid-cols-2 sm:gap-2 sm:gap-y-3 md:gap-3 md:grid-cols-3"
+              >
+                {activeProject.details.map((detail) => (
+                  <div
+                    key={detail}
+                    className="flex min-h-10 items-center justify-center gap-1 rounded-full border border-zinc-200 bg-white px-2 py-1.5 text-center text-xs font-bold text-zinc-700 shadow-[0_10px_35px_rgba(15,23,42,0.04)] sm:min-h-12 sm:gap-1.5 sm:px-3 sm:py-2 md:min-h-14 md:gap-2 md:px-5 md:py-3 md:text-sm"
+                  >
+                    {detail === "React" || detail === "PY" ? (
+                      <Code2 className="h-3 w-3 text-zinc-400 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
+                    ) : (
+                      <Braces className="h-3 w-3 text-zinc-400 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
+                    )}
+                    {detail}
+                  </div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </section>
   );

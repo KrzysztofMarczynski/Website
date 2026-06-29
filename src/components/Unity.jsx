@@ -4,7 +4,7 @@ export default function Unity() {
   return (
     <section
       id="Unity Games"
-      className="relative min-h-screen overflow-hidden bg-white px-5 pb-20 pt-20 text-zinc-950 md:px-10 md:pt-24 lg:px-16 lg:pt-28"
+      className="relative min-h-screen overflow-hidden bg-white px-4 pb-16 pt-12 text-zinc-950 sm:px-5 sm:pb-20 sm:pt-16 md:px-10 md:pt-24 lg:px-16 lg:pt-28"
     >
       <div className="relative z-10 mx-auto max-w-6xl">
         <motion.h2
@@ -12,7 +12,7 @@ export default function Unity() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="mb-16 pb-8 text-center text-4xl font-bold leading-[1.25] text-zinc-950 md:pb-10 md:text-5xl md:leading-[1.2] lg:pb-12 lg:text-6xl lg:leading-[1.15]"
+          className="mb-8 pb-4 text-center text-2xl font-bold leading-[1.25] text-zinc-950 sm:mb-12 sm:pb-8 md:pb-10 md:text-5xl md:leading-[1.2] lg:pb-12 lg:text-6xl lg:leading-[1.15]"
         >
           Unity Projects
         </motion.h2>
@@ -33,7 +33,7 @@ export default function Unity() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="mx-auto mb-20 max-w-3xl text-center text-lg leading-relaxed text-zinc-700 md:text-xl"
+          className="mx-auto mb-12 max-w-3xl text-center text-sm leading-relaxed text-zinc-700 sm:mb-16 sm:text-base md:mb-20 md:text-lg lg:text-xl"
         >
           <p>
             Games are my passion.
@@ -50,7 +50,7 @@ export default function Unity() {
           </p>
         </motion.div>
 
-        <div className="space-y-16 md:space-y-20 lg:space-y-24">
+        <div className="space-y-10 sm:space-y-16 md:space-y-20 lg:space-y-24">
           {[
             {
               gif: "gra1.gif",
@@ -79,7 +79,7 @@ export default function Unity() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.15 }}
-              className="grid items-center gap-10 md:grid-cols-2 lg:gap-16"
+              className="grid items-center gap-6 sm:gap-8 md:gap-10 md:grid-cols-2 lg:gap-16"
             >
               <div
                 className={`order-1 ${
@@ -100,10 +100,10 @@ export default function Unity() {
                   index % 2 === 1 ? "md:order-1" : "md:order-2"
                 }`}
               >
-                <h3 className="text-2xl font-semibold text-zinc-950 md:text-3xl">
+                <h3 className="text-base font-semibold text-zinc-950 sm:text-lg md:text-xl lg:text-2xl xl:text-3xl">
                   {project.title}
                 </h3>
-                <p className="text-lg leading-relaxed text-zinc-700 md:text-xl">
+                <p className="text-xs leading-relaxed text-zinc-700 sm:text-sm md:text-base lg:text-lg xl:text-xl">
                   {project.text}
                 </p>
               </div>
