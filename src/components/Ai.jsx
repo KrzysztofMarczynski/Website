@@ -13,7 +13,9 @@ export default function AI() {
   const API_URL = "/api/chat";
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
   };
 
   useEffect(() => {
@@ -26,24 +28,43 @@ export default function AI() {
     if (input.trim() === "") return;
 
     const userMessage = input;
-    setMessages((prev) => [...prev, { from: "user", text: userMessage }]);
+
+    setMessages((prev) => [
+      ...prev,
+      { from: "user", text: userMessage },
+    ]);
+
     setInput("");
 
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: userMessage })
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: userMessage,
+        }),
       });
 
-      if (!res.ok) throw new Error("Something went wrong.");
+      if (!res.ok) throw new Error();
 
       const data = await res.json();
-      setMessages((prev) => [...prev, { from: "ai", text: data.reply }]);
-    } catch (err) {
+
       setMessages((prev) => [
         ...prev,
-        { from: "ai", text: "Ups... try again" },
+        {
+          from: "ai",
+          text: data.reply,
+        },
+      ]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "ai",
+          text: "Ups... try again",
+        },
       ]);
     }
   };
@@ -57,95 +78,143 @@ export default function AI() {
 
   return (
     <>
-      {/* ===== PŁYWAJĄCY DYMEK W PRAWYM DOLNYM ROGU ===== */}
       <motion.button
         onClick={() => setIsOpen(true)}
-        whileHover={{ scale: 1.15 }}
+        whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-6 right-6 z-[100] bg-gradient-to-br from-blue-600 to-indigo-600 
-                   text-white p-5 rounded-full shadow-2xl hover:shadow-blue-500/50 
-                   transition-all duration-300 flex items-center gap-3 group"
+        className="fixed bottom-6 right-6 z-[9998] flex items-center gap-3 rounded-full border border-zinc-800 bg-zinc-950 px-5 py-5 text-white shadow-[0_18px_60px_rgba(15,23,42,0.24)] transition-all duration-300 hover:-translate-y-1 hover:bg-zinc-900 active:scale-95"
       >
-        <MessageCircle className="w-8 h-8" />
-        <span className="hidden sm:block font-medium pr-2 group-hover:pr-3 transition-all">
+        <MessageCircle className="h-7 w-7" />
+
+        <span className="hidden font-semibold sm:block">
           Ask AI
         </span>
       </motion.button>
 
-      {/* ===== CZAT (MODAL) ===== */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/70 p-4">
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-zinc-950/75 backdrop-blur-md p-4"
+            onClick={() => setIsOpen(false)}
+          >
             <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: 50 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.85, y: 0 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="w-full max-w-md sm:max-w-lg bg-[#1E201E] rounded-3xl shadow-2xl 
-                         flex flex-col overflow-hidden border border-gray-700/50 h-[85vh] sm:h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+              initial={{
+                opacity: 0,
+                scale: 0.9,
+                y: 40,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.95,
+              }}
+              transition={{
+                duration: 0.25,
+              }}
+              className="flex h-[85vh] w-full max-w-xl flex-col overflow-hidden rounded-[2rem] border border-zinc-200 bg-white shadow-[0_35px_120px_rgba(15,23,42,0.20)]"
             >
               {/* HEADER */}
-              <div className="bg-gray-800 px-5 sm:px-6 py-4 flex justify-between items-center rounded-t-3xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
-                    <MessageCircle className="w-6 h-6 text-white" />
+
+              <div className="flex items-center justify-between border-b border-zinc-200 bg-white px-6 py-5">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-zinc-950 text-white">
+                    <MessageCircle className="h-5 w-5" />
                   </div>
+
                   <div>
-                    <p className="font-semibold text-white">AI Assistant</p>
-                    <p className="text-xs text-green-400">Online • Ready</p>
+                    <p className="font-semibold text-zinc-950">
+                      AI Assistant
+                    </p>
+
+                    <p className="text-xs text-zinc-400">
+                      Online
+                    </p>
                   </div>
                 </div>
-                <button 
-                  onClick={() => setIsOpen(false)} 
-                  className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-700/50 transition"
-                >
-                  <X className="w-7 h-7" />
-                </button>
-              </div>
 
-              {/* WIADOMOŚCI – SCROLLABLE */}
-              <div 
-                className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 bg-gray-900/40 custom-scrollbar"
-              >
-                {messages.map((msg, i) => (
-                  <div
-                    key={i}
-                    className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`px-4 py-3 rounded-2xl max-w-[85%] break-words shadow-sm
-                        ${msg.from === "user" 
-                          ? "bg-blue-600 text-white" 
-                          : "bg-gray-700 text-white"}`}
-                    >
-                      {msg.text}
-                    </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* INPUT */}
-              <div className="bg-gray-800 px-4 py-3 flex gap-2 border-t border-gray-700">
-                <input
-                  type="text"
-                  placeholder="Write message..."
-                  className="flex-1 bg-gray-700 text-white placeholder-gray-400 rounded-2xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                />
                 <button
-                  onClick={handleSend}
-                  className="bg-blue-600 hover:bg-blue-500 px-6 rounded-2xl font-medium text-white transition-all active:scale-95"
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-full p-2 text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-950"
                 >
-                  Send
+                  <X className="h-6 w-6" />
                 </button>
               </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-    </>
-  );
+<div className="flex-1 overflow-y-auto bg-white p-5 custom-scrollbar">
+  <div className="space-y-4">
+    {messages.map((msg, i) => (
+      <div
+        key={i}
+        className={`flex ${
+          msg.from === "user"
+            ? "justify-end"
+            : "justify-start"
+        }`}
+      >
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 8,
+            scale: 0.98,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            scale: 1,
+          }}
+          transition={{
+            duration: 0.2,
+          }}
+          className={`max-w-[82%] rounded-3xl px-5 py-3 shadow-sm break-words ${
+            msg.from === "user"
+              ? "bg-zinc-950 text-white"
+              : "border border-zinc-200 bg-zinc-100 text-zinc-900"
+          }`}
+        >
+          <p className="whitespace-pre-wrap text-[15px] leading-7">
+            {msg.text}
+          </p>
+        </motion.div>
+      </div>
+    ))}
+
+    <div ref={messagesEndRef} />
+  </div>
+</div>
+
+<div className="border-t border-zinc-200 bg-white p-4">
+  <div className="flex items-end gap-3">
+    <input
+      type="text"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      onKeyDown={handleKeyDown}
+      placeholder="Ask me anything..."
+      className="flex-1 rounded-2xl border border-zinc-200 bg-zinc-100 px-5 py-3 text-zinc-900 placeholder:text-zinc-500 transition-all duration-200 focus:border-zinc-900 focus:bg-white focus:outline-none"
+    />
+
+    <motion.button
+      whileHover={{ scale: 1.04 }}
+      whileTap={{ scale: 0.96 }}
+      onClick={handleSend}
+      className="rounded-2xl bg-zinc-950 px-6 py-3 font-semibold text-white transition-all duration-300 hover:bg-zinc-800"
+    >
+      Send
+    </motion.button>
+  </div>
+
+  <p className="mt-3 text-center text-xs text-zinc-400">
+    AI responses may contain mistakes.
+  </p>
+</div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  </>
+);
 }
