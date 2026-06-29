@@ -1,77 +1,104 @@
 import { motion } from "framer-motion";
 
+const skills = [
+  "Computer hardware",
+  "3D printing",
+  "3D modeling",
+  "Pixel art",
+  "Unity",
+  "C",
+  "C#",
+  "Python",
+  "JavaScript",
+  "English C1",
+];
+
 export default function Hero() {
   const scrollToContact = () => {
     const el = document.getElementById("contact");
+
     if (el) {
       const yOffset = -80;
       const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  };
+
+  const scrollToProjects = () => {
+    const el = document.getElementById("code");
+
+    if (el) {
+      const yOffset = -96;
+      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
       window.scrollTo({ top: y, behavior: "smooth" });
     }
   };
 
   return (
-    <section className="relative pt-24 md:pt-28 lg:pt-32 pb-10 px-5 md:px-10 lg:px-16 bg-gray-950 text-white">
-      <div className="relative z-10 max-w-7xl mx-auto">
-        {/* ===== MOBILE TITLE ===== */}
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="lg:hidden text-center mb-10 text-4xl md:text-5xl font-bold leading-tight 
-                     bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
-                     bg-clip-text text-transparent"
-        >
-          Hi, my name is Krzysztof
-        </motion.h1>
-
-        {/* ===== MAIN FLEX CONTAINER ===== */}
-        <div className="flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-16">
-          {/* ===== LEFT SIDE – IMAGE ===== */}
-          <motion.div
-            initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9 }}
-            className="w-full lg:w-1/2 flex justify-center lg:justify-start"
+    <section className="relative min-h-screen overflow-hidden bg-white px-5 pb-20 pt-28 text-zinc-950 md:px-10 md:pt-32 lg:px-16 lg:pt-36">
+      <div className="relative z-10 mx-auto max-w-7xl">
+        <div className="relative left-1/2 w-screen -translate-x-1/2 px-5 md:px-10 lg:px-16">
+          <motion.h1
+            initial={{ opacity: 0, y: 34 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            className="mx-auto max-w-[94rem] text-center text-[clamp(3.05rem,7.35vw,7.35rem)] font-black uppercase leading-[1.08] tracking-normal text-zinc-950"
           >
-            <div className="relative rounded-2xl overflow-hidden border border-gray-700/50">
+            <span className="block xl:inline">KRZYSZTOF</span>
+            <span className="block xl:ml-8 xl:inline">MARCZYŃSKI</span>
+          </motion.h1>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+          className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-zinc-200 pt-5 text-[0.7rem] font-bold uppercase tracking-normal text-zinc-500 sm:text-xs lg:max-w-none lg:justify-between"
+        >
+          <span>Portfolio 2026</span>
+          <span>Creative Developer</span>
+          <span>Based in Poland</span>
+        </motion.div>
+
+        <div className="mt-14 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16">
+          <motion.div
+            initial={{ opacity: 0, y: 42 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="flex w-full justify-center lg:justify-start"
+          >
+            <div className="relative w-full max-w-[32rem] overflow-hidden rounded-[2rem] border border-zinc-200 bg-zinc-100 shadow-[0_18px_60px_rgba(15,23,42,0.10)]">
               <img
                 src="portrait.png"
-                alt="Krzysztof"
-                className="w-full max-w-md lg:max-w-none object-cover 
-                           aspect-[4/5] lg:aspect-[3/4] 
-                           grayscale-[30%] hover:grayscale-0 
-                           transition-all duration-700"
+                alt="Krzysztof Marczyński"
+                className="aspect-[4/5] w-full object-cover object-center grayscale-[12%] transition-all duration-700 hover:scale-[1.025] hover:grayscale-0"
               />
             </div>
           </motion.div>
 
-          {/* ===== RIGHT SIDE – TEXT ===== */}
-          <div className="w-full lg:w-1/2 space-y-8 text-center lg:text-left">
-            {/* ===== DESKTOP TITLE ===== */}
-            <motion.h1
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="hidden lg:block text-5xl xl:text-6xl font-bold leading-tight 
-                         bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
-                         bg-clip-text text-transparent"
-            >
-              Hi, my name is Krzysztof
-            </motion.h1>
-
-            {/* ===== DESCRIPTION ===== */}
+          <div className="w-full space-y-8 text-center lg:text-left">
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="space-y-5 text-lg md:text-xl leading-relaxed text-gray-300"
+              initial={{ opacity: 0, y: 42 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.85,
+                delay: 0.28,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="space-y-6 text-lg leading-relaxed text-zinc-700 md:text-xl"
             >
-              <p>#about me</p>
+              <div>
+                <p className="mb-3 text-sm font-bold uppercase text-zinc-400">
+                  About me
+                </p>
+                <h2 className="text-3xl font-bold leading-tight text-zinc-950 md:text-5xl">
+                  Creative developer focused on clean ideas, useful details,
+                  and interactive work.
+                </h2>
+              </div>
+
               <p>
                 I am an energetic and creative person who enjoys solving
                 problems and improving existing solutions. I think outside the
@@ -80,32 +107,42 @@ export default function Hero() {
                 things. I work very well in a team environment and enjoy
                 collaborating with others.
               </p>
-              <br />
-              #skillset
-              <br />
-              <br />• Computer hardware
-              <br />• 3D printing and 3D modeling
-              <br />• Pixel art creation
-              <br />• Game development in Unity
-              <br />• Programming in C, C#, Python, and JavaScript
-              <br />• English C1
+
+              <div className="grid grid-cols-2 gap-3 text-sm font-semibold text-zinc-600 sm:grid-cols-5">
+                {skills.map((skill) => (
+                  <div
+                    key={skill}
+                    className="flex min-h-12 items-center justify-center rounded-full border border-zinc-200 bg-white px-4 py-2 text-center leading-tight shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
+                  >
+                    {skill}
+                  </div>
+                ))}
+              </div>
             </motion.div>
 
-            {/* ===== BUTTON ===== */}
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex justify-center lg:justify-start"
+              initial={{ opacity: 0, y: 34 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.75,
+                delay: 0.38,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="flex flex-wrap justify-center gap-3 lg:justify-start"
             >
               <button
-                onClick={() => scrollToContact(contact)}
-                className="px-10 py-4 text-xl font-bold rounded-full
-                         bg-red-600 hover:bg-red-500 text-white cursor-pointer
-                         transition-all active:scale-95"
+                type="button"
+                onClick={scrollToProjects}
+                className="rounded-full border border-zinc-300 bg-white px-7 py-3.5 text-sm font-bold uppercase text-zinc-950 transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-950 active:scale-95"
               >
-                Contact Me
+                View projects
+              </button>
+              <button
+                type="button"
+                onClick={scrollToContact}
+                className="rounded-full bg-zinc-950 px-7 py-3.5 text-sm font-bold uppercase text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-zinc-800 active:scale-95"
+              >
+                Contact me
               </button>
             </motion.div>
           </div>
