@@ -6,7 +6,6 @@ const NAV_LINKS = [
   { label: "CODE", id: "code" },
   { label: "3D PRINT", id: "3d-print" },
   { label: "UNITY", id: "unity-games" },
-  { label: "PHOTO", id: "Photo_to_playlist" },
   { label: "CONTACT", id: "contact" },
 ];
 

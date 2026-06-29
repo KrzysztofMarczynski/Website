@@ -29,10 +29,6 @@ function App() {
           <Unity />
         </section>
 
-        <section id="Photo_to_playlist" className="animate-fadeIn">
-          <Photo_to_playlist />
-        </section>
-
         <section id="contact" className="animate-fadeIn">
           <Contact />
         </section>
