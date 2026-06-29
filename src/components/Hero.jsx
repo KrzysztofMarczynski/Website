@@ -3,75 +3,64 @@ import { motion } from "framer-motion";
 export default function Hero() {
   const scrollToContact = () => {
     const el = document.getElementById("contact");
+
     if (el) {
       const yOffset = -80;
       const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
       window.scrollTo({ top: y, behavior: "smooth" });
     }
   };
 
   return (
-    <section className="relative pt-24 md:pt-28 lg:pt-32 pb-10 px-5 md:px-10 lg:px-16 bg-gray-950 text-white">
-      <div className="relative z-10 max-w-7xl mx-auto">
-        {/* ===== MOBILE TITLE ===== */}
+    <section className="relative bg-white px-5 pb-10 pt-24 text-zinc-950 md:px-10 md:pt-28 lg:px-16 lg:pt-32">
+      <div className="relative z-10 mx-auto max-w-7xl">
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="lg:hidden text-center mb-10 text-4xl md:text-5xl font-bold leading-tight 
-                     bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
-                     bg-clip-text text-transparent"
+          className="mb-10 text-center text-4xl font-bold leading-tight text-zinc-950 md:text-5xl lg:hidden"
         >
           Hi, my name is Krzysztof
         </motion.h1>
 
-        {/* ===== MAIN FLEX CONTAINER ===== */}
-        <div className="flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-16">
-          {/* ===== LEFT SIDE – IMAGE ===== */}
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-16">
           <motion.div
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9 }}
-            className="w-full lg:w-1/2 flex justify-center lg:justify-start"
+            className="flex w-full justify-center lg:w-1/2 lg:justify-start"
           >
-            <div className="relative rounded-2xl overflow-hidden border border-gray-700/50">
+            <div className="relative overflow-hidden rounded-2xl border border-zinc-200 shadow-[0_24px_90px_rgba(15,23,42,0.12)]">
               <img
                 src="portrait.png"
                 alt="Krzysztof"
-                className="w-full max-w-md lg:max-w-none object-cover 
-                           aspect-[4/5] lg:aspect-[3/4] 
-                           grayscale-[30%] hover:grayscale-0 
-                           transition-all duration-700"
+                className="aspect-[4/5] w-full max-w-md object-cover grayscale-[20%] transition-all duration-700 hover:grayscale-0 lg:aspect-[3/4] lg:max-w-none"
               />
             </div>
           </motion.div>
 
-          {/* ===== RIGHT SIDE – TEXT ===== */}
-          <div className="w-full lg:w-1/2 space-y-8 text-center lg:text-left">
-            {/* ===== DESKTOP TITLE ===== */}
+          <div className="w-full space-y-8 text-center lg:w-1/2 lg:text-left">
             <motion.h1
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="hidden lg:block text-5xl xl:text-6xl font-bold leading-tight 
-                         bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
-                         bg-clip-text text-transparent"
+              className="hidden text-5xl font-bold leading-tight text-zinc-950 lg:block xl:text-6xl"
             >
               Hi, my name is Krzysztof
             </motion.h1>
 
-            {/* ===== DESCRIPTION ===== */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="space-y-5 text-lg md:text-xl leading-relaxed text-gray-300"
+              className="space-y-5 text-lg leading-relaxed text-zinc-700 md:text-xl"
             >
-              <p>#about me</p>
+              <p className="font-semibold text-zinc-950">#about me</p>
               <p>
                 I am an energetic and creative person who enjoys solving
                 problems and improving existing solutions. I think outside the
@@ -80,18 +69,18 @@ export default function Hero() {
                 things. I work very well in a team environment and enjoy
                 collaborating with others.
               </p>
-              <br />
-              #skillset
-              <br />
-              <br />• Computer hardware
-              <br />• 3D printing and 3D modeling
-              <br />• Pixel art creation
-              <br />• Game development in Unity
-              <br />• Programming in C, C#, Python, and JavaScript
-              <br />• English C1
+
+              <p className="font-semibold text-zinc-950">#skillset</p>
+              <div className="space-y-1">
+                <p>- Computer hardware</p>
+                <p>- 3D printing and 3D modeling</p>
+                <p>- Pixel art creation</p>
+                <p>- Game development in Unity</p>
+                <p>- Programming in C, C#, Python, and JavaScript</p>
+                <p>- English C1</p>
+              </div>
             </motion.div>
 
-            {/* ===== BUTTON ===== */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -100,10 +89,9 @@ export default function Hero() {
               className="flex justify-center lg:justify-start"
             >
               <button
-                onClick={() => scrollToContact(contact)}
-                className="px-10 py-4 text-xl font-bold rounded-full
-                         bg-red-600 hover:bg-red-500 text-white cursor-pointer
-                         transition-all active:scale-95"
+                type="button"
+                onClick={scrollToContact}
+                className="rounded-full bg-zinc-950 px-10 py-4 text-xl font-bold text-white transition-all duration-300 hover:bg-zinc-800 active:scale-95"
               >
                 Contact Me
               </button>

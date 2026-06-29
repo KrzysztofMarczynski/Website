@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 function CodeFromFile({ filePath, repo, language = "python" }) {
-  const [code, setCode] = useState("// git hub loading");
+  const [code, setCode] = useState("// Loading from GitHub");
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -12,28 +12,30 @@ function CodeFromFile({ filePath, repo, language = "python" }) {
 
     fetch(rawUrl)
       .then((res) => {
-        if (!res.ok)
-          throw new Error(`Błąd ${res.status} – plik nie znaleziony`);
+        if (!res.ok) {
+          throw new Error(`Error ${res.status} - file not found`);
+        }
+
         return res.text();
       })
       .then((text) => setCode(text))
       .catch((err) => {
         console.error(err);
         setError(err.message);
-        setCode("// Nie udało się wczytać kodu");
+        setCode("// Could not load code");
       });
   }, [filePath, repo]);
 
   if (error) {
     return (
-      <div className="p-6 bg-red-950/40 rounded-xl border border-red-800/50 text-red-300 text-center">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center text-red-600">
         {error}
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl overflow-hidden border border-gray-700/60 shadow-2xl shadow-black/30">
+    <div className="overflow-hidden rounded-xl border border-zinc-800 shadow-2xl shadow-zinc-950/20">
       <SyntaxHighlighter
         language={language}
         style={dracula}
@@ -56,7 +58,6 @@ function CodeFromFile({ filePath, repo, language = "python" }) {
 export default function Code() {
   const [activeTab, setActiveTab] = useState("C");
 
-  // Mapowanie: nazwa zakładki → repozytorium GitHub
   const repoMap = {
     C: "ft_printf",
     JavaScript: "Website",
@@ -64,7 +65,6 @@ export default function Code() {
     Python: "Website",
   };
 
-  // Mapowanie: nazwa zakładki → dokładna ścieżka do pliku (do linku blob)
   const filePathMap = {
     C: "ft_printf.c",
     JavaScript: "src/components/Ai.jsx",
@@ -72,96 +72,82 @@ export default function Code() {
     Python: "api/index.py",
   };
 
-  const codeSamples = {
-    C: "",
-    JavaScript: "",
-    CSharp: "",
-    Python: "",
-  };
-
   const languageDescriptions = {
     C: (
       <>
         This is my <code>printf</code> implementation.
-        <br />I learned how to work with variadic arguments, data formatting and
-        low level text printing in C.
+        <br />I learned how to work with variadic arguments, data formatting,
+        and low-level text printing in C.
       </>
     ),
     JavaScript: (
       <>
-        JavaScript + React – allowed me to learn how to create a nice and clear
-        website where I can post my portfolio .
-        <br />
+        JavaScript and React helped me build a clean portfolio where I can show
+        my projects and experiments.
       </>
     ),
     CSharp: (
       <>
-        This is my own Binding of Isaac style level generation system that I use
-        in the game I'm creating.
+        This is my Binding of Isaac style level generation system that I use in
+        the game I am creating.
       </>
     ),
     Python: (
       <>
-		The language I'm currently learning, this is the code that supports the AI ​​assistant on this website
+        Python is the language I am currently learning. This example supports
+        the AI assistant on this website.
       </>
     ),
   };
 
-  const tabs = Object.keys(codeSamples);
-
-  // Pobieramy repo i ścieżkę dla aktualnej zakładki
+  const tabs = Object.keys(repoMap);
   const currentRepo = repoMap[activeTab] || "Website";
   const currentFilePath = filePathMap[activeTab] || "README.md";
-
-  // Link do konkretnego pliku w konkretnym repo
   const githubFileLink = `https://github.com/KrzysztofMarczynski/${currentRepo}/blob/main/${currentFilePath}`;
 
   return (
     <section
       id="Code"
-      className="relative min-h-screen pt-12 sm:pt-14 md:pt-16 lg:pt-16 pb-20 px-5 md:px-10 lg:px-16 
-                 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 
-                 text-white overflow-visible"
+      className="relative min-h-screen overflow-visible bg-white px-5 pb-20 pt-12 text-zinc-950 sm:pt-14 md:px-10 md:pt-16 lg:px-16 lg:pt-16"
     >
-      <div className="relative z-10 max-w-6xl mx-auto">
+      <div className="relative z-10 mx-auto max-w-6xl">
         <motion.h2
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold mt-6 mb-12 pb-4 text-center leading-tight tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent drop-shadow-md"
+          className="mb-12 mt-6 pb-4 text-center text-4xl font-bold leading-tight tracking-tight text-zinc-950 sm:text-5xl md:text-5xl lg:text-6xl"
         >
           My Code & Experience
         </motion.h2>
 
-        {/* Zakładki */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="flex flex-wrap justify-center gap-3 md:gap-4 mb-10"
+          className="mb-10 flex flex-wrap justify-center gap-3 md:gap-4"
         >
           {tabs.map((lang) => (
             <button
               key={lang}
+              type="button"
               onClick={() => setActiveTab(lang)}
-              className={`
-                px-6 py-2.5 rounded-full font-medium text-base md:text-lg
-                transition-all duration-300 border border-gray-700/60
-                ${
-                  activeTab === lang
-                    ? "bg-gradient-to-r from-blue-600/80 to-indigo-600/80 text-white shadow-lg shadow-blue-700/30 border-blue-500/50"
-                    : "bg-gray-800/40 text-gray-300 hover:bg-gray-700/60 hover:text-white hover:border-gray-500/60"
-                }
-              `}
+              className={`rounded-full border px-6 py-2.5 text-base font-medium transition-all duration-300 md:text-lg ${
+                activeTab === lang
+                  ? "border-zinc-950 bg-zinc-950 text-white shadow-lg shadow-zinc-950/15"
+                  : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400 hover:text-zinc-950"
+              }`}
             >
-              {lang === "JavaScript" ? "JS / React" : lang}
+              {lang === "JavaScript"
+                ? "JS / React"
+                : lang === "CSharp"
+                  ? "C#"
+                  : lang}
             </button>
           ))}
         </motion.div>
 
-        {/* Zawartość kodu */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -169,7 +155,7 @@ export default function Code() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -30, scale: 0.97 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="relative w-full max-w-5xl mx-auto bg-gray-950/70 backdrop-blur-md border border-gray-700/50 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden"
+            className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-950 shadow-[0_24px_90px_rgba(15,23,42,0.18)]"
           >
             <div className="max-h-[500px] overflow-y-auto">
               {activeTab === "C" ? (
@@ -199,11 +185,10 @@ export default function Code() {
               ) : null}
             </div>
 
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-gray-950/40" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-zinc-950/30" />
           </motion.div>
         </AnimatePresence>
 
-        {/* Opis doświadczenia */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -211,26 +196,34 @@ export default function Code() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -40 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="mt-10 md:mt-12 lg:mt-14 max-w-3xl mx-auto text-center space-y-8 pb-12 md:pb-16 lg:pb-20"
+            className="mx-auto mt-10 max-w-3xl space-y-8 pb-12 text-center md:mt-12 md:pb-16 lg:mt-14 lg:pb-20"
           >
-            <h3 className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent leading-tight">
-              {activeTab === "JavaScript" ? "JavaScript / React" : activeTab} –
+            <h3 className="text-3xl font-semibold leading-tight text-zinc-950 md:text-4xl">
+              {activeTab === "JavaScript"
+                ? "JavaScript / React"
+                : activeTab === "CSharp"
+                  ? "C#"
+                  : activeTab}{" "}
               Experience
             </h3>
 
-            <p className="text-lg md:text-xl leading-relaxed text-gray-300">
+            <p className="text-lg leading-relaxed text-zinc-700 md:text-xl">
               {languageDescriptions[activeTab]}
             </p>
 
-            {/* Poprawiony link – teraz zależy od aktywnej zakładki */}
             <a
               href={githubFileLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 mt-8 px-7 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-blue-700/30"
+              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-zinc-950 px-7 py-3.5 font-medium text-white shadow-lg shadow-zinc-950/15 transition-all duration-300 hover:bg-zinc-800"
             >
-              See my {activeTab === "JavaScript" ? "JS/React" : activeTab} code
-              on GitHub →
+              See my{" "}
+              {activeTab === "JavaScript"
+                ? "JS/React"
+                : activeTab === "CSharp"
+                  ? "C#"
+                  : activeTab}{" "}
+              code on GitHub -&gt;
             </a>
           </motion.div>
         </AnimatePresence>
