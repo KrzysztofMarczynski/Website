@@ -1,286 +1,215 @@
 import { motion } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
+
+const projects = [
+  {
+    id: "pirate-stories",
+    eyebrow: "Board game design",
+    title: "Pirate Stories",
+    description:
+      "A modular board game where players compete to capture three pirate treasures. Each session is unique thanks to the dynamic board system, encouraging strategic gameplay and unpredictable interactions.",
+    sections: [
+      {
+        heading: "Concept",
+        text: "At the beginning I focused on creating and designing a modular board so that each game feels different from the previous one.",
+        images: [1, 2, 3],
+        cols: "grid-cols-2 sm:grid-cols-3",
+      },
+      {
+        heading: "Figurines",
+        text: "I designed figurines for the game, and the design process took a lot of careful iteration.",
+        images: [4, 5],
+        cols: "grid-cols-2",
+        reverse: true,
+      },
+      {
+        heading: "Whole Game",
+        text: "After printing the entire board, I realized that it was not practical to unfold, so I redesigned part of the board.",
+        images: [7, 8],
+        cols: "grid-cols-1 sm:grid-cols-2",
+      },
+      {
+        heading: "Redesign",
+        text: "I printed a new board and designed a new type of element to place on it, making the whole setup much more convenient.",
+        images: [9, 11],
+        cols: "grid-cols-2",
+        reverse: true,
+      },
+    ],
+  },
+  {
+    id: "phone-holder",
+    eyebrow: "Utility design",
+    title: "Phone Holder",
+    description:
+      "A magnetic phone holder for daily use. Features a printed screw for mounting and press-fitted charging connector. Simple, practical, and effective.",
+    image: "/phone_holder.gif",
+    link: "https://www.printables.com/model/1627041-phone-holder",
+  },
+  {
+    id: "coin-holder",
+    eyebrow: "Car accessories",
+    title: "Coin Holder",
+    description:
+      "A car-mounted coin holder designed to keep loose change organized and eliminate noise while driving.",
+    image: "/coin_holder.gif",
+    link: "https://www.printables.com/model/1658618-coin-holder-for-polish-zloty",
+  },
+];
 
 export default function Print() {
   return (
     <section
       id="3D Print"
-      className="relative min-h-screen overflow-hidden bg-white px-4 pb-16 pt-12 text-zinc-950 sm:px-5 sm:pb-20 sm:pt-16 md:px-10 md:pt-24 lg:px-16 lg:pt-28"
+      className="relative bg-white px-4 py-16 text-zinc-950 sm:px-5 md:px-10 md:py-16 lg:px-16"
     >
-      <div className="relative z-10 mx-auto max-w-6xl">
-        <motion.h2
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mb-8 pb-4 text-center text-2xl font-bold leading-[1.2] text-zinc-950 sm:mb-12 sm:pb-6 md:pb-8 md:text-5xl md:leading-[1.15] lg:pb-10 lg:text-6xl lg:leading-[1.1]"
-        >
-          3D Printing
-        </motion.h2>
-
+      <div className="mx-auto max-w-7xl">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 34 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="mx-auto mb-20 max-w-3xl text-center text-lg leading-relaxed text-zinc-700 md:text-xl"
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-10 border-t border-zinc-200 pt-8 md:mb-14"
         >
-          <p>
-            3D printing is another hobby of mine. I am currently working on my
-            own board game, and I also create smaller side projects depending on
-            what I need.
-          </p>
-          <p className="mt-6">
-            Each print is modeled and created by me, using programs like
-            SketchUp and Solid Edge.
-          </p>
+          <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+            <div>
+              <p className="mb-4 text-sm font-bold uppercase text-zinc-400">
+                3D & Fabrication
+              </p>
+              <p className="mb-6 max-w-2xl text-base leading-relaxed text-zinc-600 md:text-lg lg:hidden">
+                From custom board games to practical utilities, I design and
+                print 3D models that combine functionality with precision.
+              </p>
+              <h2 className="text-2xl font-black uppercase leading-[0.98] tracking-normal text-zinc-950 sm:text-3xl md:text-5xl lg:text-7xl xl:text-8xl">
+                Printing & Design
+              </h2>
+            </div>
+
+            <p className="hidden max-w-2xl text-base leading-relaxed text-zinc-600 md:text-lg lg:block lg:pt-2 xl:text-xl">
+              From custom board games to practical utilities, I design and print
+              3D models that combine functionality with precision. Each project
+              uses SketchUp and Solid Edge for modeling.
+            </p>
+          </div>
         </motion.div>
 
-        <h1 className="mb-4 pb-2 text-center text-xl font-semibold leading-[1.25] text-zinc-950 sm:mb-6 sm:pb-4 sm:text-2xl md:text-3xl lg:text-5xl">
-          Pirate Stories
-        </h1>
+        <div className="space-y-12 lg:space-y-14">
+          {/* Pirate Stories - Multi-section project */}
+          <motion.div
+            initial={{ opacity: 0, y: 34 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.75, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="space-y-6 lg:space-y-8"
+          >
+            <div className="grid gap-3 rounded-[1.75rem] border border-zinc-200 bg-white p-2.5 shadow-[0_18px_70px_rgba(15,23,42,0.07)] sm:gap-3 sm:p-3 md:gap-4 md:p-5 lg:gap-5 lg:p-6 md:min-h-[120px]">
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase text-zinc-400 sm:text-sm">
+                  {projects[0].eyebrow}
+                </p>
+                <h3 className="text-base font-bold leading-tight text-zinc-950 sm:text-xl md:text-2xl lg:text-4xl">
+                  {projects[0].title}
+                </h3>
+                <p className="mt-2 max-w-3xl text-xs leading-relaxed text-zinc-600 sm:mt-3 sm:text-sm md:text-base lg:text-lg">
+                  {projects[0].description}
+                </p>
+              </div>
+            </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="mx-auto mb-12 max-w-3xl text-center text-sm leading-relaxed text-zinc-700 sm:mb-16 sm:text-base md:mb-20 md:text-lg lg:text-xl"
-        >
-          <p>
-            Pirate Stories is a board game. The goal is to capture three pirate
-            treasures at all costs. The board is modular, making each game
-            completely different from the last. Players can attack each other,
-            capture ships, and make every session more unpredictable.
-          </p>
-        </motion.div>
-
-        <div className="space-y-10 sm:space-y-16">
-          <div className="grid items-center gap-6 sm:gap-8 md:gap-10 md:grid-cols-2 lg:gap-12">
-            <motion.div
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="order-1 space-y-6 md:order-1"
-            >
-              <h3 className="text-lg font-semibold text-zinc-950 sm:text-xl lg:text-2xl xl:text-3xl">Concept</h3>
-              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base lg:text-lg">
-                At the beginning I focused on creating and designing a modular
-                board so that each game feels different from the previous one.
-              </p>
-            </motion.div>
-
-            <div className="order-2 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 md:order-2">
-              {[1, 2, 3].map((i) => (
+            {/* Pirate Stories sections */}
+            <div className="space-y-4 sm:space-y-6 lg:space-y-7">
+              {projects[0].sections.map((section, idx) => (
                 <motion.div
-                  key={i}
-                  whileHover={{ scale: 1.45, zIndex: 50 }}
-                  className="aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl border border-zinc-200 shadow-[0_18px_60px_rgba(15,23,42,0.12)]"
+                  key={section.heading}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: idx * 0.1 }}
+                  className={`pb-4 sm:pb-5 lg:pb-6 ${
+                    idx !== projects[0].sections.length - 1 ? "border-b border-zinc-100" : ""
+                  }`}
                 >
-                  <img
-                    src={`${i}.png`}
-                    alt=""
-                    className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 items-start">
+                    {/* Text on left */}
+                    <div className="space-y-2 sm:space-y-2.5 md:col-span-1">
+                      <h4 className="text-sm font-bold text-zinc-950 sm:text-base md:text-lg lg:text-xl">
+                        {section.heading}
+                      </h4>
+                      <p className="text-xs leading-relaxed text-zinc-600 sm:text-sm md:text-base">
+                        {section.text}
+                      </p>
+                    </div>
+
+                    {/* Images on right - all in one row */}
+                    <div className={`grid ${section.cols} md:flex md:gap-2.5 gap-1.5 sm:gap-2.5 md:col-span-2`}>
+                      {section.images.map((img) => (
+                        <div
+                          key={img}
+                          className="aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl border border-zinc-200 shadow-[0_8px_30px_rgba(15,23,42,0.06)] md:min-w-0"
+                        >
+                        <img
+                          src={`${img}.png`}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ))}
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          <div className="grid items-center gap-10 md:grid-cols-2 lg:gap-12">
-            <div className="order-2 grid grid-cols-2 gap-4 md:order-1">
-              {[4, 5].map((i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ scale: 1.45, zIndex: 50 }}
-                  className="aspect-[3/4] cursor-pointer overflow-hidden rounded-2xl border border-zinc-200 shadow-[0_18px_60px_rgba(15,23,42,0.12)]"
-                >
-                  <img
-                    src={`${i}.png`}
-                    alt=""
-                    className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
-                  />
-                </motion.div>
-              ))}
-            </div>
-
+          {/* Phone Holder & Coin Holder */}
+          {projects.slice(1).map((project, idx) => (
             <motion.div
-              initial={{ opacity: 0, y: 60 }}
+              key={project.id}
+              initial={{ opacity: 0, y: 34 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="order-1 space-y-4 sm:space-y-6 md:order-2"
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{
+                duration: 0.75,
+                delay: 0.1 + idx * 0.08,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="grid gap-6 sm:gap-8 md:gap-10 md:grid-cols-2 lg:gap-12"
             >
-              <h3 className="text-lg font-semibold text-zinc-950 sm:text-xl lg:text-2xl xl:text-3xl">
-                Figurines
-              </h3>
-              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base lg:text-lg">
-                I designed figurines for the game, and the design process took a
-                lot of careful iteration.
-              </p>
-            </motion.div>
-          </div>
-
-          <div className="grid items-center gap-6 sm:gap-8 md:gap-10 md:grid-cols-2 lg:gap-12">
-            <motion.div
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="order-1 space-y-4 sm:space-y-6 md:order-1"
-            >
-              <h3 className="text-lg font-semibold text-zinc-950 sm:text-xl lg:text-2xl xl:text-3xl">
-                Whole Game
-              </h3>
-              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base lg:text-lg">
-                After printing the entire board, I realized that it was not
-                practical to unfold, so I redesigned part of the board.
-              </p>
-            </motion.div>
-
-            <div className="order-2 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 md:order-2">
-              {[7, 8].map((i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ scale: 1.45, zIndex: 50 }}
-                  className="aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl border border-zinc-200 shadow-[0_18px_60px_rgba(15,23,42,0.12)]"
+              <div className="space-y-3 sm:space-y-4 flex flex-col justify-center">
+                <div>
+                  <p className="mb-2 text-xs font-bold uppercase text-zinc-400 sm:text-sm">
+                    {project.eyebrow}
+                  </p>
+                  <h3 className="text-base font-bold leading-tight text-zinc-950 sm:text-xl md:text-2xl lg:text-4xl">
+                    {project.title}
+                  </h3>
+                </div>
+                <p className="text-xs leading-relaxed text-zinc-600 sm:text-sm md:text-base lg:text-lg">
+                  {project.description}
+                </p>
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-full bg-zinc-950 px-3 py-2 text-xs font-bold uppercase text-white transition-all duration-300 sm:gap-2 sm:px-4 sm:py-2.5 md:px-6 md:py-3 md:text-sm md:inline-flex md:w-auto hover:-translate-y-0.5 hover:bg-zinc-800 active:scale-95"
                 >
-                  <img
-                    src={`${i}.png`}
-                    alt=""
-                    className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </div>
+                  View on Printables
+                  <ArrowUpRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
+                </a>
+              </div>
 
-          <div className="grid items-center gap-6 sm:gap-8 md:gap-10 md:grid-cols-2 lg:gap-12">
-            <div className="order-2 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 md:order-1">
-              {[9, 11].map((i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ scale: 1.45, zIndex: 50 }}
-                  className="aspect-[3/4] cursor-pointer overflow-hidden rounded-2xl border border-zinc-200 shadow-[0_18px_60px_rgba(15,23,42,0.12)]"
-                >
+              <div className="flex items-center justify-center">
+                <div className="w-full overflow-hidden rounded-2xl border border-zinc-200 shadow-[0_18px_60px_rgba(15,23,42,0.12)]">
                   <img
-                    src={`${i}.png`}
-                    alt=""
-                    className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
+                    src={project.image}
+                    alt={project.title}
+                    className="h-auto w-full object-cover"
                   />
-                </motion.div>
-              ))}
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="order-1 space-y-4 sm:space-y-6 md:order-2"
-            >
-              <h3 className="text-lg font-semibold text-zinc-950 sm:text-xl lg:text-2xl xl:text-3xl">
-                Redesign
-              </h3>
-              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base lg:text-lg\">
-                I printed a new board and designed a new type of element to
-                place on it, making the whole setup much more convenient.
-              </p>
+                </div>
+              </div>
             </motion.div>
-          </div>
+          ))}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mx-auto mt-24 max-w-5xl"
-        >
-          <div className="grid items-center gap-8 sm:gap-10 md:gap-12 md:grid-cols-2 lg:gap-16">
-            <div className="space-y-6 sm:space-y-8 text-center md:text-left">
-              <h3 className="mb-3 pb-2 text-xl font-semibold leading-[1.25] text-zinc-950 sm:mb-6 sm:pb-4 sm:text-2xl md:text-3xl lg:text-5xl">
-                Other 3D Projects
-              </h3>
-              <h3 className="mb-3 pb-2 text-lg font-semibold leading-[1.25] text-zinc-950 sm:mb-6 sm:pb-4 sm:text-xl md:text-2xl lg:text-4xl">
-                Phone Holder
-              </h3>
-
-              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base md:text-lg lg:text-xl">
-                Just a basic magnetic phone holder that I use every day. It has
-                a printed screw inside so you can attach a rubber mount to it.
-                The charger is press-fitted. It works surprisingly well.
-              </p>
-
-              <a
-                href="https://www.printables.com/model/1627041-phone-holder"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center gap-3 rounded-xl bg-zinc-950 px-8 py-4 text-lg font-medium text-white shadow-lg shadow-zinc-950/15 transition-all duration-300 hover:bg-zinc-800 active:scale-95"
-              >
-                Check out my model here -&gt;
-              </a>
-            </div>
-
-            <div className="flex justify-center">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.92 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.9, delay: 0.2 }}
-                className="w-full max-w-md overflow-hidden rounded-2xl border border-zinc-200 shadow-[0_18px_60px_rgba(15,23,42,0.12)]"
-              >
-                <img
-                  src="/phone_holder.gif"
-                  alt="Phone holder 3D printing timelapse"
-                  className="h-auto w-full object-cover"
-                />
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mx-auto mt-24 max-w-5xl"
-        >
-          <div className="grid items-center gap-8 sm:gap-10 md:gap-12 md:grid-cols-2 lg:gap-16">
-            <div className="space-y-6 sm:space-y-8 text-center md:text-left">
-              <h3 className="mb-3 pb-2 text-lg font-semibold leading-[1.25] text-zinc-950 sm:mb-6 sm:pb-4 sm:text-xl md:text-2xl lg:text-4xl">
-                Coin Holder
-              </h3>
-
-              <p className="text-sm leading-relaxed text-zinc-700 sm:text-base md:text-lg lg:text-xl">
-                This is the coin holder I use in my car to keep coins in one
-                place so they do not make noise while driving.
-              </p>
-
-              <a
-                href="https://www.printables.com/model/1658618-coin-holder-for-polish-zloty"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-zinc-950 px-4 py-2 text-xs font-medium text-white shadow-lg shadow-zinc-950/15 transition-all duration-300 hover:bg-zinc-800 active:scale-95 sm:mt-6 sm:gap-3 sm:rounded-xl sm:px-8 sm:py-4 sm:text-base\"
-              >
-                Check out my model here -&gt;
-              </a>
-            </div>
-
-            <div className="flex justify-center">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.92 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.9, delay: 0.2 }}
-                className="w-full max-w-md overflow-hidden rounded-2xl border border-zinc-200 shadow-[0_18px_60px_rgba(15,23,42,0.12)]"
-              >
-                <img
-                  src="/coin_holder.gif"
-                  alt="Coin Holder 3D printing timelapse"
-                  className="h-auto w-full object-cover"
-                />
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
