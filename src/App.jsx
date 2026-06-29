@@ -5,12 +5,11 @@ import Print from "./components/Print";
 import Unity from "./components/Unity";
 import Code from "./components/Code";
 import Photo_to_playlist from "./components/Photo_to_playlist";
-import Footer from "./components/Footer";
 import Contact from "./components/Contact";
 
 function App() {
   return (
-    <div className="bg-gray-950 text-white min-h-screen scroll-smooth">
+    <div className="min-h-screen scroll-smooth bg-white text-zinc-950">
       <Navbar />
 
       <main className="pb-40 sm:pb-24 md:pb-28 lg:pb-10">
@@ -38,6 +37,7 @@ function App() {
           <Contact />
         </section>
       </main>
+
       <Ai />
     </div>
   );
