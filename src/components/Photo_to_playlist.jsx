@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 export default function PhotoToPlaylist() {
@@ -13,23 +13,28 @@ export default function PhotoToPlaylist() {
   const [name, setName] = useState("My Photo Playlist");
   const [genre, setGenre] = useState("");
   const [tracks, setTracks] = useState(5);
-
   const [step, setStep] = useState(1);
 
   const parseBase64 = (dataUrl) => {
-    if (!dataUrl) return null;
+    if (!dataUrl) {
+      return null;
+    }
+
     return dataUrl.split(",")[1] || null;
   };
 
   const loadImageFile = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
+
       reader.onload = () => {
         const img = new Image();
+
         img.onload = () => resolve(img);
         img.onerror = (error) => reject(error);
         img.src = reader.result;
       };
+
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
@@ -41,29 +46,50 @@ export default function PhotoToPlaylist() {
       const ctx = canvas.getContext("2d");
       const width = Math.min(80, img.width);
       const height = Math.min(80, img.height);
+
       canvas.width = width;
       canvas.height = height;
       ctx.drawImage(img, 0, 0, width, height);
+
       const imageData = ctx.getImageData(0, 0, width, height).data;
-      let r = 0,
-        g = 0,
-        b = 0,
-        count = 0;
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let count = 0;
+
       for (let i = 0; i < imageData.length; i += 4) {
         r += imageData[i];
         g += imageData[i + 1];
         b += imageData[i + 2];
         count += 1;
       }
+
       r = Math.round(r / count);
       g = Math.round(g / count);
       b = Math.round(b / count);
+
       const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-      if (brightness > 210) return "bright uplifting photo";
-      if (brightness < 80) return "moody atmospheric photo";
-      if (g > r && g > b) return "calm natural photo";
-      if (r > g && r > b) return "warm energetic photo";
-      if (b > r && b > g) return "dreamy chill photo";
+
+      if (brightness > 210) {
+        return "bright uplifting photo";
+      }
+
+      if (brightness < 80) {
+        return "moody atmospheric photo";
+      }
+
+      if (g > r && g > b) {
+        return "calm natural photo";
+      }
+
+      if (r > g && r > b) {
+        return "warm energetic photo";
+      }
+
+      if (b > r && b > g) {
+        return "dreamy chill photo";
+      }
+
       return "photo-inspired playlist";
     } catch (error) {
       console.error("[ERROR] Image analysis failed:", error);
@@ -102,9 +128,15 @@ export default function PhotoToPlaylist() {
       canvas.height = height;
       ctx.drawImage(img, 0, 0, width, height);
       jpegData = canvas.toDataURL("image/jpeg", quality);
+
       const bytes = calculateBytes(jpegData);
 
-      if (bytes <= targetBytes || (quality <= 0.45 && width <= minDimension && height <= minDimension)) {
+      if (
+        bytes <= targetBytes ||
+        (quality <= 0.45 &&
+          width <= minDimension &&
+          height <= minDimension)
+      ) {
         break;
       }
 
@@ -126,37 +158,41 @@ export default function PhotoToPlaylist() {
     return jpegData;
   };
 
-  const handleImageChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleImageChange = async (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
 
     if (!file.type.startsWith("image/")) {
-      alert("Wybierz plik obrazu (jpg, png itp.)");
+      alert("Choose an image file.");
       return;
     }
 
     if (file.size > 8 * 1024 * 1024) {
-      alert("Maksymalny rozmiar pliku to 8 MB");
+      alert("Maximum file size is 8 MB.");
       return;
     }
 
     setImage(file);
-    const previewUrl = URL.createObjectURL(file);
-    setImagePreview(previewUrl);
+    setImagePreview(URL.createObjectURL(file));
 
     try {
       const jpegData = await convertImageToJpeg(file);
-      setImageBase64(parseBase64(jpegData));
       const hint = await analyzeImageMood(file);
+
+      setImageBase64(parseBase64(jpegData));
       setAnalysisHint(hint);
     } catch (error) {
       console.error("[ERROR] Image processing failed:", error);
-      alert("Nie udało się przetworzyć obrazka. Spróbuj innego pliku.");
+      alert("Could not process this image. Try another file.");
     }
   };
 
   useEffect(() => {
     const savedToken = localStorage.getItem("spotify_token");
+
     if (savedToken) {
       setToken(savedToken);
       setStep(2);
@@ -171,26 +207,26 @@ export default function PhotoToPlaylist() {
     };
   }, [imagePreview]);
 
-  // 🔐 LOGIN SPOTIFY - POPRAWIONA WERSJA
-const loginSpotify = () => {
-  const clientId = import.meta.env.VITE_CLIENT_ID;
-  const redirectUri = import.meta.env.VITE_REDIRECT_URI || window.location.origin;
+  const loginSpotify = () => {
+    const clientId = import.meta.env.VITE_CLIENT_ID;
+    const redirectUri =
+      import.meta.env.VITE_REDIRECT_URI || window.location.origin;
 
-  const scope = "playlist-modify-public playlist-modify-private user-read-private";
+    const scope =
+      "playlist-modify-public playlist-modify-private user-read-private";
 
-  const authUrl =
-    "https://accounts.spotify.com/authorize?" +
-    `client_id=${clientId}&` +
-    `response_type=code&` +
-    `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-    `scope=${encodeURIComponent(scope)}&` +
-    `state=123&` +
-    `show_dialog=true`;
+    const authUrl =
+      "https://accounts.spotify.com/authorize?" +
+      `client_id=${clientId}&` +
+      "response_type=code&" +
+      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+      `scope=${encodeURIComponent(scope)}&` +
+      "state=123&" +
+      "show_dialog=true";
 
-  window.location.href = authUrl;
-};
+    window.location.href = authUrl;
+  };
 
-  // 🔄 HANDLE SPOTIFY CALLBACK
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
@@ -198,66 +234,69 @@ const loginSpotify = () => {
 
     if (error) {
       console.error("[ERROR] Spotify callback error:", error);
-      alert("Błąd logowania od Spotify: " + error);
+      alert("Spotify login error: " + error);
       return;
     }
 
     if (code) {
-      console.log("[DEBUG] Spotify code received → exchanging for token...");
-
       fetch("/api/exchange-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
       })
         .then((res) => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+
           return res.json();
         })
         .then((data) => {
-          if (data.error) throw new Error(data.error);
+          if (data.error) {
+            throw new Error(data.error);
+          }
 
           const accessToken = data.access_token;
-          console.log("[DEBUG] Token received successfully!");
-          console.log("[DEBUG] Scopes:", data.scope);
 
           setToken(accessToken);
           localStorage.setItem("spotify_token", accessToken);
-
           setStep(2);
 
-          // Wyczyść parametry z URL
-          window.history.replaceState({}, document.title, window.location.pathname);
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname,
+          );
         })
         .catch((err) => {
           console.error("[ERROR] Token exchange failed:", err);
-          alert("❌ Nie udało się zalogować: " + err.message);
+          alert("Could not log in: " + err.message);
         });
     }
   }, []);
 
-  // 🎵 GENERATE PLAYLIST
   const generatePlaylist = async () => {
     const savedToken = token || localStorage.getItem("spotify_token");
 
-    console.log("[DEBUG] Generate playlist - token length:", savedToken ? savedToken.length : 0);
-
     if (!savedToken) {
-      alert("Zaloguj się do Spotify");
+      alert("Log in to Spotify first.");
       setStep(1);
       return;
     }
 
     if (!image || !imageBase64) {
-      return alert("⚠️ Wybierz zdjęcie, aby utworzyć playlistę.");
+      alert("Choose a photo to create a playlist.");
+      return;
     }
 
     if (!name) {
-      return alert("⚠️ Podaj nazwę playlisty!");
+      alert("Enter playlist name.");
+      return;
     }
 
     if (!tracks || tracks < 1) {
-      return alert("⚠️ Wybierz liczbę utworów!");
+      alert("Choose the number of tracks.");
+      return;
     }
 
     setLoading(true);
@@ -272,7 +311,6 @@ const loginSpotify = () => {
         imageBase64,
       };
 
-      console.log("[DEBUG] Sending playlist generation request with image");
       const res = await fetch("/api/create-playlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -286,162 +324,150 @@ const loginSpotify = () => {
       }
 
       if (!data.url) {
-        throw new Error("Brak URL playlisty w odpowiedzi");
+        throw new Error("Missing playlist URL in response.");
       }
 
       setPlaylistUrl(data.url);
       setStep(3);
-
-      console.log("[DEBUG] Playlist created successfully!");
-      console.log("[DEBUG] Search query used:", data.searchQuery);
-    } catch (e) {
-      console.error("[ERROR] Generate playlist failed:", e);
-      alert("❌ Błąd tworzenia playlisty: " + e.message);
+    } catch (error) {
+      console.error("[ERROR] Generate playlist failed:", error);
+      alert("Could not create playlist: " + error.message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
     <section
       id="Photo to playlist"
-      className="min-h-screen bg-gray-950 text-white p-10"
+      className="min-h-screen bg-white px-5 py-20 text-zinc-950 md:px-10 lg:px-16"
     >
-      {/* TITLE */}
       <motion.h2
         initial={{ opacity: 0, y: 60 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16
-                   bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 
-                   bg-clip-text text-blue-400"
+        className="mb-16 text-center text-4xl font-bold text-zinc-950 md:text-5xl lg:text-6xl"
       >
         Photo to Playlist
       </motion.h2>
 
-      {/* DESCRIPTION */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 0.1 }}
-        className="max-w-3xl mx-auto text-center text-lg md:text-xl leading-relaxed text-gray-300 mb-10"
+        className="mx-auto mb-10 max-w-3xl text-center text-lg leading-relaxed text-zinc-700 md:text-xl"
       >
-        <p>The program creates a Spotify playlist based on the photos you upload.</p>
+        <p>
+          The program creates a Spotify playlist based on the photos you upload.
+        </p>
       </motion.div>
 
-      {/* ================= LOGIN ================= */}
       {step === 1 && (
         <div className="text-center">
-          <a
+          <button
+            type="button"
             onClick={loginSpotify}
-            className="inline-flex items-center gap-3 mt-6 px-8 py-4 
-                       bg-[#1DB954] hover:bg-[#17a74a] 
-                       text-black font-medium text-lg rounded-xl cursor-pointer"
+            className="mt-6 inline-flex cursor-pointer items-center gap-3 rounded-xl bg-[#1DB954] px-8 py-4 text-lg font-semibold text-black transition-all duration-300 hover:bg-[#17a74a] active:scale-95"
           >
             Log in with Spotify
-          </a>
+          </button>
         </div>
       )}
 
-      {/* ================= UPLOAD + SETTINGS ================= */}
       {step >= 2 && (
-        <div className="flex flex-col items-center justify-center gap-8 mt-10">
-
-          {/* UPLOAD */}
-          <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-6 text-center">
-            <h3 className="text-xl mb-4">Upload or take a photo</h3>
+        <div className="mt-10 flex flex-col items-center justify-center gap-8">
+          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 text-center shadow-[0_18px_60px_rgba(15,23,42,0.08)]">
+            <h3 className="mb-4 text-xl font-semibold text-zinc-950">
+              Upload or take a photo
+            </h3>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="block w-full text-sm text-gray-300
-                         file:mr-4 file:py-2 file:px-4
-                         file:rounded-full file:border-0
-                         file:text-sm file:font-semibold
-                         file:bg-purple-600 file:text-white
-                         hover:file:bg-purple-700"
+              className="block w-full text-sm text-zinc-600 file:mr-4 file:rounded-full file:border-0 file:bg-zinc-950 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-zinc-800"
             />
             {analysisHint && (
-              <p className="mt-3 text-sm text-gray-400">
-                Analiza obrazka: <span className="text-white">{analysisHint}</span>
+              <p className="mt-3 text-sm text-zinc-500">
+                Image analysis:{" "}
+                <span className="text-zinc-950">{analysisHint}</span>
               </p>
             )}
           </div>
 
-          {/* PREVIEW */}
           {imagePreview && (
             <img
               src={imagePreview}
-              className="w-full max-w-md rounded-2xl border border-gray-800"
+              className="w-full max-w-md rounded-2xl border border-zinc-200 shadow-[0_18px_60px_rgba(15,23,42,0.08)]"
               alt="Preview"
             />
           )}
 
-          {/* SETTINGS */}
-          <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl p-6">
-
+          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)]">
             <div className="mb-4">
-              <label className="block mb-2">Playlist name:</label>
+              <label className="mb-2 block font-medium text-zinc-950">
+                Playlist name:
+              </label>
               <input
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 rounded"
+                onChange={(event) => setName(event.target.value)}
+                className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-zinc-950 outline-none transition focus:border-zinc-950"
               />
             </div>
 
             <div className="mb-4">
-              <label className="block mb-2">Genre (opcjonalnie):</label>
+              <label className="mb-2 block font-medium text-zinc-950">
+                Genre optional:
+              </label>
               <input
                 value={genre}
-                onChange={(e) => setGenre(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 rounded"
-                placeholder="rock, metal, indie pop, chillwave..."
+                onChange={(event) => setGenre(event.target.value)}
+                className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-zinc-950"
+                placeholder="rock, metal, indie pop, chillwave"
               />
             </div>
 
             <div>
-              <label className="block mb-2">
-                Tracks: <span className="text-purple-400">{tracks}</span>
+              <label className="mb-2 block font-medium text-zinc-950">
+                Tracks: <span className="text-zinc-500">{tracks}</span>
               </label>
               <input
                 type="range"
                 min="1"
                 max="10"
                 value={tracks}
-                onChange={(e) => setTracks(Number(e.target.value))}
-                className="w-full accent-purple-500"
+                onChange={(event) => setTracks(Number(event.target.value))}
+                className="w-full accent-zinc-950"
               />
-              <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <div className="mt-1 flex justify-between text-xs text-zinc-500">
                 <span>1</span>
                 <span>10</span>
               </div>
             </div>
           </div>
 
-          {/* GENERATE BUTTON */}
-          <a
+          <button
+            type="button"
             onClick={generatePlaylist}
-            className="inline-flex items-center gap-3 mt-6 px-8 py-4 
-                       bg-purple-600 hover:bg-purple-700 
-                       text-white font-medium text-lg rounded-xl cursor-pointer"
+            className="mt-6 inline-flex cursor-pointer items-center gap-3 rounded-xl bg-zinc-950 px-8 py-4 text-lg font-medium text-white transition-all duration-300 hover:bg-zinc-800 active:scale-95"
           >
-            {loading ? "Generating..." : "Generate Playlist"}
-          </a>
+            {loading ? "Generating" : "Generate Playlist"}
+          </button>
         </div>
       )}
 
-      {/* ================= RESULT ================= */}
       {step === 3 && playlistUrl && (
-        <div className="text-center mt-12">
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 max-w-md mx-auto">
-            <h3 className="text-xl mb-4">Your playlist is ready!</h3>
+        <div className="mt-12 text-center">
+          <div className="mx-auto max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)]">
+            <h3 className="mb-4 text-xl font-semibold text-zinc-950">
+              Your playlist is ready!
+            </h3>
             <a
               href={playlistUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-green-400 underline text-lg"
+              className="text-lg font-medium text-green-700 underline"
             >
               Open Spotify Playlist
             </a>
