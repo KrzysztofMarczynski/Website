@@ -132,34 +132,37 @@ export default function Blog() {
           {activePost && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6" onMouseDown={() => setActivePost(null)}>
               <motion.article initial={{ opacity: 0, y: 40, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 30, scale: 0.97 }} onMouseDown={(e) => e.stopPropagation()} className="w-full max-w-6xl h-[94dvh] overflow-y-auto rounded-3xl bg-white shadow-xl">
-                <div className="sticky top-0 z-10 flex items-start justify-between border-b border-zinc-100 bg-white p-6 sm:p-8">
-  <div>
-    <p className="mb-3 text-xs font-bold uppercase text-zinc-400">
-      {activePost.category}
-    </p>
-    <h3 className="text-3xl sm:text-4xl font-black leading-tight text-zinc-950">
-      {activePost.title}
-    </h3>
-  </div>
+<div className="sticky top-0 z-10 border-b border-zinc-100 bg-white p-6 sm:p-8">
+  <div className="flex flex-col gap-5">
+    <div className="flex justify-end gap-3">
+      <a
+        href={activePost.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-zinc-800"
+      >
+        GITHUB
+        <ArrowUpRight className="h-4 w-4" />
+      </a>
 
-  <div className="flex items-center gap-3">
-    <a
-      href={activePost.github}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-zinc-800"
-    >
-      GITHUB
-      <ArrowUpRight className="h-4 w-4" />
-    </a>
+      <button
+        type="button"
+        onClick={() => setActivePost(null)}
+        className="flex h-12 w-12 items-center justify-center rounded-full border border-zinc-200 bg-white transition hover:border-zinc-950 active:scale-95"
+      >
+        <X className="h-6 w-6" />
+      </button>
+    </div>
 
-    <button
-      type="button"
-      onClick={() => setActivePost(null)}
-      className="flex h-12 w-12 items-center justify-center rounded-full border border-zinc-200 bg-white transition hover:border-zinc-950 active:scale-95"
-    >
-      <X className="h-6 w-6" />
-    </button>
+    <div>
+      <p className="mb-3 text-xs font-bold uppercase text-zinc-400">
+        {activePost.category}
+      </p>
+
+      <h3 className="text-3xl font-black leading-tight text-zinc-950 sm:text-4xl">
+        {activePost.title}
+      </h3>
+    </div>
   </div>
 </div>
                 <div className="p-6 sm:p-8 lg:p-12">
