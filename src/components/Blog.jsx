@@ -21,6 +21,7 @@ const blogPosts = [
   title: "Flash Sale Ticket Reservation System",
   category: "Full Stack",
   image: "flash_sale/Main page.png",
+  github: "https://github.com/KrzysztofMarczynski/intern-flash-sale-task",
   gallery: [
     "flash_sale/ticekt lock.png",
     "flash_sale/buy.png",
