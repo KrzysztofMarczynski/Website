@@ -25,8 +25,8 @@ export default function Hero() {
     }
   };
 
-  const scrollToProjects = () => {
-    const el = document.getElementById("code");
+  const scrollToBlog = () => {
+    const el = document.getElementById("blog");
 
     if (el) {
       const yOffset = -96;
@@ -37,7 +37,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-white px-5 pb-20 pt-28 text-zinc-950 md:px-10 md:pt-32 lg:px-16 lg:pt-36">
+    <section className="relative overflow-hidden bg-white px-5 pb-10 pt-24 text-zinc-950 md:px-10 md:pb-12 md:pt-28 lg:px-16 lg:pt-32">
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="relative left-1/2 w-screen -translate-x-1/2 px-5 md:px-10 lg:px-16">
           <motion.h1
@@ -62,7 +62,7 @@ export default function Hero() {
           <span>Based in Poland</span>
         </motion.div>
 
-        <div className="mt-14 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16">
+        <div className="mt-10 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-12">
           <motion.div
             initial={{ opacity: 0, y: 42 }}
             animate={{ opacity: 1, y: 0 }}
@@ -78,7 +78,7 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          <div className="w-full space-y-8 text-center lg:text-left">
+          <div className="w-full space-y-6 text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 42 }}
               animate={{ opacity: 1, y: 0 }}
@@ -132,10 +132,10 @@ export default function Hero() {
             >
               <button
                 type="button"
-                onClick={scrollToProjects}
+                onClick={scrollToBlog}
                 className="rounded-full border border-zinc-300 bg-white px-7 py-3.5 text-sm font-bold uppercase text-zinc-950 transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-950 active:scale-95"
               >
-                View projects
+                See my blog
               </button>
               <button
                 type="button"

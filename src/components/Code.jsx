@@ -59,6 +59,16 @@ const codeProjects = [
   },
 ];
 
+const codeHighlights = [
+  "Low-level C",
+  "React UI",
+  "Unity logic",
+  "PY API",
+];
+
+const codeIntro =
+  "A compact look at the languages and systems I use: from low-level C exercises, through React UI work, to Unity game logic and PY API experiments.";
+
 function CodeFromFile({ filePath, repo, language = "python" }) {
   const [code, setCode] = useState("// Loading from GitHub");
   const [error, setError] = useState(null);
@@ -132,7 +142,7 @@ export default function Code() {
   return (
     <section
       id="Code"
-      className="relative bg-white px-4 py-16 text-zinc-950 sm:px-5 md:px-10 md:py-24 lg:px-16"
+      className="relative bg-white px-4 py-10 text-zinc-950 sm:px-5 md:px-10 md:py-14 lg:px-16"
     >
       <div className="mx-auto max-w-7xl">
         <motion.div
@@ -140,32 +150,58 @@ export default function Code() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.35 }}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-10 border-t border-zinc-200 pt-8 md:mb-14"
+          className="mb-8 border-t border-zinc-200 pt-6 md:mb-10"
         >
           <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-            <div>
-              <p className="mb-4 text-sm font-bold uppercase text-zinc-400">
+            <div className="text-center lg:text-left">
+              <p className="mb-3 text-sm font-bold uppercase text-zinc-400">
                 Code archive
               </p>
-              <p className="mb-6 max-w-2xl text-base leading-relaxed text-zinc-600 md:text-lg lg:hidden">
-                A compact look at the languages and systems I use: from
-                low-level C exercises, through React UI work, to Unity game
-                logic and PY API experiments.
-              </p>
+              <div className="mx-auto mb-5 max-w-2xl lg:mx-0 lg:hidden">
+                <p className="mb-2 text-xs font-bold uppercase text-zinc-400">
+                  Focus stack
+                </p>
+                <p className="mb-4 text-sm leading-relaxed text-zinc-600">
+                  {codeIntro}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {codeHighlights.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full bg-zinc-100 px-3 py-2 text-center text-xs font-bold text-zinc-600"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
               <h2 className="text-2xl font-black uppercase leading-[0.98] tracking-normal text-zinc-950 sm:text-3xl md:text-5xl lg:text-7xl xl:text-8xl">
                 Code & experience
               </h2>
             </div>
 
-            <p className="hidden max-w-2xl text-base leading-relaxed text-zinc-600 md:text-lg lg:block lg:pt-2 xl:text-xl">
-              A compact look at the languages and systems I use: from low-level
-              C exercises, through React UI work, to Unity game logic and PY API
-              experiments.
-            </p>
+            <div className="hidden max-w-2xl lg:block">
+              <p className="mb-3 text-xs font-bold uppercase text-zinc-400">
+                Focus stack
+              </p>
+              <p className="mb-4 text-base leading-relaxed text-zinc-600">
+                {codeIntro}
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {codeHighlights.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full bg-zinc-100 px-4 py-2 text-center text-sm font-bold text-zinc-700"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </motion.div>
 
-        <div className="flex flex-col gap-6 sm:gap-8 lg:grid lg:grid-cols-[20rem_1fr] xl:grid-cols-[22rem_1fr]">
+        <div className="flex flex-col gap-5 sm:gap-6 lg:grid lg:grid-cols-[20rem_1fr] xl:grid-cols-[22rem_1fr]">
           <motion.aside
             initial={{ opacity: 0, y: 34 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -183,7 +219,7 @@ export default function Code() {
                   onClick={() => setActiveTab(project.id)}
                   className={`group flex h-14 w-full items-center gap-3 rounded-[1rem] border px-3 text-left transition-colors duration-300 sm:h-16 sm:px-4 sm:rounded-[1.25rem] lg:block lg:h-auto lg:min-h-0 lg:w-full lg:rounded-[1.35rem] lg:p-5 lg:transition-all ${
                     isActive
-                      ? "border-zinc-950 bg-zinc-950 text-white shadow-[0_18px_60px_rgba(15,23,42,0.16)]"
+                      ? "border-zinc-950 bg-zinc-950 text-white"
                       : "border-zinc-200 bg-white text-zinc-950 lg:hover:-translate-y-0.5 lg:hover:border-zinc-400"
                   }`}
                 >
@@ -211,15 +247,15 @@ export default function Code() {
                   >
                     {project.eyebrow}
                   </p>
-<h3 className="min-w-0 truncate text-xs font-bold leading-tight sm:text-sm lg:text-lg">
-  {project.name}
-</h3>
+                  <h3 className="min-w-0 truncate text-xs font-bold leading-tight sm:text-sm lg:text-lg">
+                    {project.name}
+                  </h3>
                 </button>
               );
             })}
           </motion.aside>
 
-          <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+          <div className="space-y-4 sm:space-y-5 lg:space-y-6">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${activeProject.id}-description`}
@@ -227,7 +263,7 @@ export default function Code() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -18 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="grid gap-2 rounded-[1.75rem] border border-zinc-200 bg-white p-2.5 shadow-[0_18px_70px_rgba(15,23,42,0.07)] sm:gap-3 sm:p-3 md:gap-5 md:grid-cols-[1fr_auto] md:items-center md:p-6 md:min-h-[160px]"
+                className="grid gap-2 rounded-[1.75rem] border border-zinc-200 bg-white p-2.5 sm:gap-3 sm:p-3 md:gap-5 md:grid-cols-[1fr_auto] md:items-center md:p-6 md:min-h-[160px]"
               >
                 <div>
                   <p className="mb-2 text-xs font-bold uppercase text-zinc-400 sm:text-sm">
@@ -236,7 +272,7 @@ export default function Code() {
                   <h3 className="text-base font-bold leading-tight text-zinc-950 sm:text-xl md:text-2xl lg:text-4xl">
                     {activeProject.title}
                   </h3>
-                  <p className="mt-2 max-w-3xl text-xs leading-relaxed text-zinc-600 sm:mt-3 sm:text-sm md:text-base lg:text-lg">
+                  <p className="mt-3 max-w-3xl text-xs leading-relaxed text-zinc-600 sm:text-sm md:text-base">
                     {activeProject.description}
                   </p>
                 </div>
@@ -258,7 +294,7 @@ export default function Code() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.75, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden rounded-[1.75rem] border border-zinc-800 bg-zinc-950 shadow-[0_28px_100px_rgba(15,23,42,0.18)]"
+              className="overflow-hidden rounded-[1.75rem] border border-zinc-800 bg-zinc-950"
             >
               <div className="flex flex-col gap-2 border-b border-white/10 bg-zinc-900 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-2 sm:gap-3">
@@ -302,7 +338,7 @@ export default function Code() {
                 {activeProject.details.map((detail) => (
                   <div
                     key={detail}
-                    className="flex min-h-10 items-center justify-center gap-1 rounded-full border border-zinc-200 bg-white px-2 py-1.5 text-center text-xs font-bold text-zinc-700 shadow-[0_10px_35px_rgba(15,23,42,0.04)] sm:min-h-12 sm:gap-1.5 sm:px-3 sm:py-2 md:min-h-14 md:gap-2 md:px-5 md:py-3 md:text-sm"
+                    className="flex min-h-10 items-center justify-center gap-1 rounded-full border border-zinc-200 bg-white px-2 py-1.5 text-center text-xs font-bold text-zinc-700 sm:min-h-12 sm:gap-1.5 sm:px-3 sm:py-2 md:min-h-14 md:gap-2 md:px-5 md:py-3 md:text-sm"
                   >
                     {detail === "React" || detail === "PY" ? (
                       <Code2 className="h-3 w-3 text-zinc-400 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />

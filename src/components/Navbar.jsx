@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const NAV_LINKS = [
   { label: "ABOUT", id: "hero" },
+  { label: "BLOG", id: "blog" },
   { label: "CODE", id: "code" },
   { label: "3D PRINT", id: "3d-print" },
   { label: "UNITY", id: "unity-games" },

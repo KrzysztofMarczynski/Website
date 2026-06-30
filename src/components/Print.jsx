@@ -57,11 +57,16 @@ const projects = [
   },
 ];
 
+const printHighlights = ["Board games", "Utility models", "SketchUp", "Solid Edge"];
+
+const printIntro =
+  "From custom board games to practical utilities, I design and print 3D models that combine functionality with precision. Each project uses SketchUp and Solid Edge for modeling.";
+
 export default function Print() {
   return (
     <section
       id="3D Print"
-      className="relative bg-white px-4 py-16 text-zinc-950 sm:px-5 md:px-10 md:py-16 lg:px-16"
+      className="relative bg-white px-4 py-10 text-zinc-950 sm:px-5 md:px-10 md:py-12 lg:px-16"
     >
       <div className="mx-auto max-w-7xl">
         <motion.div
@@ -69,40 +74,67 @@ export default function Print() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.35 }}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-10 border-t border-zinc-200 pt-8 md:mb-14"
+          className="mb-8 border-t border-zinc-200 pt-6 md:mb-10"
         >
           <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-            <div>
-              <p className="mb-4 text-sm font-bold uppercase text-zinc-400">
+            <div className="text-center lg:text-left">
+              <p className="mb-3 text-sm font-bold uppercase text-zinc-400">
                 3D & Fabrication
               </p>
-              <p className="mb-6 max-w-2xl text-base leading-relaxed text-zinc-600 md:text-lg lg:hidden">
-                From custom board games to practical utilities, I design and
-                print 3D models that combine functionality with precision.
-              </p>
+              <div className="mx-auto mb-5 max-w-2xl lg:mx-0 lg:hidden">
+                <p className="mb-2 text-xs font-bold uppercase text-zinc-400">
+                  Design range
+                </p>
+                <p className="mb-4 text-sm leading-relaxed text-zinc-600">
+                  {printIntro}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {printHighlights.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full bg-zinc-100 px-3 py-2 text-center text-xs font-bold text-zinc-600"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
               <h2 className="text-2xl font-black uppercase leading-[0.98] tracking-normal text-zinc-950 sm:text-3xl md:text-5xl lg:text-7xl xl:text-8xl">
                 Printing & Design
               </h2>
             </div>
 
-            <p className="hidden max-w-2xl text-base leading-relaxed text-zinc-600 md:text-lg lg:block lg:pt-2 xl:text-xl">
-              From custom board games to practical utilities, I design and print
-              3D models that combine functionality with precision. Each project
-              uses SketchUp and Solid Edge for modeling.
-            </p>
+            <div className="hidden max-w-2xl lg:block">
+              <p className="mb-3 text-xs font-bold uppercase text-zinc-400">
+                Design range
+              </p>
+              <p className="mb-4 text-base leading-relaxed text-zinc-600">
+                {printIntro}
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {printHighlights.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full bg-zinc-100 px-4 py-2 text-center text-sm font-bold text-zinc-700"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </motion.div>
 
-        <div className="space-y-12 lg:space-y-14">
+        <div className="space-y-8 lg:space-y-10">
           {/* Pirate Stories - Multi-section project */}
           <motion.div
             initial={{ opacity: 0, y: 34 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.75, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-6 lg:space-y-8"
+            className="space-y-5 lg:space-y-6"
           >
-            <div className="grid gap-3 rounded-[1.75rem] border border-zinc-200 bg-white p-2.5 shadow-[0_18px_70px_rgba(15,23,42,0.07)] sm:gap-3 sm:p-3 md:gap-4 md:p-5 lg:gap-5 lg:p-6 md:min-h-[120px]">
+            <div className="grid gap-3 rounded-[1.75rem] border border-zinc-200 bg-white p-2.5 sm:gap-3 sm:p-3 md:gap-4 md:p-5 lg:gap-5 lg:p-6 md:min-h-[120px]">
               <div>
                 <p className="mb-2 text-xs font-bold uppercase text-zinc-400 sm:text-sm">
                   {projects[0].eyebrow}
@@ -110,14 +142,14 @@ export default function Print() {
                 <h3 className="text-base font-bold leading-tight text-zinc-950 sm:text-xl md:text-2xl lg:text-4xl">
                   {projects[0].title}
                 </h3>
-                <p className="mt-2 max-w-3xl text-xs leading-relaxed text-zinc-600 sm:mt-3 sm:text-sm md:text-base lg:text-lg">
+                <p className="mt-3 max-w-3xl text-xs leading-relaxed text-zinc-600 sm:text-sm md:text-base">
                   {projects[0].description}
                 </p>
               </div>
             </div>
 
             {/* Pirate Stories sections */}
-            <div className="space-y-4 sm:space-y-6 lg:space-y-7">
+            <div className="space-y-4 sm:space-y-5 lg:space-y-6">
               {projects[0].sections.map((section, idx) => (
                 <motion.div
                   key={section.heading}
@@ -131,11 +163,14 @@ export default function Print() {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 items-start">
                     {/* Text on left */}
-                    <div className="space-y-2 sm:space-y-2.5 md:col-span-1">
+                    <div className="md:col-span-1">
+                      <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-zinc-400">
+                        Step {String(idx + 1).padStart(2, "0")}
+                      </p>
                       <h4 className="text-sm font-bold text-zinc-950 sm:text-base md:text-lg lg:text-xl">
                         {section.heading}
                       </h4>
-                      <p className="text-xs leading-relaxed text-zinc-600 sm:text-sm md:text-base">
+                      <p className="mt-2 text-xs leading-relaxed text-zinc-600 sm:text-sm">
                         {section.text}
                       </p>
                     </div>
@@ -145,7 +180,7 @@ export default function Print() {
                       {section.images.map((img) => (
                         <div
                           key={img}
-                          className="aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl border border-zinc-200 shadow-[0_8px_30px_rgba(15,23,42,0.06)] md:min-w-0"
+                          className="aspect-[4/3] overflow-hidden rounded-lg border border-zinc-200 sm:rounded-xl md:min-w-0"
                         >
                         <img
                           src={`${img}.png`}
@@ -173,7 +208,7 @@ export default function Print() {
                 delay: 0.1 + idx * 0.08,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="grid gap-6 sm:gap-8 md:gap-10 md:grid-cols-2 lg:gap-12"
+              className="grid gap-5 sm:gap-6 md:grid-cols-2 md:gap-8 lg:gap-10"
             >
               <div className="space-y-3 sm:space-y-4 flex flex-col justify-center">
                 <div>
@@ -184,7 +219,7 @@ export default function Print() {
                     {project.title}
                   </h3>
                 </div>
-                <p className="text-xs leading-relaxed text-zinc-600 sm:text-sm md:text-base lg:text-lg">
+                <p className="text-xs leading-relaxed text-zinc-600 sm:text-sm md:text-base">
                   {project.description}
                 </p>
                 <a
@@ -199,7 +234,7 @@ export default function Print() {
               </div>
 
               <div className="flex items-center justify-center">
-                <div className="w-full overflow-hidden rounded-2xl border border-zinc-200 shadow-[0_18px_60px_rgba(15,23,42,0.12)]">
+                <div className="w-full overflow-hidden rounded-2xl border border-zinc-200">
                   <img
                     src={project.image}
                     alt={project.title}
